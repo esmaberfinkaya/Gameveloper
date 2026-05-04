@@ -208,6 +208,143 @@ app.patch('/api/questions/:questionId/responses/:responseId/accept', async (req,
   }
 });
 
+// Fikir Havuzu (Ideas) Katmanı: Listeleme
+app.get('/api/ideas', async (req, res) => {
+  const currentUserId = parseInt(req.query.userId, 10);
+  try {
+    const ideas = await prisma.idea.findMany({
+      orderBy: { createdAt: 'desc' },
+      include: {
+        user: { select: { id: true, name: true, role: true, trustScore: true } },
+        comments: {
+          orderBy: { createdAt: 'asc' },
+          include: {
+            user: { select: { id: true, name: true, role: true, trustScore: true } }
+          }
+        }
+      }
+    });
+
+    const filteredIdeas = ideas.map(idea => {
+      const filteredComments = idea.comments.filter(c => {
+        if (!c.isPrivate) return true;
+        return currentUserId === idea.userId || currentUserId === c.userId;
+      });
+      return { ...idea, comments: filteredComments };
+    });
+
+    res.json(filteredIdeas);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Fikir Havuzu: Fikir Ekleme
+app.post('/api/ideas', async (req, res) => {
+  const { title, story, visuals, gameplay, category, userId } = req.body;
+  try {
+    const newIdea = await prisma.idea.create({
+      data: {
+        title, story, visuals, gameplay, category, userId: parseInt(userId, 10)
+      }
+    });
+    res.status(201).json(newIdea);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Fikir Havuzu: Yorum Ekleme
+app.post('/api/ideas/:id/comments', async (req, res) => {
+  const { id } = req.params;
+  const { content, isPrivate, userId } = req.body;
+  try {
+    const newComment = await prisma.comment.create({
+      data: {
+        content,
+        isPrivate: isPrivate || false,
+        userId: parseInt(userId, 10),
+        ideaId: parseInt(id, 10)
+      }
+    });
+    res.status(201).json(newComment);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Keşfet (Explore) Katmanı: Karma Akış
+app.get('/api/explore', async (req, res) => {
+  const { filter, userId } = req.query;
+  const currentUserId = parseInt(userId, 10);
+
+  try {
+    const user = currentUserId ? await prisma.user.findUnique({ where: { id: currentUserId } }) : null;
+    const userRole = user ? user.role : 'GAMER';
+
+    const questions = await prisma.question.findMany({
+      include: {
+        user: { select: { id: true, name: true, role: true, trustScore: true } },
+        responses: {
+          orderBy: { createdAt: 'asc' },
+          include: { user: { select: { id: true, name: true, role: true, trustScore: true } } }
+        }
+      }
+    });
+
+    const ideas = await prisma.idea.findMany({
+      include: {
+        user: { select: { id: true, name: true, role: true, trustScore: true } },
+        comments: {
+          orderBy: { createdAt: 'asc' },
+          include: { user: { select: { id: true, name: true, role: true, trustScore: true } } }
+        }
+      }
+    });
+
+    const mappedQuestions = questions.map(q => ({ ...q, feedType: 'QUESTION' }));
+    const mappedIdeas = ideas.map(i => {
+      const filteredComments = i.comments.filter(c => {
+        if (!c.isPrivate) return true;
+        return currentUserId === i.userId || currentUserId === c.userId;
+      });
+      return { ...i, comments: filteredComments, feedType: 'IDEA' };
+    });
+
+    let mixFeed = [...mappedQuestions, ...mappedIdeas];
+
+    if (filter === 'unresolved') {
+      mixFeed = mappedQuestions.filter(q => !q.isResolved);
+    } else if (filter === 'popular') {
+      mixFeed.sort((a, b) => {
+        const scoreA = (a.responses?.length || 0) + (a.comments?.length || 0);
+        const scoreB = (b.responses?.length || 0) + (b.comments?.length || 0);
+        return scoreB - scoreA;
+      });
+    } else if (filter === 'newest') {
+      mixFeed.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    } else {
+      // Sana Özel (For You)
+      mixFeed.sort((a, b) => {
+        if (userRole === 'DEVELOPER') {
+          const aPriority = (a.feedType === 'QUESTION' && !a.isResolved) ? 1 : 0;
+          const bPriority = (b.feedType === 'QUESTION' && !b.isResolved) ? 1 : 0;
+          if (aPriority !== bPriority) return bPriority - aPriority;
+        } else {
+          const aPriority = a.feedType === 'IDEA' ? 1 : 0;
+          const bPriority = b.feedType === 'IDEA' ? 1 : 0;
+          if (aPriority !== bPriority) return bPriority - aPriority;
+        }
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      });
+    }
+
+    res.json(mixFeed);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

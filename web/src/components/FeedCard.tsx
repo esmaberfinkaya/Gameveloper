@@ -20,9 +20,10 @@ interface FeedCardProps {
   responses?: any[];
   currentUser?: any;
   onUpdate?: () => void;
+  isExplore?: boolean;
 }
 
-export default function FeedCard({ id, title, content, category, imageUrl, createdAt, isResolved, user, responses = [], currentUser, onUpdate }: FeedCardProps) {
+export default function FeedCard({ id, title, content, category, imageUrl, createdAt, isResolved, user, responses = [], currentUser, onUpdate, isExplore = false }: FeedCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState<"SOLUTION" | "COMMENT">("SOLUTION");
   const [responseContent, setResponseContent] = useState("");
@@ -119,10 +120,9 @@ export default function FeedCard({ id, title, content, category, imageUrl, creat
 
         {/* Question Content */}
         <div className="pt-2">
-          <h3 className="text-lg font-bold text-white mb-2 group-hover:text-glow-cyan transition-colors pr-20">{title}</h3>
+          <h3 className={`text-lg font-bold text-white mb-2 group-hover:text-glow-cyan transition-colors pr-20 ${isExplore ? 'truncate' : ''}`}>{title}</h3>
           
-          {/* Markdown Renderer with Custom Code Styles & YouTube Support */}
-          <div className="text-gray-300 text-sm leading-relaxed custom-markdown-body space-y-3">
+          <div className={`text-gray-300 text-sm leading-relaxed custom-markdown-body space-y-3 ${isExplore ? 'line-clamp-3 overflow-hidden max-h-20' : ''}`}>
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
               components={{
@@ -130,6 +130,7 @@ export default function FeedCard({ id, title, content, category, imageUrl, creat
                   const href = props.href || "";
                   const ytMatch = href.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i);
                   if (ytMatch) {
+                    if (isExplore) return <span className="text-neon-cyan">[YouTube Video]</span>;
                     return (
                       <div className="my-6 aspect-video rounded-xl overflow-hidden border border-accent-purple/30 shadow-[0_0_20px_rgba(188,19,254,0.15)] relative group/video">
                         <div className="absolute inset-0 bg-neon-cyan/5 pointer-events-none group-hover/video:bg-transparent transition-colors"></div>
@@ -151,9 +152,12 @@ export default function FeedCard({ id, title, content, category, imageUrl, creat
               {content}
             </ReactMarkdown>
           </div>
+          {isExplore && (
+             <button className="text-neon-cyan text-xs font-bold mt-2 hover:underline">Devamını Oku...</button>
+          )}
 
           {/* Optional Image */}
-          {imageUrl && (
+          {imageUrl && !isExplore && (
             <div className="mt-4 rounded-lg overflow-hidden border border-gray-800 relative group-hover:border-accent-purple/30 transition-colors max-h-96">
               <img src={imageUrl} alt="İçerik görseli" className="w-full h-full object-cover" />
             </div>

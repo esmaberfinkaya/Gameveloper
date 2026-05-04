@@ -13,7 +13,8 @@ import {
   Menu,
   X,
   Users,
-  Activity
+  Activity,
+  User
 } from "lucide-react";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -59,6 +60,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     { name: "Fikir Havuzu", href: "/dashboard/ideas", icon: Lightbulb, color: "accent-purple" },
     { name: "Ortaklık Bul", href: "/dashboard/partners", icon: Users, color: "neon-pink" },
     { name: "Yol Haritaları", href: "/dashboard/roadmaps", icon: Map, color: "green-400" },
+    { name: "Profilim", href: "/dashboard/profile", icon: User, color: "accent-purple" },
   ];
 
   return (

@@ -1,15 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { MessageSquarePlus, X, Image as ImageIcon, AlertTriangle } from "lucide-react";
+import { MessageSquarePlus, Compass, Sparkles, TrendingUp, Clock, Target, X, Image as ImageIcon, AlertTriangle } from "lucide-react";
 import FeedCard from "@/components/FeedCard";
+import IdeaCard from "@/components/IdeaCard";
 
-export default function DashboardIssuesPage() {
+export default function ExplorePage() {
   const [user, setUser] = useState<any>(null);
   
   // Feed States
-  const [questions, setQuestions] = useState<any[]>([]);
-  const [isLoadingQuestions, setIsLoadingQuestions] = useState(true);
+  const [mixFeed, setMixFeed] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [activeFilter, setActiveFilter] = useState("for_you"); // for_you, popular, newest, unresolved
 
   // Modal States
   const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false);
@@ -28,21 +30,26 @@ export default function DashboardIssuesPage() {
     if (userData) {
       setUser(JSON.parse(userData));
     }
-    fetchQuestions();
   }, []);
 
-  const fetchQuestions = async () => {
-    setIsLoadingQuestions(true);
+  useEffect(() => {
+    if (user) {
+      fetchExploreFeed();
+    }
+  }, [user, activeFilter]);
+
+  const fetchExploreFeed = async () => {
+    setIsLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/api/questions");
+      const res = await fetch(`http://localhost:5000/api/explore?filter=${activeFilter}&userId=${user?.id}`);
       if (res.ok) {
         const data = await res.json();
-        setQuestions(data);
+        setMixFeed(data);
       }
     } catch (err) {
-      console.error("Sorular çekilemedi", err);
+      console.error("Akış çekilemedi", err);
     } finally {
-      setIsLoadingQuestions(false);
+      setIsLoading(false);
     }
   };
 
@@ -62,7 +69,7 @@ export default function DashboardIssuesPage() {
       if (res.ok) {
         setIsQuestionModalOpen(false);
         setFormData({ title: "", content: "", category: "Unity", imageUrl: "" });
-        fetchQuestions();
+        fetchExploreFeed();
       }
     } catch (err) {
       console.error("Soru sorulurken hata oluştu", err);
@@ -174,7 +181,7 @@ export default function DashboardIssuesPage() {
         <p><strong>Topluluk Kuralları:</strong> Geliştiriciler (DEVELOPER) detaylı çözümler paylaşır ve yön gösterir. Oyuncular (GAMER) ise ağırlıklı olarak fikir belirtir ve tartışmalara katılır. Soru sorarken dürüst olun ve saygıyı koruyun.</p>
       </div>
 
-      <div className="max-w-4xl mx-auto space-y-6 md:space-y-8 pb-20">
+      <div className="max-w-6xl mx-auto pb-20">
         
         {/* Mobile action button since sidebar is hidden on mobile mostly */}
         <div className="md:hidden flex justify-end mb-4">
@@ -182,12 +189,14 @@ export default function DashboardIssuesPage() {
             onClick={() => setIsQuestionModalOpen(true)}
             className="flex items-center gap-2 px-4 py-2 bg-neon-cyan/20 text-neon-cyan border border-neon-cyan rounded-md text-sm font-bold shadow-[0_0_10px_rgba(0,255,255,0.2)]"
           >
-            <MessageSquarePlus size={16} /> Yeni Soru Sor
+            <MessageSquarePlus size={16} /> Yeni Soru
           </button>
         </div>
 
-        <div className="flex items-center justify-between mb-6 border-b border-gray-800 pb-2">
-          <h1 className="text-2xl font-bold text-gray-200 tracking-wider">Sorunlar & Akış <span className="text-neon-cyan animate-pulse ml-1">_</span></h1>
+        <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+          <h1 className="text-3xl font-black text-white tracking-widest uppercase flex items-center gap-3">
+            <Compass size={32} className="text-neon-cyan" /> Keşfet
+          </h1>
           
           <button 
             onClick={() => setIsQuestionModalOpen(true)}
@@ -197,45 +206,83 @@ export default function DashboardIssuesPage() {
           </button>
         </div>
 
-        {isLoadingQuestions ? (
-          // Skeleton Posts
-          [1, 2, 3].map((item) => (
-            <div key={item} className="bg-card-bg/60 border border-gray-800/80 p-5 md:p-6 rounded-xl space-y-4 opacity-60 animate-pulse backdrop-blur-sm">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-gray-700"></div>
-                <div className="space-y-2 flex-1">
-                  <div className="h-4 bg-gray-700 rounded w-1/4"></div>
-                  <div className="h-3 bg-gray-700 rounded w-1/6"></div>
+        {/* Filter Tabs */}
+        <div className="flex flex-wrap items-center gap-2 mb-8 border-b border-gray-800 pb-4">
+          <button 
+            onClick={() => setActiveFilter("for_you")}
+            className={`px-4 py-2 rounded-full text-sm font-bold flex items-center gap-2 transition-all ${activeFilter === "for_you" ? 'bg-neon-cyan text-black shadow-[0_0_15px_rgba(0,255,255,0.4)]' : 'bg-[#0D1117] text-gray-400 border border-gray-800 hover:border-neon-cyan/50'}`}
+          >
+            <Sparkles size={16} /> Sana Özel
+          </button>
+          <button 
+            onClick={() => setActiveFilter("popular")}
+            className={`px-4 py-2 rounded-full text-sm font-bold flex items-center gap-2 transition-all ${activeFilter === "popular" ? 'bg-neon-pink text-white shadow-[0_0_15px_rgba(255,0,255,0.4)]' : 'bg-[#0D1117] text-gray-400 border border-gray-800 hover:border-neon-pink/50'}`}
+          >
+            <TrendingUp size={16} /> Popüler
+          </button>
+          <button 
+            onClick={() => setActiveFilter("newest")}
+            className={`px-4 py-2 rounded-full text-sm font-bold flex items-center gap-2 transition-all ${activeFilter === "newest" ? 'bg-accent-purple text-white shadow-[0_0_15px_rgba(188,19,254,0.4)]' : 'bg-[#0D1117] text-gray-400 border border-gray-800 hover:border-accent-purple/50'}`}
+          >
+            <Clock size={16} /> En Yeni
+          </button>
+          <button 
+            onClick={() => setActiveFilter("unresolved")}
+            className={`px-4 py-2 rounded-full text-sm font-bold flex items-center gap-2 transition-all ${activeFilter === "unresolved" ? 'bg-green-500 text-black shadow-[0_0_15px_rgba(34,197,94,0.4)]' : 'bg-[#0D1117] text-gray-400 border border-gray-800 hover:border-green-500/50'}`}
+          >
+            <Target size={16} /> Çözüm Bekleyenler
+          </button>
+        </div>
+
+        {/* GRID LAYOUT */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+          {isLoading ? (
+            // Skeleton Posts
+            [1, 2, 3, 4, 5, 6].map((item) => (
+              <div key={item} className="bg-card-bg/60 border border-gray-800/80 p-5 rounded-xl space-y-4 opacity-60 animate-pulse backdrop-blur-sm h-48">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-gray-700"></div>
+                  <div className="space-y-2 flex-1">
+                    <div className="h-4 bg-gray-700 rounded w-1/4"></div>
+                    <div className="h-3 bg-gray-700 rounded w-1/6"></div>
+                  </div>
+                </div>
+                <div className="space-y-3 pt-2">
+                  <div className="h-4 bg-gray-700 rounded w-full"></div>
+                  <div className="h-4 bg-gray-700 rounded w-5/6"></div>
                 </div>
               </div>
-              <div className="space-y-3 pt-2">
-                <div className="h-4 bg-gray-700 rounded w-full"></div>
-                <div className="h-4 bg-gray-700 rounded w-5/6"></div>
-                <div className="h-4 bg-gray-700 rounded w-4/6"></div>
-              </div>
+            ))
+          ) : mixFeed.length === 0 ? (
+            <div className="col-span-full text-center text-gray-500 py-20 border border-dashed border-gray-800 rounded-xl bg-card-bg/30">
+              <Compass size={48} className="mx-auto mb-4 opacity-20" />
+              <p className="text-lg">Bu filtreye uygun içerik bulunamadı.</p>
             </div>
-          ))
-        ) : questions.length === 0 ? (
-          <div className="text-center text-gray-500 py-10 border border-dashed border-gray-800 rounded-xl bg-card-bg/30">
-            <p>Henüz hiç sorun paylaşılmamış. İlk soruyu sen sor!</p>
-          </div>
-        ) : (
-          questions.map((q: any) => (
-            <FeedCard key={q.id} {...q} currentUser={user} onUpdate={fetchQuestions} />
-          ))
-        )}
-        
-        <div className="text-center text-gray-600 py-10 text-xs md:text-sm tracking-widest uppercase flex items-center justify-center gap-4 opacity-50">
-          <span className="w-12 h-px bg-gray-700"></span>
-          Veri Akışı Sonu
-          <span className="w-12 h-px bg-gray-700"></span>
+          ) : (
+            mixFeed.map((item: any) => {
+              if (item.feedType === 'QUESTION') {
+                return <FeedCard key={`q-${item.id}`} {...item} currentUser={user} onUpdate={fetchExploreFeed} isExplore={true} />;
+              } else if (item.feedType === 'IDEA') {
+                return <IdeaCard key={`i-${item.id}`} {...item} currentUser={user} onUpdate={fetchExploreFeed} isExplore={true} />;
+              }
+              return null;
+            })
+          )}
         </div>
+        
+        {!isLoading && mixFeed.length > 0 && (
+          <div className="text-center text-gray-600 py-10 mt-10 text-xs md:text-sm tracking-widest uppercase flex items-center justify-center gap-4 opacity-50">
+            <span className="w-12 h-px bg-gray-700"></span>
+            Keşfet Sonu
+            <span className="w-12 h-px bg-gray-700"></span>
+          </div>
+        )}
 
       </div>
 
       {/* Global Style overrides for markdown tags */}
       <style dangerouslySetInnerHTML={{__html: `
-        .custom-markdown-body p { margin-bottom: 0.75rem; }
+        .custom-markdown-body p { margin-bottom: 0.5rem; }
         .custom-markdown-body pre {
           background-color: #05070a;
           border: 1px solid #1f2937;
@@ -244,8 +291,8 @@ export default function DashboardIssuesPage() {
           padding: 1rem;
           overflow-x: auto;
           box-shadow: inset 0 0 10px rgba(0,255,255,0.05);
-          margin-top: 0.75rem;
-          margin-bottom: 0.75rem;
+          margin-top: 0.5rem;
+          margin-bottom: 0.5rem;
         }
         .custom-markdown-body pre code { background-color: transparent; color: #fff; text-shadow: 0 0 5px rgba(0,255,255,0.4); padding: 0; }
         .custom-markdown-body code {

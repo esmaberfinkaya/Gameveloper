@@ -1,0 +1,64 @@
+@import "tailwindcss";
+
+:root {
+  --background: #0D1117;
+  --foreground: #E6EDF3;
+  --card-bg: #161B22;
+  --neon-cyan: #00FFFF;
+  --neon-pink: #FF00FF;
+  --accent-purple: #BD93F9;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card-bg: var(--card-bg);
+  --color-neon-cyan: var(--neon-cyan);
+  --color-neon-pink: var(--neon-pink);
+  --color-accent-purple: var(--accent-purple);
+  
+  --font-sans: var(--font-geist-sans), "Inter", Arial, sans-serif;
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+}
+
+/* Custom Cyberpunk Glow Utilities */
+.neon-glow-cyan {
+  box-shadow: 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-cyan), inset 0 0 5px var(--neon-cyan);
+}
+
+.neon-glow-cyan-hover:hover {
+  box-shadow: 0 0 15px var(--neon-cyan), 0 0 30px var(--neon-cyan), inset 0 0 10px var(--neon-cyan);
+  text-shadow: 0 0 5px var(--neon-cyan);
+}
+
+.neon-glow-pink {
+  box-shadow: 0 0 10px var(--neon-pink), 0 0 20px var(--neon-pink), inset 0 0 5px var(--neon-pink);
+}
+
+.text-glow-cyan {
+  text-shadow: 0 0 8px var(--neon-cyan);
+}
+
+.text-glow-pink {
+  text-shadow: 0 0 8px var(--neon-pink);
+}
+
+.input-cyber {
+  background-color: rgba(22, 27, 34, 0.8);
+  border: 1px solid var(--accent-purple);
+  color: var(--foreground);
+  transition: all 0.3s ease;
+}
+.input-cyber:focus {
+  outline: none;
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+}

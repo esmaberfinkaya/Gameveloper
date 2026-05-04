@@ -1,0 +1,112 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  GAMER
+  DEVELOPER
+  ADMIN
+}
+
+enum ResponseType {
+  COMMENT
+  SOLUTION
+}
+
+model User {
+  id         Int       @id @default(autoincrement())
+  email      String    @unique
+  name       String
+  password   String
+  role       Role      @default(GAMER)
+  trustScore Int       @default(0)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  
+  // Relations
+  comments   Comment[]
+  ideas      Idea[]
+  roadmaps   Roadmap[]
+  assets     Asset[]
+  questions  Question[]
+  questionResponses QuestionResponse[]
+}
+
+model Idea {
+  id          Int       @id @default(autoincrement())
+  title       String
+  description String
+  category    String
+  userId      Int
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  user        User      @relation(fields: [userId], references: [id])
+  comments    Comment[]
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  content   String
+  isPrivate Boolean  @default(false)
+  userId    Int
+  ideaId    Int      // Link to an Idea / Post
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id])
+  idea      Idea     @relation(fields: [ideaId], references: [id])
+}
+
+model Roadmap {
+  id          Int      @id @default(autoincrement())
+  title       String
+  contentJson Json     // Holds the hierarchical JSON roadmap data
+  rating      Float    @default(0.0)
+  userId      Int
+  createdAt   DateTime @default(now())
+
+  creator     User     @relation(fields: [userId], references: [id])
+}
+
+model Asset {
+  id        Int      @id @default(autoincrement())
+  title     String
+  url       String   // S3/Cloudinary Link
+  userId    Int
+  createdAt DateTime @default(now())
+
+  owner     User     @relation(fields: [userId], references: [id])
+}
+
+model Question {
+  id          Int      @id @default(autoincrement())
+  title       String
+  content     String
+  category    String
+  imageUrl    String?
+  userId      Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  isResolved  Boolean  @default(false)
+
+  user        User     @relation(fields: [userId], references: [id])
+  responses   QuestionResponse[]
+}
+
+model QuestionResponse {
+  id          Int          @id @default(autoincrement())
+  content     String
+  type        ResponseType @default(COMMENT)
+  isAccepted  Boolean      @default(false)
+  userId      Int
+  questionId  Int
+  createdAt   DateTime     @default(now())
+
+  user        User         @relation(fields: [userId], references: [id])
+  question    Question     @relation(fields: [questionId], references: [id])
+}

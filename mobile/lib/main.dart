@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'theme/app_theme.dart';
+import 'screens/main_navigation.dart';
 
 void main() {
   runApp(const GameveloperApp());
@@ -12,18 +14,8 @@ class GameveloperApp extends StatelessWidget {
     return MaterialApp(
       title: 'Gameveloper',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        brightness: Brightness.dark,
-        scaffoldBackgroundColor: const Color(0xFF0D1117), // Deep Dark Blue
-        primaryColor: const Color(0xFF00FFFF), // Neon Cyan
-        colorScheme: const ColorScheme.dark(
-          primary: Color(0xFF00FFFF),
-          secondary: Color(0xFFFF00FF), // Neon Pink
-          surface: Color(0xFF161B22), // Dark Gray Card
-        ),
-        fontFamily: 'Roboto', // Change as per assets
-      ),
-      home: const AuthScreen(),
+      theme: AppTheme.darkTheme,
+      home: const MainNavigation(),
     );
   }
 }
@@ -145,7 +137,10 @@ class _AuthScreenState extends State<AuthScreen> {
                 // Submit Button
                 ElevatedButton(
                   onPressed: () {
-                    // TODO: Connect to backend API
+                    // Navigate to MainNavigation on successful connect
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (_) => const MainNavigation())
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: isLogin ? const Color(0xFF00FFFF) : const Color(0xFFFF00FF),

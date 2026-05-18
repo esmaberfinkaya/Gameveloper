@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import 'explore_screen.dart';
 import 'profile_screen.dart';
+import 'issues_screen.dart';
+import 'partnership_screen.dart';
 
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});
@@ -15,8 +17,8 @@ class _MainNavigationState extends State<MainNavigation> {
 
   final List<Widget> _screens = [
     const ExploreScreen(),
-    const Center(child: Text('Sorunlar', style: TextStyle(color: Colors.white))),
-    const Center(child: Text('Ortaklık Bul', style: TextStyle(color: Colors.white))),
+    const IssuesScreen(),
+    const PartnershipScreen(),
     const ProfileScreen(),
   ];
 
@@ -68,3 +70,4 @@ class _MainNavigationState extends State<MainNavigation> {
     );
   }
 }
+

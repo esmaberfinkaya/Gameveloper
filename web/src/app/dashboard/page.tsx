@@ -1,9 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { MessageSquarePlus, Compass, Sparkles, TrendingUp, Clock, Target, X, Image as ImageIcon, AlertTriangle } from "lucide-react";
+import { MessageSquarePlus, Compass, Target, X, Image as ImageIcon, AlertTriangle, Globe } from "lucide-react";
 import FeedCard from "@/components/FeedCard";
 import IdeaCard from "@/components/IdeaCard";
+import ProjectCard from "@/components/ProjectCard";
+import SolutionCard from "@/components/SolutionCard";
+import RoadmapCard from "@/components/RoadmapCard";
 
 export default function ExplorePage() {
   const [user, setUser] = useState<any>(null);
@@ -11,7 +14,7 @@ export default function ExplorePage() {
   // Feed States
   const [mixFeed, setMixFeed] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeFilter, setActiveFilter] = useState("for_you"); // for_you, popular, newest, unresolved
+  const [activeFilter, setActiveFilter] = useState("global"); // global, problems
 
   // Modal States
   const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false);
@@ -41,10 +44,51 @@ export default function ExplorePage() {
   const fetchExploreFeed = async () => {
     setIsLoading(true);
     try {
-      const res = await fetch(`http://localhost:5000/api/explore?filter=${activeFilter}&userId=${user?.id}`);
+      const res = await fetch(`http://localhost:5000/api/explore?filter=${activeFilter === "problems" ? "unresolved" : "newest"}&userId=${user?.id}`);
       if (res.ok) {
         const data = await res.json();
-        setMixFeed(data);
+        
+        let finalFeed = data;
+        
+        if (activeFilter === "global") {
+          const mockItems = [
+            {
+              id: 901,
+              feedType: "PROJECT",
+              title: "Cyber Neon - Fast Paced Shooter",
+              description: "Merhaba arkadaşlar, 6 aydır üzerinde çalıştığım neon temalı cyberpunk FPS oyunumun ilk oynanış videosu ve Steam sayfası yayında. Hızlı hareket mekanikleri ve duvar koşusu ekledim. Unity HDRP kullanarak optimize ettim. Geri bildirimlerinizi bekliyorum!",
+              imageUrl: "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070&auto=format&fit=crop",
+              link: "https://gameveloper.com",
+              category: "Showcase",
+              createdAt: new Date().toISOString(),
+              user: { id: 88, name: "Esma", role: "DEVELOPER" }
+            },
+            {
+              id: 902,
+              feedType: "SOLUTION",
+              questionTitle: "Unity'de Kamera Titremesi (Jitter) Sorunu",
+              content: "Eğer karakteri FixedUpdate içinde hareket ettirip, kamerayı Update içinde takip ettiriyorsanız bu titreme olur. Çözüm: Kameranın takip kodunu **LateUpdate** içine taşıyın. \n\n```csharp\nvoid LateUpdate() {\n  transform.position = Vector3.Lerp(transform.position, target.position, speed * Time.deltaTime);\n}\n```",
+              createdAt: new Date(Date.now() - 3600000).toISOString(),
+              user: { id: 55, name: "CyberDev", role: "DEVELOPER" }
+            },
+            {
+              id: 903,
+              feedType: "ROADMAP",
+              title: "Sıfırdan Pro C# ve Unity Oyun Geliştirme",
+              description: "Programlama mantığından başlayarak, OOP prensipleri, SOLID kuralları ve Unity'nin gelişmiş API'lerini kullanarak profesyonel oyun geliştirme adımları.",
+              level: "Sıfırdan İleri Seviye",
+              duration: "12 Hafta",
+              createdAt: new Date(Date.now() - 7200000).toISOString(),
+              user: { id: 77, name: "CodeNinja", role: "DEVELOPER" }
+            }
+          ];
+          
+          finalFeed = [...data, ...mockItems].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        } else if (activeFilter === "problems") {
+          finalFeed = data.filter((item: any) => item.feedType === "QUESTION");
+        }
+        
+        setMixFeed(finalFeed);
       }
     } catch (err) {
       console.error("Akış çekilemedi", err);
@@ -183,7 +227,7 @@ export default function ExplorePage() {
 
       <div className="max-w-6xl mx-auto pb-20">
         
-        {/* Mobile action button since sidebar is hidden on mobile mostly */}
+        {/* Mobile action button */}
         <div className="md:hidden flex justify-end mb-4">
           <button 
             onClick={() => setIsQuestionModalOpen(true)}
@@ -195,7 +239,7 @@ export default function ExplorePage() {
 
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
           <h1 className="text-3xl font-black text-white tracking-widest uppercase flex items-center gap-3">
-            <Compass size={32} className="text-neon-cyan" /> Keşfet
+            <Compass size={32} className="text-neon-cyan" /> Dashboard
           </h1>
           
           <button 
@@ -209,36 +253,24 @@ export default function ExplorePage() {
         {/* Filter Tabs */}
         <div className="flex flex-wrap items-center gap-2 mb-8 border-b border-gray-800 pb-4">
           <button 
-            onClick={() => setActiveFilter("for_you")}
-            className={`px-4 py-2 rounded-full text-sm font-bold flex items-center gap-2 transition-all ${activeFilter === "for_you" ? 'bg-neon-cyan text-black shadow-[0_0_15px_rgba(0,255,255,0.4)]' : 'bg-[#0D1117] text-gray-400 border border-gray-800 hover:border-neon-cyan/50'}`}
+            onClick={() => setActiveFilter("global")}
+            className={`px-6 py-2.5 rounded-full text-sm font-bold flex items-center gap-2 transition-all ${activeFilter === "global" ? 'bg-accent-purple text-white shadow-[0_0_15px_rgba(188,19,254,0.4)] border border-accent-purple' : 'bg-[#0D1117] text-gray-400 border border-gray-800 hover:border-accent-purple/50'}`}
           >
-            <Sparkles size={16} /> Sana Özel
+            <Globe size={18} /> Global Akış
           </button>
           <button 
-            onClick={() => setActiveFilter("popular")}
-            className={`px-4 py-2 rounded-full text-sm font-bold flex items-center gap-2 transition-all ${activeFilter === "popular" ? 'bg-neon-pink text-white shadow-[0_0_15px_rgba(255,0,255,0.4)]' : 'bg-[#0D1117] text-gray-400 border border-gray-800 hover:border-neon-pink/50'}`}
+            onClick={() => setActiveFilter("problems")}
+            className={`px-6 py-2.5 rounded-full text-sm font-bold flex items-center gap-2 transition-all ${activeFilter === "problems" ? 'bg-neon-pink text-white shadow-[0_0_15px_rgba(255,0,255,0.4)] border border-neon-pink' : 'bg-[#0D1117] text-gray-400 border border-gray-800 hover:border-neon-pink/50'}`}
           >
-            <TrendingUp size={16} /> Popüler
-          </button>
-          <button 
-            onClick={() => setActiveFilter("newest")}
-            className={`px-4 py-2 rounded-full text-sm font-bold flex items-center gap-2 transition-all ${activeFilter === "newest" ? 'bg-accent-purple text-white shadow-[0_0_15px_rgba(188,19,254,0.4)]' : 'bg-[#0D1117] text-gray-400 border border-gray-800 hover:border-accent-purple/50'}`}
-          >
-            <Clock size={16} /> En Yeni
-          </button>
-          <button 
-            onClick={() => setActiveFilter("unresolved")}
-            className={`px-4 py-2 rounded-full text-sm font-bold flex items-center gap-2 transition-all ${activeFilter === "unresolved" ? 'bg-green-500 text-black shadow-[0_0_15px_rgba(34,197,94,0.4)]' : 'bg-[#0D1117] text-gray-400 border border-gray-800 hover:border-green-500/50'}`}
-          >
-            <Target size={16} /> Çözüm Bekleyenler
+            <Target size={18} /> Sorunlar
           </button>
         </div>
 
-        {/* GRID LAYOUT */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+        {/* GRID LAYOUT - Now with dynamic columns based on content, but max 2 for better visibility of wide cards */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {isLoading ? (
             // Skeleton Posts
-            [1, 2, 3, 4, 5, 6].map((item) => (
+            [1, 2, 3, 4].map((item) => (
               <div key={item} className="bg-card-bg/60 border border-gray-800/80 p-5 rounded-xl space-y-4 opacity-60 animate-pulse backdrop-blur-sm h-48">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-gray-700"></div>
@@ -264,6 +296,12 @@ export default function ExplorePage() {
                 return <FeedCard key={`q-${item.id}`} {...item} currentUser={user} onUpdate={fetchExploreFeed} isExplore={true} />;
               } else if (item.feedType === 'IDEA') {
                 return <IdeaCard key={`i-${item.id}`} {...item} currentUser={user} onUpdate={fetchExploreFeed} isExplore={true} />;
+              } else if (item.feedType === 'PROJECT') {
+                return <ProjectCard key={`p-${item.id}`} {...item} />;
+              } else if (item.feedType === 'SOLUTION') {
+                return <SolutionCard key={`s-${item.id}`} {...item} />;
+              } else if (item.feedType === 'ROADMAP') {
+                return <RoadmapCard key={`r-${item.id}`} {...item} />;
               }
               return null;
             })
@@ -273,7 +311,7 @@ export default function ExplorePage() {
         {!isLoading && mixFeed.length > 0 && (
           <div className="text-center text-gray-600 py-10 mt-10 text-xs md:text-sm tracking-widest uppercase flex items-center justify-center gap-4 opacity-50">
             <span className="w-12 h-px bg-gray-700"></span>
-            Keşfet Sonu
+            Akış Sonu
             <span className="w-12 h-px bg-gray-700"></span>
           </div>
         )}

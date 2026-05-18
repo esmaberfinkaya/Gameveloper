@@ -162,7 +162,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </aside>
 
       {/* ORTA SÜTUN: İÇERİK */}
-      <main className="flex-1 flex flex-col h-screen overflow-hidden relative">
+      <main className="flex-1 w-full lg:w-[65%] flex flex-col h-screen overflow-hidden relative">
         {/* Mobile Header */}
         <header className="md:hidden h-20 bg-card-bg/80 backdrop-blur-md border-b border-accent-purple/30 flex items-center justify-between px-6 shrink-0 relative z-10">
           <div className="flex items-center gap-4">
@@ -187,7 +187,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </main>
 
       {/* SAĞ SÜTUN: KULLANICI PANELİ */}
-      <aside className="w-80 bg-[#0D1117] border-l border-accent-purple/30 hidden lg:flex flex-col shrink-0">
+      <aside className="w-[15%] bg-[#0D1117] border-l border-accent-purple/30 hidden lg:flex flex-col shrink-0">
         
         {/* Kullanıcı Profili ve Trust Score Banner */}
         <div className="p-8 border-b border-gray-800 flex flex-col items-center justify-center relative overflow-hidden group">

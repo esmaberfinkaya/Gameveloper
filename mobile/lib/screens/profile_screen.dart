@@ -3,7 +3,20 @@ import '../widgets/cyber_card.dart';
 import '../theme/app_theme.dart';
 
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
+  final String username;
+  final String role;
+  final int trustScore;
+  final int solvedIssues;
+  final int completedProjects;
+  
+  const ProfileScreen({
+    super.key,
+    this.username = 'ESMA',
+    this.role = 'DEVELOPER',
+    this.trustScore = 1250,
+    this.solvedIssues = 15,
+    this.completedProjects = 4,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -17,9 +30,9 @@ class ProfileScreen extends StatelessWidget {
             pinned: true,
             backgroundColor: AppTheme.background,
             flexibleSpace: FlexibleSpaceBar(
-              title: const Text(
-                'ESMA',
-                style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 4),
+              title: Text(
+                username.toUpperCase(),
+                style: const TextStyle(fontWeight: FontWeight.w900, letterSpacing: 4),
               ),
               centerTitle: true,
               background: Stack(
@@ -47,10 +60,10 @@ class ProfileScreen extends StatelessWidget {
                           boxShadow: AppTheme.getGlow(AppTheme.accentPurple, blur: 20),
                           color: AppTheme.background,
                         ),
-                        child: const Center(
+                        child: Center(
                           child: Text(
-                            'E',
-                            style: TextStyle(
+                            username[0].toUpperCase(),
+                            style: const TextStyle(
                               fontSize: 40,
                               fontWeight: FontWeight.w900,
                               color: AppTheme.accentPurple,
@@ -72,9 +85,9 @@ class ProfileScreen extends StatelessWidget {
                           border: Border.all(color: AppTheme.neonCyan.withOpacity(0.5)),
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        child: const Text(
-                          'DEVELOPER',
-                          style: TextStyle(
+                        child: Text(
+                          role.toUpperCase(),
+                          style: const TextStyle(
                             color: AppTheme.neonCyan,
                             fontSize: 10,
                             fontWeight: FontWeight.bold,
@@ -120,7 +133,7 @@ class ProfileScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '1250',
+                        trustScore.toString(),
                         style: TextStyle(
                           color: AppTheme.neonCyan,
                           fontSize: 36,
@@ -144,12 +157,12 @@ class ProfileScreen extends StatelessWidget {
                           decoration: const BoxDecoration(
                             border: Border(bottom: BorderSide(color: Colors.white10)),
                           ),
-                          child: const Center(
+                          child: Center(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text('15', style: TextStyle(color: AppTheme.textPrimary, fontSize: 24, fontWeight: FontWeight.bold)),
-                                Text('Çözülen Sorun', style: TextStyle(color: AppTheme.textSecondary, fontSize: 10)),
+                                Text(solvedIssues.toString(), style: const TextStyle(color: AppTheme.textPrimary, fontSize: 24, fontWeight: FontWeight.bold)),
+                                const Text('Çözülen Sorun', style: TextStyle(color: AppTheme.textSecondary, fontSize: 10)),
                               ],
                             ),
                           ),
@@ -160,7 +173,7 @@ class ProfileScreen extends StatelessWidget {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text('4', style: TextStyle(color: AppTheme.neonYellow, fontSize: 24, fontWeight: FontWeight.bold)),
+                              Text(completedProjects.toString(), style: const TextStyle(color: AppTheme.neonYellow, fontSize: 24, fontWeight: FontWeight.bold)),
                               const Text('Tamamlanan Proje', style: TextStyle(color: AppTheme.textSecondary, fontSize: 10)),
                             ],
                           ),

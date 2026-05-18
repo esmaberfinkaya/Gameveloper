@@ -20,8 +20,43 @@ export default function PartnersPage() {
           </button>
         </div>
 
-        <div className="text-center text-gray-500 py-10 border border-dashed border-gray-800 rounded-xl bg-card-bg/30">
-          <p>Şu an aktif bir ortaklık ilanı bulunmuyor. Kendi projen için ekip arkadaşı aramaya ne dersin?</p>
+        {/* MOCK DATA: URGENT Partnership from BlenderMaster */}
+        <div className="bg-card-bg/80 border border-neon-yellow/50 p-6 rounded-xl shadow-[0_0_15px_rgba(255,227,0,0.15)] hover:shadow-[0_0_25px_rgba(255,227,0,0.3)] transition-all flex flex-col gap-4 relative overflow-hidden">
+          {/* Urgent Glow Line */}
+          <div className="absolute top-0 left-0 w-full h-1 bg-neon-yellow shadow-[0_0_10px_rgba(255,227,0,1)]"></div>
+          
+          <div className="flex justify-between items-start">
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="px-2 py-1 bg-neon-yellow/20 text-neon-yellow text-xs font-bold rounded border border-neon-yellow shadow-[0_0_5px_rgba(255,227,0,0.5)]">3D ARTIST ARANIYOR</span>
+                <span className="flex items-center gap-1 text-red-500 text-xs font-bold animate-pulse">
+                  <AlertTriangle size={14} /> URGENT
+                </span>
+              </div>
+              <h2 className="text-xl font-black text-white">Sci-Fi Çevre Tasarımı İçin Yardım</h2>
+              <p className="text-sm text-gray-400 mt-2">
+                Unity HDRP kullanarak geliştirdiğim projede sci-fi koridor ve dış mekan modellemeleri yapacak bir 3D artist arıyorum.
+              </p>
+            </div>
+          </div>
+          
+          <div className="flex justify-between items-end mt-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-white font-bold border border-gray-600">
+                B
+              </div>
+              <div>
+                <p className="text-sm text-white font-bold">BlenderMaster</p>
+                <p className="text-xs text-neon-cyan flex items-center gap-1">
+                  Trust Score: 2450 <span className="text-neon-cyan drop-shadow-[0_0_5px_rgba(0,255,255,0.8)]">⚡</span>
+                </p>
+              </div>
+            </div>
+            
+            <button className="px-6 py-2 bg-neon-yellow/20 text-neon-yellow border border-neon-yellow font-bold rounded hover:bg-neon-yellow hover:text-black transition-all shadow-[0_0_10px_rgba(255,227,0,0.3)]">
+              BAŞVUR
+            </button>
+          </div>
         </div>
       </div>
     </>

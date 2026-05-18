@@ -25,8 +25,50 @@ export default function ProfilePage() {
       const res = await fetch(`http://localhost:5000/api/explore?userId=${userId}`);
       if (res.ok) {
         const data = await res.json();
-        const myPosts = data.filter((item: any) => item.userId === userId);
-        setUserPosts(myPosts);
+        let myPosts = data.filter((item: any) => item.userId === userId);
+        
+        const mockItems = [
+          {
+            id: 901,
+            feedType: "PROJECT",
+            title: "Cyber Neon - Fast Paced Shooter",
+            description: "Merhaba arkadaşlar, 6 aydır üzerinde çalıştığım neon temalı cyberpunk FPS oyunumun ilk oynanış videosu ve Steam sayfası yayında.",
+            category: "Showcase",
+            createdAt: new Date().toISOString(),
+            user: { id: 1, name: "Esma", role: "DEVELOPER" }
+          },
+          {
+            id: 902,
+            feedType: "QUESTION",
+            title: "NullReferenceException at PlayerMovement.cs",
+            content: "Karakter zıplama kodunu yazarken Rigidbody bileseni null dönüyor.",
+            category: "Unity",
+            isResolved: true,
+            createdAt: new Date(Date.now() - 3600000).toISOString(),
+            user: { id: 2, name: "CyberDev", role: "DEVELOPER" }
+          },
+          {
+            id: 903,
+            feedType: "IDEA",
+            title: "Zamanı Donduran Kılıç Ustası",
+            story: "Ana karakter zamanı yavaşlatabiliyor ancak hareket ettikçe kendi canı azalıyor.",
+            category: "Aksiyon",
+            createdAt: new Date(Date.now() - 7200000).toISOString(),
+            user: { id: 4, name: "AlphaGamer", role: "GAMER" }
+          },
+          {
+            id: 904,
+            feedType: "PROJECT",
+            title: "Sci-Fi Koridor Render",
+            description: "Blender Eevee kullanarak hazırladığım yeni çevre tasarımı.",
+            category: "Art",
+            createdAt: new Date(Date.now() - 10800000).toISOString(),
+            user: { id: 3, name: "BlenderMaster", role: "DEVELOPER" }
+          }
+        ];
+        
+        const myMocks = mockItems.filter(item => item.user.name === user.name);
+        setUserPosts([...myPosts, ...myMocks]);
       }
     } catch (err) {
       console.error("Gönderiler çekilemedi", err);

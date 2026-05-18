@@ -41,7 +41,19 @@ export default function IdeasPage() {
       const res = await fetch(`http://localhost:5000/api/ideas?userId=${user?.id}`);
       if (res.ok) {
         const data = await res.json();
-        setIdeas(data);
+        
+        const mockIdea = {
+          id: 903,
+          title: "Zamanı Donduran Kılıç Ustası",
+          story: "Ana karakter zamanı yavaşlatabiliyor ancak hareket ettikçe kendi canı azalıyor.",
+          visuals: "Karanlık ve neon ışıklı bir metropolis, low poly karakter tasarımı.",
+          gameplay: "Hack and slash mekanikleri ve ritim tabanlı combo sistemi.",
+          category: "Aksiyon",
+          createdAt: new Date(Date.now() - 7200000).toISOString(),
+          user: { id: 4, name: "AlphaGamer", role: "GAMER" }
+        };
+        
+        setIdeas([...data, mockIdea]);
       }
     } catch (err) {
       console.error("Fikirler çekilemedi", err);

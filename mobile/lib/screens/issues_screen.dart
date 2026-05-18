@@ -18,31 +18,23 @@ class _IssuesScreenState extends State<IssuesScreen> {
       'title': 'NullReferenceException at PlayerMovement.cs',
       'content': 'Karakter zıplama kodunu yazarken Rigidbody bileseni null dönüyor. GetComponent() metodunu Awake icinde cagirdim ama ise yaramadi.',
       'tag': '#Unity',
-      'isSolved': false,
-      'username': 'GamerGirl99',
-      'role': 'GAMER'
+      'isSolved': true,
+      'username': 'CyberDev',
+      'role': 'DEVELOPER'
     },
     {
       'title': 'Blender FBX export scale sorunu',
       'content': 'Blender\'dan Unity\'e model aktarirken modelim devasa oluyor. Scale apply yapmama ragmen duzelmedi. Export ayarlarinda neyi gozden kaciriyorum?',
       'tag': '#Blender',
-      'isSolved': true,
-      'username': '3D_Noob',
-      'role': 'DEVELOPER'
-    },
-    {
-      'title': 'Coroutines vs Async/Await in Unity',
-      'content': 'Performans ve okunabilirlik acisindan hangisini kullanmak daha mantikli? Buyuk bir sistem yaziyorum ve state machine kurmam gerekiyor.',
-      'tag': '#C#',
       'isSolved': false,
-      'username': 'CodeNinja',
+      'username': 'BlenderMaster',
       'role': 'DEVELOPER'
     },
     {
       'title': 'Lightmap baking cok uzun suruyor',
       'content': 'Sahnemde cok fazla statik obje var, lightmap hesaplamasi saatler suruyor. Progressive GPU kullaniyorum.',
       'tag': '#Unity',
-      'isSolved': true,
+      'isSolved': false,
       'username': 'LevelDesigner',
       'role': 'DEVELOPER'
     }

@@ -7,11 +7,11 @@ class PartnershipScreen extends StatelessWidget {
 
   final List<Map<String, dynamic>> mockPartnerships = const [
     {
-      'title': 'Cyber Neon Projesi İçin 3D Artist Aranıyor',
-      'description': 'Unity HDRP kullanarak geliştirdiğim cyberpunk FPS oyunum için silah ve karakter modellemeleri yapacak bir 3D artist arıyorum. Gelir paylaşımı modeli ile çalışılacaktır.',
+      'title': 'Sci-Fi Çevre Tasarımı İçin Yardım',
+      'description': 'Unity HDRP kullanarak geliştirdiğim projede sci-fi koridor ve dış mekan modellemeleri yapacak bir 3D artist arıyorum.',
       'requiredRole': '3D ARTIST',
-      'username': 'Esma',
-      'trustScore': 1250,
+      'username': 'BlenderMaster',
+      'trustScore': 2450,
       'isUrgent': true,
     },
     {

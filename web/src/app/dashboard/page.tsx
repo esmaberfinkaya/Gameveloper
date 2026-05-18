@@ -50,7 +50,7 @@ export default function ExplorePage() {
         
         let finalFeed = data;
         
-        if (activeFilter === "global") {
+        if (activeFilter === "global" || activeFilter === "problems") {
           const mockItems = [
             {
               id: 901,
@@ -61,31 +61,49 @@ export default function ExplorePage() {
               link: "https://gameveloper.com",
               category: "Showcase",
               createdAt: new Date().toISOString(),
-              user: { id: 88, name: "Esma", role: "DEVELOPER" }
+              user: { id: 1, name: "Esma", role: "DEVELOPER" }
             },
             {
               id: 902,
-              feedType: "SOLUTION",
-              questionTitle: "Unity'de Kamera Titremesi (Jitter) Sorunu",
-              content: "Eğer karakteri FixedUpdate içinde hareket ettirip, kamerayı Update içinde takip ettiriyorsanız bu titreme olur. Çözüm: Kameranın takip kodunu **LateUpdate** içine taşıyın. \n\n```csharp\nvoid LateUpdate() {\n  transform.position = Vector3.Lerp(transform.position, target.position, speed * Time.deltaTime);\n}\n```",
+              feedType: "QUESTION",
+              title: "NullReferenceException at PlayerMovement.cs",
+              content: "Karakter zıplama kodunu yazarken Rigidbody bileseni null dönüyor. GetComponent() metodunu Awake icinde cagirdim ama ise yaramadi.",
+              category: "Unity",
+              isResolved: true,
+              resolvedBy: { id: 1, name: "Esma" }, // Esma onayladı
               createdAt: new Date(Date.now() - 3600000).toISOString(),
-              user: { id: 55, name: "CyberDev", role: "DEVELOPER" }
+              user: { id: 2, name: "CyberDev", role: "DEVELOPER" }
             },
             {
               id: 903,
-              feedType: "ROADMAP",
-              title: "Sıfırdan Pro C# ve Unity Oyun Geliştirme",
-              description: "Programlama mantığından başlayarak, OOP prensipleri, SOLID kuralları ve Unity'nin gelişmiş API'lerini kullanarak profesyonel oyun geliştirme adımları.",
-              level: "Sıfırdan İleri Seviye",
-              duration: "12 Hafta",
+              feedType: "IDEA",
+              title: "Zamanı Donduran Kılıç Ustası",
+              story: "Ana karakter zamanı yavaşlatabiliyor ancak hareket ettikçe kendi canı azalıyor.",
+              visuals: "Karanlık ve neon ışıklı bir metropolis, low poly karakter tasarımı.",
+              gameplay: "Hack and slash mekanikleri ve ritim tabanlı combo sistemi.",
               createdAt: new Date(Date.now() - 7200000).toISOString(),
-              user: { id: 77, name: "CodeNinja", role: "DEVELOPER" }
+              user: { id: 4, name: "AlphaGamer", role: "GAMER" }
+            },
+            {
+              id: 904,
+              feedType: "PROJECT",
+              title: "Sci-Fi Koridor Render",
+              description: "Blender Eevee kullanarak hazırladığım yeni çevre tasarımı. Işıklandırma konusunda fikirlerinizi merak ediyorum.",
+              imageUrl: "https://images.unsplash.com/photo-1614729939124-032f0b56c9ce?q=80&w=2070&auto=format&fit=crop",
+              category: "Art",
+              createdAt: new Date(Date.now() - 10800000).toISOString(),
+              user: { id: 3, name: "BlenderMaster", role: "DEVELOPER" }
             }
           ];
           
-          finalFeed = [...data, ...mockItems].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-        } else if (activeFilter === "problems") {
-          finalFeed = data.filter((item: any) => item.feedType === "QUESTION");
+          if (activeFilter === "global") {
+            finalFeed = [...data, ...mockItems].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+          } else {
+            // For problems, show only questions, including our mock question
+            const apiQuestions = data.filter((item: any) => item.feedType === "QUESTION");
+            const mockQuestions = mockItems.filter(item => item.feedType === "QUESTION");
+            finalFeed = [...apiQuestions, ...mockQuestions];
+          }
         }
         
         setMixFeed(finalFeed);

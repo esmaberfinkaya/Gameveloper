@@ -21,15 +21,15 @@ export default function PartnersPage() {
         </div>
 
         {/* MOCK DATA: URGENT Partnership from BlenderMaster */}
-        <div className="bg-card-bg/80 border border-neon-yellow/50 p-6 rounded-xl shadow-[0_0_15px_rgba(255,227,0,0.15)] hover:shadow-[0_0_25px_rgba(255,227,0,0.3)] transition-all flex flex-col gap-4 relative overflow-hidden">
+        <div className="bg-card-bg/80 border border-neon-yellow/50 p-6 rounded-xl neon-glow-theme hover:neon-glow-theme transition-all flex flex-col gap-4 relative overflow-hidden">
           {/* Urgent Glow Line */}
-          <div className="absolute top-0 left-0 w-full h-1 bg-neon-yellow shadow-[0_0_10px_rgba(255,227,0,1)]"></div>
+          <div className="absolute top-0 left-0 w-full h-1 bg-neon-yellow neon-glow-theme"></div>
           
           <div className="flex justify-between items-start">
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <span className="px-2 py-1 bg-neon-yellow/20 text-neon-yellow text-xs font-bold rounded border border-neon-yellow shadow-[0_0_5px_rgba(255,227,0,0.5)]">3D ARTIST ARANIYOR</span>
-                <span className="flex items-center gap-1 text-red-500 text-xs font-bold animate-pulse">
+                <span className="px-2 py-1 bg-neon-yellow/20 text-neon-yellow text-xs font-bold rounded border border-neon-yellow neon-glow-theme">3D ARTIST ARANIYOR</span>
+                <span className="flex items-center gap-1 text-theme-accent text-xs font-bold animate-pulse">
                   <AlertTriangle size={14} /> URGENT
                 </span>
               </div>
@@ -48,12 +48,12 @@ export default function PartnersPage() {
               <div>
                 <p className="text-sm text-white font-bold">BlenderMaster</p>
                 <p className="text-xs text-neon-cyan flex items-center gap-1">
-                  Trust Score: 2450 <span className="text-neon-cyan drop-shadow-[0_0_5px_rgba(0,255,255,0.8)]">⚡</span>
+                  Trust Score: 2450 <span className="text-neon-cyan drop-neon-glow-theme">⚡</span>
                 </p>
               </div>
             </div>
             
-            <button className="px-6 py-2 bg-neon-yellow/20 text-neon-yellow border border-neon-yellow font-bold rounded hover:bg-neon-yellow hover:text-black transition-all shadow-[0_0_10px_rgba(255,227,0,0.3)]">
+            <button className="px-6 py-2 bg-neon-yellow/20 text-neon-yellow border border-neon-yellow font-bold rounded hover:bg-neon-yellow hover:text-black transition-all neon-glow-theme">
               BAŞVUR
             </button>
           </div>

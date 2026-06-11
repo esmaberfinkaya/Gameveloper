@@ -73,7 +73,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.error_outline, color: AppTheme.neonPink, size: 48),
+              Icon(Icons.error_outline, color: Theme.of(context).primaryColor, size: 48),
               SizedBox(height: 16),
               Text(error!, style: TextStyle(color: Colors.white70)),
               SizedBox(height: 16),
@@ -85,8 +85,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   });
                   fetchData();
                 },
-                style: ElevatedButton.styleFrom(backgroundColor: AppTheme.neonPink.withOpacity(0.2)),
-                child: Text('Tekrar Dene', style: TextStyle(color: AppTheme.neonPink)),
+                style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).primaryColor.withOpacity(0.2)),
+                child: Text('Tekrar Dene', style: TextStyle(color: Theme.of(context).primaryColor)),
               )
             ],
           ),
@@ -144,8 +144,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         height: 100,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          border: Border.all(color: AppTheme.accentPurple, width: 3),
-                          boxShadow: AppTheme.getGlow(AppTheme.accentPurple, blur: 20),
+                          border: Border.all(color: Theme.of(context).primaryColor, width: 3),
+                          boxShadow: AppTheme.getGlow(Theme.of(context).primaryColor, blur: 20),
                           color: AppTheme.background,
                         ),
                         child: Center(
@@ -154,7 +154,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             style: TextStyle(
                               fontSize: 40,
                               fontWeight: FontWeight.w900,
-                              color: AppTheme.accentPurple,
+                              color: Theme.of(context).primaryColor,
                             ),
                           ),
                         ),
@@ -235,7 +235,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 
                 // Secondary Stats Grid inside a card
                 CyberCard(
-                  glowColor: AppTheme.accentPurple,
+                  glowColor: Theme.of(context).primaryColor,
                   hasGlow: false,
                   padding: EdgeInsets.zero,
                   child: Column(
@@ -261,7 +261,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(completedProjects.toString(), style: TextStyle(color: AppTheme.neonYellow, fontSize: 24, fontWeight: FontWeight.bold)),
+                              Text(completedProjects.toString(), style: TextStyle(color: Theme.of(context).primaryColor, fontSize: 24, fontWeight: FontWeight.bold)),
                               Text('Tamamlanan Proje', style: TextStyle(color: AppTheme.textSecondary, fontSize: 10)),
                             ],
                           ),
@@ -280,7 +280,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.0),
               child: CyberCard(
-                glowColor: AppTheme.neonPink,
+                glowColor: Theme.of(context).primaryColor,
                 hasGlow: true,
                 padding: EdgeInsets.all(20),
                 child: Row(
@@ -288,11 +288,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Container(
                       padding: EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: AppTheme.neonPink.withOpacity(0.1),
+                        color: Theme.of(context).primaryColor.withOpacity(0.1),
                         shape: BoxShape.circle,
-                        border: Border.all(color: AppTheme.neonPink),
+                        border: Border.all(color: Theme.of(context).primaryColor),
                       ),
-                      child: Icon(Icons.emoji_events, color: AppTheme.neonPink),
+                      child: Icon(Icons.emoji_events, color: Theme.of(context).primaryColor),
                     ),
                     SizedBox(width: 16),
                     Expanded(

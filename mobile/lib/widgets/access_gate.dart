@@ -66,8 +66,8 @@ class _AccessGateState extends State<AccessGate> with SingleTickerProviderStateM
       padding: const EdgeInsets.all(24),
       margin: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.red.withOpacity(0.1),
-        border: Border.all(color: Colors.redAccent.withOpacity(0.5)),
+        color: Theme.of(context).primaryColor.withOpacity(0.1),
+        border: Border.all(color: Theme.of(context).primaryColor.withOpacity(0.5)),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -78,40 +78,40 @@ class _AccessGateState extends State<AccessGate> with SingleTickerProviderStateM
             builder: (context, child) {
               return Transform.translate(
                 offset: Offset(_glitchController.value * 4 - 2, 0),
-                child: const Icon(
+                child: Icon(
                   Icons.block,
-                  color: Colors.redAccent,
+                  color: Theme.of(context).primaryColor,
                   size: 48,
                   shadows: [
-                    Shadow(color: Colors.red, blurRadius: 15),
+                    Shadow(color: Theme.of(context).primaryColor, blurRadius: 15),
                   ],
                 ),
               );
             },
           ),
           const SizedBox(height: 16),
-          const Text(
+          Text(
             'ACCESS DENIED',
             style: TextStyle(
-              color: Colors.redAccent,
+              color: Theme.of(context).primaryColor,
               fontSize: 24,
               fontWeight: FontWeight.w900,
               letterSpacing: 4,
-              shadows: [Shadow(color: Colors.red, blurRadius: 10)],
+              shadows: [Shadow(color: Theme.of(context).primaryColor, blurRadius: 10)],
             ),
           ),
           const SizedBox(height: 8),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
             decoration: BoxDecoration(
-              color: Colors.red.withOpacity(0.2),
+              color: Theme.of(context).primaryColor.withOpacity(0.2),
               borderRadius: BorderRadius.circular(4),
-              border: Border.all(color: Colors.redAccent.withOpacity(0.3)),
+              border: Border.all(color: Theme.of(context).primaryColor.withOpacity(0.3)),
             ),
-            child: const Text(
+            child: Text(
               'DEVELOPER ROLE REQUIRED',
               style: TextStyle(
-                color: Colors.redAccent,
+                color: Theme.of(context).primaryColor,
                 fontSize: 10,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 2,

@@ -40,7 +40,7 @@ class PartnershipScreen extends StatelessWidget {
         leading: Icon(Icons.group_add),
         actions: [
           IconButton(
-            icon: Icon(Icons.sort, color: AppTheme.neonYellow),
+            icon: Icon(Icons.sort, color: Theme.of(context).primaryColor),
             onPressed: () {},
           )
         ],
@@ -53,7 +53,7 @@ class PartnershipScreen extends StatelessWidget {
           final isUrgent = item['isUrgent'] as bool;
 
           return CyberCard(
-            glowColor: AppTheme.neonYellow,
+            glowColor: Theme.of(context).primaryColor,
             hasGlow: true,
             borderWidth: 2,
             padding: EdgeInsets.all(20.0),
@@ -67,15 +67,15 @@ class PartnershipScreen extends StatelessWidget {
                     Container(
                       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
-                        color: AppTheme.neonYellow.withOpacity(0.1),
-                        border: Border.all(color: AppTheme.neonYellow),
+                        color: Theme.of(context).primaryColor.withOpacity(0.1),
+                        border: Border.all(color: Theme.of(context).primaryColor),
                         borderRadius: BorderRadius.circular(4),
-                        boxShadow: AppTheme.getGlow(AppTheme.neonYellow, blur: 10),
+                        boxShadow: AppTheme.getGlow(Theme.of(context).primaryColor, blur: 10),
                       ),
                       child: Text(
                         item['requiredRole'],
                         style: TextStyle(
-                          color: AppTheme.neonYellow,
+                          color: Theme.of(context).primaryColor,
                           fontSize: 10,
                           fontWeight: FontWeight.w900,
                           letterSpacing: 2.0,
@@ -173,11 +173,11 @@ class PartnershipScreen extends StatelessWidget {
                     ElevatedButton(
                       onPressed: () {},
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.neonYellow.withOpacity(0.2),
-                        foregroundColor: AppTheme.neonYellow,
+                        backgroundColor: Theme.of(context).primaryColor.withOpacity(0.2),
+                        foregroundColor: Theme.of(context).primaryColor,
                         elevation: 0,
                         shape: RoundedRectangleBorder(
-                          side: BorderSide(color: AppTheme.neonYellow, width: 2),
+                          side: BorderSide(color: Theme.of(context).primaryColor, width: 2),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
@@ -199,13 +199,13 @@ class PartnershipScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
-        backgroundColor: AppTheme.neonYellow.withOpacity(0.2),
+        backgroundColor: Theme.of(context).primaryColor.withOpacity(0.2),
         elevation: 0,
         shape: RoundedRectangleBorder(
-          side: BorderSide(color: AppTheme.neonYellow, width: 2),
+          side: BorderSide(color: Theme.of(context).primaryColor, width: 2),
           borderRadius: BorderRadius.circular(16),
         ),
-        child: Icon(Icons.add, color: AppTheme.neonYellow),
+        child: Icon(Icons.add, color: Theme.of(context).primaryColor),
       ),
     );
   }

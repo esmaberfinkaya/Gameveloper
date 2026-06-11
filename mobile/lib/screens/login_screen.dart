@@ -110,8 +110,8 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                     height: 1,
                     child: Container(
                       color: index % 2 == 0 
-                          ? AppTheme.neonCyan.withOpacity(0.1) 
-                          : AppTheme.neonPink.withOpacity(0.1),
+                          ? Theme.of(context).primaryColor.withOpacity(0.1) 
+                          : Theme.of(context).primaryColor.withOpacity(0.1),
                     ),
                   );
                 }),
@@ -127,10 +127,10 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                 decoration: BoxDecoration(
                   color: AppTheme.cardBg.withOpacity(0.9),
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppTheme.accentPurple.withOpacity(0.3)),
+                  border: Border.all(color: Theme.of(context).primaryColor.withOpacity(0.3)),
                   boxShadow: [
-                    BoxShadow(color: AppTheme.neonCyan.withOpacity(0.1), blurRadius: 30, spreadRadius: -5),
-                    BoxShadow(color: AppTheme.neonPink.withOpacity(0.1), blurRadius: 30, spreadRadius: -5),
+                    BoxShadow(color: Theme.of(context).primaryColor.withOpacity(0.1), blurRadius: 30, spreadRadius: -5),
+                    BoxShadow(color: Theme.of(context).primaryColor.withOpacity(0.1), blurRadius: 30, spreadRadius: -5),
                   ],
                 ),
                 child: Column(
@@ -147,7 +147,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                             style: TextStyle(
                               fontSize: 28,
                               fontWeight: FontWeight.w900,
-                              color: AppTheme.neonCyan.withOpacity(0.5),
+                              color: Theme.of(context).primaryColor.withOpacity(0.5),
                               letterSpacing: 4,
                             ),
                           ),
@@ -159,7 +159,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                             style: TextStyle(
                               fontSize: 28,
                               fontWeight: FontWeight.w900,
-                              color: AppTheme.neonPink.withOpacity(0.5),
+                              color: Theme.of(context).primaryColor.withOpacity(0.5),
                               letterSpacing: 4,
                             ),
                           ),
@@ -188,13 +188,13 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                       style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         labelText: 'E-posta',
-                        labelStyle: const TextStyle(color: AppTheme.accentPurple),
+                        labelStyle: TextStyle(color: Theme.of(context).primaryColor),
                         enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: AppTheme.accentPurple.withOpacity(0.5)),
+                          borderSide: BorderSide(color: Theme.of(context).primaryColor.withOpacity(0.5)),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(color: AppTheme.neonCyan),
+                          borderSide: BorderSide(color: Theme.of(context).primaryColor),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         filled: true,
@@ -208,13 +208,13 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                       obscureText: true,
                       decoration: InputDecoration(
                         labelText: 'Şifre',
-                        labelStyle: const TextStyle(color: AppTheme.accentPurple),
+                        labelStyle: TextStyle(color: Theme.of(context).primaryColor),
                         enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: AppTheme.accentPurple.withOpacity(0.5)),
+                          borderSide: BorderSide(color: Theme.of(context).primaryColor.withOpacity(0.5)),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(color: AppTheme.neonCyan),
+                          borderSide: BorderSide(color: Theme.of(context).primaryColor),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         filled: true,
@@ -227,11 +227,11 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: Colors.red.withOpacity(0.1),
-                          border: Border.all(color: Colors.red.withOpacity(0.5)),
+                          color: Theme.of(context).primaryColor.withOpacity(0.1),
+                          border: Border.all(color: Theme.of(context).primaryColor.withOpacity(0.5)),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: Text(_error!, style: const TextStyle(color: Colors.redAccent, fontSize: 12)),
+                        child: Text(_error!, style: TextStyle(color: Theme.of(context).primaryColor, fontSize: 12)),
                       )
                     ],
 
@@ -243,11 +243,11 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                       child: ElevatedButton(
                         onPressed: _isLoading ? null : () => _handleLogin(),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppTheme.neonCyan,
+                          backgroundColor: Theme.of(context).primaryColor,
                           foregroundColor: Colors.black,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                           elevation: 10,
-                          shadowColor: AppTheme.neonCyan,
+                          shadowColor: Theme.of(context).primaryColor,
                         ),
                         child: _isLoading 
                             ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.black, strokeWidth: 2))
@@ -267,9 +267,9 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                           child: OutlinedButton(
                             onPressed: () => _handleLogin(overrideEmail: 'esma@test.com', overridePassword: 'password123'),
                             style: OutlinedButton.styleFrom(
-                              foregroundColor: AppTheme.neonCyan,
-                              side: BorderSide(color: AppTheme.neonCyan.withOpacity(0.5)),
-                              backgroundColor: AppTheme.neonCyan.withOpacity(0.1),
+                              foregroundColor: Theme.of(context).primaryColor,
+                              side: BorderSide(color: Theme.of(context).primaryColor.withOpacity(0.5)),
+                              backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
                               padding: const EdgeInsets.symmetric(vertical: 12),
                             ),
                             child: const Column(
@@ -285,9 +285,9 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                           child: OutlinedButton(
                             onPressed: () => _handleLogin(overrideEmail: 'alpha@test.com', overridePassword: 'password123'),
                             style: OutlinedButton.styleFrom(
-                              foregroundColor: AppTheme.neonPink,
-                              side: BorderSide(color: AppTheme.neonPink.withOpacity(0.5)),
-                              backgroundColor: AppTheme.neonPink.withOpacity(0.1),
+                              foregroundColor: Theme.of(context).primaryColor,
+                              side: BorderSide(color: Theme.of(context).primaryColor.withOpacity(0.5)),
+                              backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
                               padding: const EdgeInsets.symmetric(vertical: 12),
                             ),
                             child: const Column(

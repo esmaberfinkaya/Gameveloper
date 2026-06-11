@@ -53,7 +53,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
         leading: const Icon(Icons.explore),
         actions: [
           IconButton(
-            icon: const Icon(Icons.filter_list, color: AppTheme.neonPink),
+            icon: Icon(Icons.filter_list, color: Theme.of(context).primaryColor),
             onPressed: () {},
           )
         ],
@@ -65,7 +65,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.error_outline, color: AppTheme.neonPink, size: 48),
+                      Icon(Icons.error_outline, color: Theme.of(context).primaryColor, size: 48),
                       const SizedBox(height: 16),
                       Text(error!, style: const TextStyle(color: Colors.white70)),
                       const SizedBox(height: 16),
@@ -77,8 +77,8 @@ class _ExploreScreenState extends State<ExploreScreen> {
                           });
                           fetchFeed();
                         },
-                        style: ElevatedButton.styleFrom(backgroundColor: AppTheme.neonPink.withOpacity(0.2)),
-                        child: const Text('Tekrar Dene', style: TextStyle(color: AppTheme.neonPink)),
+                        style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).primaryColor.withOpacity(0.2)),
+                        child: Text('Tekrar Dene', style: TextStyle(color: Theme.of(context).primaryColor)),
                       )
                     ],
                   ),

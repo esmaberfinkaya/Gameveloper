@@ -74,7 +74,7 @@ class _MainNavigationState extends State<MainNavigation> {
               _currentIndex = index;
             });
           },
-          items: const [
+          items: [
             BottomNavigationBarItem(
               icon: Icon(Icons.explore_outlined),
               activeIcon: Icon(Icons.explore),

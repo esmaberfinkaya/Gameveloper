@@ -83,11 +83,11 @@ export default function FeedCard({ id, title, content, category, imageUrl, creat
   };
 
   return (
-    <div className={`bg-card-bg/80 border ${isResolved ? 'border-green-500/40' : 'border-gray-800'} hover:border-accent-purple/50 rounded-xl transition-all duration-300 backdrop-blur-sm shadow-lg hover:shadow-[0_0_20px_rgba(188,19,254,0.15)] group relative overflow-hidden`}>
+    <div className={`bg-card-bg/80 border ${isResolved ? 'border-theme-accent/40' : 'border-gray-800'} hover:border-accent-purple/50 rounded-xl transition-all duration-300 backdrop-blur-sm shadow-lg hover:neon-glow-theme group relative overflow-hidden`}>
       
       {/* SOLVED Badge Top Left */}
       {isResolved && (
-        <div className="absolute top-0 left-0 bg-green-500 text-black text-[10px] font-bold px-3 py-1 rounded-br-lg z-10 flex items-center gap-1 shadow-[0_0_10px_rgba(34,197,94,0.5)]">
+        <div className="absolute top-0 left-0 bg-theme-accent text-black text-[10px] font-bold px-3 py-1 rounded-br-lg z-10 flex items-center gap-1 neon-glow-theme">
           <CheckCircle2 size={12} />
           SOLVED
         </div>
@@ -104,7 +104,7 @@ export default function FeedCard({ id, title, content, category, imageUrl, creat
           <div className="w-10 h-10 rounded-full border border-gray-700 flex items-center justify-center bg-[#0D1117] relative">
             <span className="text-gray-300 font-bold text-lg">{user?.name?.charAt(0).toUpperCase()}</span>
             {user?.trustScore > 0 && (
-              <div className="absolute -bottom-1 -right-1 bg-neon-pink text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full shadow-[0_0_5px_rgba(255,0,255,0.8)] border border-[#0D1117]">
+              <div className="absolute -bottom-1 -right-1 bg-neon-pink text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full neon-glow-theme border border-[#0D1117]">
                 TS: {user.trustScore}
               </div>
             )}
@@ -133,7 +133,7 @@ export default function FeedCard({ id, title, content, category, imageUrl, creat
                   if (ytMatch) {
                     if (isExplore) return <span className="text-theme-accent">[YouTube Video]</span>;
                     return (
-                      <div className="my-6 aspect-video rounded-xl overflow-hidden border border-accent-purple/30 shadow-[0_0_20px_rgba(188,19,254,0.15)] relative group/video">
+                      <div className="my-6 aspect-video rounded-xl overflow-hidden border border-accent-purple/30 neon-glow-theme relative group/video">
                         <div className="absolute inset-0 bg-theme-accent/5 pointer-events-none group-hover/video:bg-transparent transition-colors"></div>
                         <iframe
                           className="w-full h-full relative z-10"
@@ -194,7 +194,7 @@ export default function FeedCard({ id, title, content, category, imageUrl, creat
           <div className="flex border-b border-gray-800">
             <button 
               onClick={() => setActiveTab("SOLUTION")}
-              className={`flex-1 py-3 text-sm font-bold tracking-widest uppercase transition-all flex justify-center items-center gap-2 ${activeTab === "SOLUTION" ? 'text-green-400 border-b-2 border-green-400 bg-green-400/5' : 'text-gray-500 hover:text-gray-300'}`}
+              className={`flex-1 py-3 text-sm font-bold tracking-widest uppercase transition-all flex justify-center items-center gap-2 ${activeTab === "SOLUTION" ? 'text-theme-accent border-b-2 border-theme-accent bg-theme-accent/5' : 'text-gray-500 hover:text-gray-300'}`}
             >
               Çözüm Önerileri <span className="bg-gray-800 text-gray-300 text-[10px] px-2 py-0.5 rounded-full">{solutions.length}</span>
             </button>
@@ -217,9 +217,9 @@ export default function FeedCard({ id, title, content, category, imageUrl, creat
                     <div className="text-center text-gray-600 text-xs py-4">Henüz çözüm önerisi sunulmamış.</div>
                   ) : (
                     solutions.map((res) => (
-                      <div key={res.id} className={`p-4 rounded-xl border ${res.isAccepted ? 'bg-green-500/10 border-green-500 shadow-[0_0_15px_rgba(34,197,94,0.1)]' : 'bg-[#0D1117] border-gray-800'} relative`}>
+                      <div key={res.id} className={`p-4 rounded-xl border ${res.isAccepted ? 'bg-theme-accent/10 border-theme-accent neon-glow-theme' : 'bg-[#0D1117] border-gray-800'} relative`}>
                         {res.isAccepted && (
-                          <div className="absolute -top-3 -right-3 bg-green-500 text-black p-1 rounded-full shadow-[0_0_10px_rgba(34,197,94,0.6)]">
+                          <div className="absolute -top-3 -right-3 bg-theme-accent text-black p-1 rounded-full neon-glow-theme">
                             <CheckCircle2 size={16} />
                           </div>
                         )}
@@ -234,7 +234,7 @@ export default function FeedCard({ id, title, content, category, imageUrl, creat
                           {currentUser?.id === user.id && !isResolved && !res.isAccepted && (
                             <button 
                               onClick={() => handleAcceptSolution(res.id)}
-                              className="text-[10px] bg-green-500/20 text-green-400 border border-green-500/50 hover:bg-green-500 hover:text-black px-2 py-1 rounded transition-all font-bold tracking-wider flex items-center gap-1"
+                              className="text-[10px] bg-theme-accent/20 text-theme-accent border border-theme-accent/50 hover:bg-theme-accent hover:text-black px-2 py-1 rounded transition-all font-bold tracking-wider flex items-center gap-1"
                             >
                               <CheckCircle2 size={12} /> Onayla
                             </button>
@@ -251,7 +251,7 @@ export default function FeedCard({ id, title, content, category, imageUrl, creat
 
                 {/* Submit Solution Form */}
                 {isResolved ? (
-                  <div className="bg-green-500/5 border border-green-500/20 text-green-400 p-3 rounded-lg text-sm text-center flex items-center justify-center gap-2">
+                  <div className="bg-theme-accent/5 border border-theme-accent/20 text-theme-accent p-3 rounded-lg text-sm text-center flex items-center justify-center gap-2">
                     <CheckCircle2 size={16} /> Bu sorunun çözümü onaylanmış ve kapatılmıştır.
                   </div>
                 ) : (
@@ -266,11 +266,11 @@ export default function FeedCard({ id, title, content, category, imageUrl, creat
                         value={responseContent}
                         onChange={(e) => setResponseContent(e.target.value)}
                         placeholder="Teknik detayları ve kodları paylaşarak çözümü yaz..."
-                        className="w-full bg-background border border-gray-700 focus:border-green-400 focus:ring-1 focus:ring-green-400 rounded-md p-3 text-sm text-white resize-none custom-scrollbar font-mono"
+                        className="w-full bg-background border border-gray-700 focus:border-theme-accent focus:ring-1 focus:ring-theme-accent rounded-md p-3 text-sm text-white resize-none custom-scrollbar font-mono"
                         rows={4}
                       />
                       <div className="flex justify-end">
-                        <button disabled={isSubmitting} className="bg-green-400/20 text-green-400 border border-green-400 hover:bg-green-400 hover:text-black px-4 py-2 rounded-md text-xs font-bold transition-all flex items-center gap-2">
+                        <button disabled={isSubmitting} className="bg-theme-accent/20 text-theme-accent border border-theme-accent hover:bg-theme-accent hover:text-black px-4 py-2 rounded-md text-xs font-bold transition-all flex items-center gap-2">
                           {isSubmitting ? "Gönderiliyor..." : "Çözüm Gönder"}
                         </button>
                       </div>

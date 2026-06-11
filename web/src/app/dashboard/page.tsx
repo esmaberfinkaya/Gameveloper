@@ -91,7 +91,7 @@ export default function ExplorePage() {
       {/* Soru Modalı (Neon Form) */}
       {isQuestionModalOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[100] flex items-center justify-center p-4">
-          <div className="bg-card-bg border border-neon-cyan/50 rounded-xl shadow-[0_0_30px_rgba(0,255,255,0.15)] w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
+          <div className="bg-card-bg border border-neon-cyan/50 rounded-xl neon-glow-theme w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
             <div className="p-5 border-b border-gray-800 flex justify-between items-center bg-gray-900/50">
               <h2 className="text-xl font-bold text-neon-cyan text-glow-cyan flex items-center gap-2">
                 <MessageSquarePlus size={24} /> Yeni Soru Sor
@@ -171,7 +171,7 @@ export default function ExplorePage() {
                     <button 
                       type="submit" 
                       disabled={isSubmitting}
-                      className="px-6 py-2 bg-neon-cyan/20 text-neon-cyan border border-neon-cyan hover:bg-neon-cyan hover:text-black font-bold tracking-wide rounded-md transition-all shadow-[0_0_10px_rgba(0,255,255,0.2)] disabled:opacity-50 flex items-center gap-2"
+                      className="px-6 py-2 bg-neon-cyan/20 text-neon-cyan border border-neon-cyan hover:bg-neon-cyan hover:text-black font-bold tracking-wide rounded-md transition-all neon-glow-theme disabled:opacity-50 flex items-center gap-2"
                     >
                       {isSubmitting ? "Gönderiliyor..." : "Paylaş"}
                     </button>
@@ -195,7 +195,7 @@ export default function ExplorePage() {
         <div className="md:hidden flex justify-end mb-4">
           <button 
             onClick={() => setIsQuestionModalOpen(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-neon-cyan/20 text-neon-cyan border border-neon-cyan rounded-md text-sm font-bold shadow-[0_0_10px_rgba(0,255,255,0.2)]"
+            className="flex items-center gap-2 px-4 py-2 bg-neon-cyan/20 text-neon-cyan border border-neon-cyan rounded-md text-sm font-bold neon-glow-theme"
           >
             <MessageSquarePlus size={16} /> Yeni Soru
           </button>
@@ -218,13 +218,13 @@ export default function ExplorePage() {
         <div className="flex flex-wrap items-center gap-2 mb-8 border-b border-gray-800 pb-4">
           <button 
             onClick={() => setActiveFilter("global")}
-            className={`px-6 py-2.5 rounded-full text-sm font-bold flex items-center gap-2 transition-all ${activeFilter === "global" ? 'bg-accent-purple text-white shadow-[0_0_15px_rgba(188,19,254,0.4)] border border-accent-purple' : 'bg-[#0D1117] text-gray-400 border border-gray-800 hover:border-accent-purple/50'}`}
+            className={`px-6 py-2.5 rounded-full text-sm font-bold flex items-center gap-2 transition-all ${activeFilter === "global" ? 'bg-accent-purple text-white neon-glow-theme border border-accent-purple' : 'bg-[#0D1117] text-gray-400 border border-gray-800 hover:border-accent-purple/50'}`}
           >
             <Globe size={18} /> Global Akış
           </button>
           <button 
             onClick={() => setActiveFilter("problems")}
-            className={`px-6 py-2.5 rounded-full text-sm font-bold flex items-center gap-2 transition-all ${activeFilter === "problems" ? 'bg-neon-pink text-white shadow-[0_0_15px_rgba(255,0,255,0.4)] border border-neon-pink' : 'bg-[#0D1117] text-gray-400 border border-gray-800 hover:border-neon-pink/50'}`}
+            className={`px-6 py-2.5 rounded-full text-sm font-bold flex items-center gap-2 transition-all ${activeFilter === "problems" ? 'bg-neon-pink text-white neon-glow-theme border border-neon-pink' : 'bg-[#0D1117] text-gray-400 border border-gray-800 hover:border-neon-pink/50'}`}
           >
             <Target size={18} /> Sorunlar
           </button>
@@ -233,12 +233,12 @@ export default function ExplorePage() {
         {/* GRID LAYOUT - Now with dynamic columns based on content, but max 2 for better visibility of wide cards */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {error ? (
-            <div className="col-span-full text-center text-red-500 py-20 border border-dashed border-red-500/50 rounded-xl bg-red-500/10">
+            <div className="col-span-full text-center text-theme-accent py-20 border border-dashed border-theme-accent/50 rounded-xl bg-theme-accent/10">
               <AlertTriangle size={48} className="mx-auto mb-4 opacity-50" />
               <p className="text-lg font-bold">{error}</p>
               <button 
                 onClick={fetchExploreFeed} 
-                className="mt-4 px-4 py-2 bg-red-500/20 text-red-400 border border-red-500/50 rounded hover:bg-red-500/40 transition"
+                className="mt-4 px-4 py-2 bg-theme-accent/20 text-theme-accent border border-theme-accent/50 rounded hover:bg-theme-accent/40 transition"
               >
                 Tekrar Dene
               </button>

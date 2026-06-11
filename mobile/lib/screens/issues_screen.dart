@@ -75,7 +75,7 @@ class _IssuesScreenState extends State<IssuesScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.error_outline, color: AppTheme.neonPink, size: 48),
+                      Icon(Icons.error_outline, color: Theme.of(context).primaryColor, size: 48),
                       const SizedBox(height: 16),
                       Text(error!, style: const TextStyle(color: Colors.white70)),
                       const SizedBox(height: 16),
@@ -87,8 +87,8 @@ class _IssuesScreenState extends State<IssuesScreen> {
                           });
                           fetchIssues();
                         },
-                        style: ElevatedButton.styleFrom(backgroundColor: AppTheme.neonPink.withOpacity(0.2)),
-                        child: const Text('Tekrar Dene', style: TextStyle(color: AppTheme.neonPink)),
+                        style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).primaryColor.withOpacity(0.2)),
+                        child: Text('Tekrar Dene', style: TextStyle(color: Theme.of(context).primaryColor)),
                       )
                     ],
                   ),
@@ -150,7 +150,7 @@ class _IssuesScreenState extends State<IssuesScreen> {
                 final role = issue['user']?['role'] ?? 'GAMER';
 
                 return CyberCard(
-                  glowColor: isSolved ? AppTheme.neonGreen : AppTheme.neonPink,
+                  glowColor: isSolved ? Theme.of(context).primaryColor : Theme.of(context).primaryColor,
                   hasGlow: isSolved, // Add glow only if solved to highlight it, or maybe on both. Let's do both but different colors.
                   borderWidth: 1.5,
                   padding: const EdgeInsets.all(20.0),
@@ -163,8 +163,8 @@ class _IssuesScreenState extends State<IssuesScreen> {
                         children: [
                           Text(
                             tag,
-                            style: const TextStyle(
-                              color: AppTheme.accentPurple,
+                            style: TextStyle(
+                              color: Theme.of(context).primaryColor,
                               fontWeight: FontWeight.bold,
                               fontSize: 12,
                               letterSpacing: 1.5,
@@ -174,19 +174,19 @@ class _IssuesScreenState extends State<IssuesScreen> {
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                               decoration: BoxDecoration(
-                                color: AppTheme.neonGreen.withOpacity(0.2),
-                                border: Border.all(color: AppTheme.neonGreen),
+                                color: Theme.of(context).primaryColor.withOpacity(0.2),
+                                border: Border.all(color: Theme.of(context).primaryColor),
                                 borderRadius: BorderRadius.circular(4),
-                                boxShadow: AppTheme.getGlow(AppTheme.neonGreen, blur: 8),
+                                boxShadow: AppTheme.getGlow(Theme.of(context).primaryColor, blur: 8),
                               ),
-                              child: const Row(
+                              child: Row(
                                 children: [
-                                  Icon(Icons.check, color: AppTheme.neonGreen, size: 12),
+                                  Icon(Icons.check, color: Theme.of(context).primaryColor, size: 12),
                                   SizedBox(width: 4),
                                   Text(
                                     'SOLVED',
                                     style: TextStyle(
-                                      color: AppTheme.neonGreen,
+                                      color: Theme.of(context).primaryColor,
                                       fontSize: 10,
                                       fontWeight: FontWeight.bold,
                                       letterSpacing: 1.5,
@@ -232,7 +232,7 @@ class _IssuesScreenState extends State<IssuesScreen> {
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   border: Border.all(
-                                    color: role == 'DEVELOPER' ? AppTheme.accentPurple : Theme.of(context).primaryColor,
+                                    color: role == 'DEVELOPER' ? Theme.of(context).primaryColor : Theme.of(context).primaryColor,
                                     width: 1.5,
                                   ),
                                 ),
@@ -250,9 +250,9 @@ class _IssuesScreenState extends State<IssuesScreen> {
                             ],
                           ),
                           AccessGate(
-                            allowedRoles: const ['DEVELOPER'],
+                            allowedRoles: ['DEVELOPER'],
                             child: Row(
-                              children: const [
+                              children: [
                                 Icon(Icons.mode_comment_outlined, color: Colors.white70, size: 16),
                                 SizedBox(width: 4),
                                 Text('Yanıtla', style: TextStyle(color: Colors.white70, fontSize: 12)),
@@ -271,13 +271,13 @@ class _IssuesScreenState extends State<IssuesScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
-        backgroundColor: AppTheme.neonPink.withOpacity(0.2),
+        backgroundColor: Theme.of(context).primaryColor.withOpacity(0.2),
         elevation: 0,
         shape: RoundedRectangleBorder(
-          side: const BorderSide(color: AppTheme.neonPink, width: 2),
+          side: BorderSide(color: Theme.of(context).primaryColor, width: 2),
           borderRadius: BorderRadius.circular(16),
         ),
-        child: const Icon(Icons.add, color: AppTheme.neonPink),
+        child: Icon(Icons.add, color: Theme.of(context).primaryColor),
       ),
     );
   }

@@ -8,10 +8,11 @@
   --neon-pink: #FF00FF;
   --accent-purple: #BD93F9;
   
-  --neon-deep-blue: #0088FF;
-  --neon-yellow: #FFE300;
-  --neon-deep-red: #FF003C;
-  --neon-purple: #BC13FE;
+  --neon-deep-green: #03fc1c;
+  --neon-deep-blue: #0505e3;
+  --neon-yellow: #f7ef02;
+  --neon-deep-red: #e00202;
+  --neon-purple: #fc03cf;
 
   --theme-accent: var(--neon-cyan);
 }

@@ -49,7 +49,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     if (path.includes("/dashboard/ideas")) return "var(--neon-yellow)";
     if (path.includes("/dashboard/profile")) return "var(--neon-deep-red)";
     if (path.includes("/dashboard/partners")) return "var(--neon-purple)";
-    return "var(--neon-deep-blue)";
+    if (path.includes("/dashboard/roadmaps")) return "var(--neon-deep-blue)";
+    return "var(--neon-deep-green)";
   };
 
   const themeAccent = getThemeAccent(pathname);
@@ -57,7 +58,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   if (!user) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-neon-cyan text-glow-cyan animate-pulse tracking-widest uppercase">
+        <div className="text-theme-accent text-glow-theme animate-pulse tracking-widest uppercase">
           Sisteme Bağlanılıyor...
         </div>
       </div>
@@ -65,11 +66,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }
 
   const navLinks = [
-    { name: "Sorunlar & Akış", href: "/dashboard", icon: MessageSquarePlus, color: "neon-cyan" },
-    { name: "Fikir Havuzu", href: "/dashboard/ideas", icon: Lightbulb, color: "accent-purple" },
-    { name: "Ortaklık Bul", href: "/dashboard/partners", icon: Users, color: "neon-pink" },
-    { name: "Yol Haritaları", href: "/dashboard/roadmaps", icon: Map, color: "green-400" },
-    { name: "Profilim", href: "/dashboard/profile", icon: User, color: "accent-purple" },
+    { name: "Sorunlar & Akış", href: "/dashboard", icon: MessageSquarePlus },
+    { name: "Fikir Havuzu", href: "/dashboard/ideas", icon: Lightbulb },
+    { name: "Ortaklık Bul", href: "/dashboard/partners", icon: Users },
+    { name: "Yol Haritaları", href: "/dashboard/roadmaps", icon: Map },
+    { name: "Profilim", href: "/dashboard/profile", icon: User },
   ];
 
   return (
@@ -85,7 +86,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {isMobileMenuOpen && (
         <div className="fixed inset-0 bg-background/95 backdrop-blur-md z-50 flex flex-col md:hidden">
           <div className="flex justify-end p-6">
-            <button onClick={() => setIsMobileMenuOpen(false)} className="text-neon-pink hover:text-white transition-colors">
+            <button onClick={() => setIsMobileMenuOpen(false)} className="text-theme-accent hover:text-white transition-colors">
               <X size={32} />
             </button>
           </div>
@@ -107,7 +108,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 </Link>
               )
             })}
-            <button onClick={handleLogout} className="mt-12 flex items-center gap-3 px-6 py-3 border border-red-500/50 rounded-full text-red-400 hover:bg-red-500/20 transition-all">
+            <button onClick={handleLogout} className="mt-12 flex items-center gap-3 px-6 py-3 border border-theme-accent/50 rounded-full text-theme-accent hover:bg-theme-accent/20 transition-all">
               <LogOut size={20} /> Sistemden Çık
             </button>
           </nav>
@@ -152,7 +153,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <div className="p-4 border-t border-accent-purple/30">
           <button 
             onClick={handleLogout}
-            className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-md text-red-400 hover:text-white hover:bg-red-500/20 border border-transparent hover:border-red-500/50 transition-all duration-300"
+            className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-md text-theme-accent hover:text-white hover:bg-theme-accent/20 border border-transparent hover:border-theme-accent/50 transition-all duration-300"
           >
             <LogOut size={18} />
             <span className="font-medium tracking-wide uppercase text-sm">Sistemden Çık</span>
@@ -209,14 +210,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         {/* Son Etkileşimler */}
         <div className="flex-1 p-6 overflow-y-auto custom-scrollbar">
           <h4 className="text-sm font-bold text-gray-300 uppercase tracking-widest mb-6 flex items-center gap-2 border-b border-gray-800 pb-2">
-            <Activity size={16} className="text-neon-pink" />
+            <Activity size={16} className="text-theme-accent" />
             Son Etkileşimler
           </h4>
           
           <div className="space-y-4">
             {/* Şimdilik Mock Veri ile Etkileşimler */}
-            <div className="bg-card-bg/50 border border-gray-800 p-3 rounded-lg flex items-start gap-3 hover:border-neon-cyan/30 transition-colors">
-              <div className="w-8 h-8 rounded-full bg-neon-cyan/10 flex items-center justify-center shrink-0 mt-0.5 text-neon-cyan">
+            <div className="bg-card-bg/50 border border-gray-800 p-3 rounded-lg flex items-start gap-3 hover:border-theme-accent/30 transition-colors">
+              <div className="w-8 h-8 rounded-full bg-theme-accent/10 flex items-center justify-center shrink-0 mt-0.5 text-theme-accent">
                 <Zap size={14} />
               </div>
               <div>
@@ -227,8 +228,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </div>
             </div>
 
-            <div className="bg-card-bg/50 border border-gray-800 p-3 rounded-lg flex items-start gap-3 hover:border-accent-purple/30 transition-colors">
-              <div className="w-8 h-8 rounded-full bg-accent-purple/10 flex items-center justify-center shrink-0 mt-0.5 text-accent-purple">
+            <div className="bg-card-bg/50 border border-gray-800 p-3 rounded-lg flex items-start gap-3 hover:border-theme-accent/30 transition-colors">
+              <div className="w-8 h-8 rounded-full bg-theme-accent/10 flex items-center justify-center shrink-0 mt-0.5 text-theme-accent">
                 <MessageSquarePlus size={14} />
               </div>
               <div>

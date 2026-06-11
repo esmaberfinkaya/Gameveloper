@@ -73,15 +73,15 @@ export default function ProfilePage() {
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 auto-rows-[minmax(180px,auto)]">
         
         {/* Main Profile Identity (Span 2x2) */}
-        <div className="col-span-1 md:col-span-2 lg:col-span-2 row-span-2 bg-card-bg/80 border border-accent-purple/40 hover:border-accent-purple shadow-[0_0_20px_rgba(188,19,254,0.1)] rounded-3xl p-8 backdrop-blur-sm relative overflow-hidden group flex flex-col items-center justify-center text-center transition-all">
+        <div className="col-span-1 md:col-span-2 lg:col-span-2 row-span-2 bg-card-bg/80 border border-accent-purple/40 hover:border-accent-purple neon-glow-theme rounded-3xl p-8 backdrop-blur-sm relative overflow-hidden group flex flex-col items-center justify-center text-center transition-all">
           <div className="absolute top-0 right-0 w-full h-full bg-accent-purple/5 rounded-full blur-[100px] pointer-events-none"></div>
           
-          <div className="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-accent-purple flex items-center justify-center bg-[#0D1117] shadow-[0_0_40px_rgba(188,19,254,0.4)] mb-6 relative z-10 group-hover:scale-105 transition-transform duration-500">
+          <div className="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-accent-purple flex items-center justify-center bg-[#0D1117] neon-glow-theme mb-6 relative z-10 group-hover:scale-105 transition-transform duration-500">
             <span className="text-accent-purple font-black text-6xl">{user.name.charAt(0).toUpperCase()}</span>
           </div>
           
           <h2 className="text-3xl md:text-4xl font-black text-white tracking-widest uppercase mb-2 relative z-10">{user.name}</h2>
-          <div className="text-sm text-neon-cyan uppercase tracking-widest font-bold mb-4 inline-block px-4 py-1.5 bg-neon-cyan/10 border border-neon-cyan/30 rounded-full shadow-[0_0_15px_rgba(0,255,255,0.2)] relative z-10">
+          <div className="text-sm text-neon-cyan uppercase tracking-widest font-bold mb-4 inline-block px-4 py-1.5 bg-neon-cyan/10 border border-neon-cyan/30 rounded-full neon-glow-theme relative z-10">
             {user.role}
           </div>
           <p className="text-gray-400 text-sm max-w-sm mx-auto relative z-10">
@@ -90,39 +90,39 @@ export default function ProfilePage() {
         </div>
 
         {/* Trust Score Box (Span 1x2) */}
-        <div className="col-span-1 md:col-span-1 lg:col-span-1 row-span-2 bg-[#05070a] border border-neon-cyan/50 hover:border-neon-cyan shadow-[0_0_30px_rgba(0,255,255,0.15)] hover:shadow-[0_0_50px_rgba(0,255,255,0.3)] rounded-3xl p-8 flex flex-col items-center justify-center relative overflow-hidden transition-all group">
+        <div className="col-span-1 md:col-span-1 lg:col-span-1 row-span-2 bg-[#05070a] border border-neon-cyan/50 hover:border-neon-cyan neon-glow-theme hover:neon-glow-theme rounded-3xl p-8 flex flex-col items-center justify-center relative overflow-hidden transition-all group">
           <div className="absolute -bottom-10 -right-10 text-neon-cyan/5 group-hover:text-neon-cyan/10 transition-colors">
             <Zap size={180} />
           </div>
           
-          <Zap size={48} className="text-neon-cyan mb-4 animate-pulse relative z-10 drop-shadow-[0_0_15px_rgba(0,255,255,0.8)]" />
+          <Zap size={48} className="text-neon-cyan mb-4 animate-pulse relative z-10 drop-neon-glow-theme" />
           <h3 className="text-sm text-gray-400 uppercase tracking-[0.2em] mb-2 relative z-10 font-bold">Trust Score</h3>
           <div className="text-7xl font-black text-neon-cyan text-glow-cyan relative z-10">{user.trustScore}</div>
           <p className="text-xs text-neon-cyan/60 mt-4 text-center relative z-10 uppercase tracking-wider">Topluluk <br/> Güvenilirlik Puanı</p>
         </div>
 
         {/* Stats 1: Solutions (Span 1x1) */}
-        <div className="col-span-1 md:col-span-1 lg:col-span-1 bg-card-bg/60 border border-green-500/30 hover:border-green-500 rounded-3xl p-6 flex flex-col justify-between group transition-all">
+        <div className="col-span-1 md:col-span-1 lg:col-span-1 bg-card-bg/60 border border-theme-accent/30 hover:border-theme-accent rounded-3xl p-6 flex flex-col justify-between group transition-all">
           <div className="flex justify-between items-start">
             <h3 className="text-xs text-gray-400 uppercase tracking-widest font-bold">Çözülen<br/>Sorunlar</h3>
-            <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center text-green-500 group-hover:scale-110 transition-transform">
+            <div className="w-10 h-10 rounded-full bg-theme-accent/10 flex items-center justify-center text-theme-accent group-hover:scale-110 transition-transform">
               <Code size={20} />
             </div>
           </div>
-          <div className="text-4xl font-black text-green-400 mt-4 shadow-green-500/50 drop-shadow-md">
+          <div className="text-4xl font-black text-theme-accent mt-4 shadow-theme-accent/50 drop-shadow-md">
             {userPosts.length * 3 + 12}
           </div>
         </div>
 
         {/* Stats 2: Projects (Span 1x1) */}
-        <div className="col-span-1 md:col-span-1 lg:col-span-1 bg-card-bg/60 border border-yellow-500/30 hover:border-yellow-500 rounded-3xl p-6 flex flex-col justify-between group transition-all">
+        <div className="col-span-1 md:col-span-1 lg:col-span-1 bg-card-bg/60 border border-theme-accent/30 hover:border-theme-accent rounded-3xl p-6 flex flex-col justify-between group transition-all">
           <div className="flex justify-between items-start">
             <h3 className="text-xs text-gray-400 uppercase tracking-widest font-bold">Tamamlanan<br/>Projeler</h3>
-            <div className="w-10 h-10 rounded-full bg-yellow-500/10 flex items-center justify-center text-yellow-500 group-hover:scale-110 transition-transform">
+            <div className="w-10 h-10 rounded-full bg-theme-accent/10 flex items-center justify-center text-theme-accent group-hover:scale-110 transition-transform">
               <Target size={20} />
             </div>
           </div>
-          <div className="text-4xl font-black text-yellow-500 mt-4 drop-shadow-md">
+          <div className="text-4xl font-black text-theme-accent mt-4 drop-shadow-md">
             {user.role === 'DEVELOPER' ? 4 : 1}
           </div>
         </div>
@@ -130,7 +130,7 @@ export default function ProfilePage() {
         {/* Achievements Banner (Span Full Width) */}
         <div className="col-span-1 md:col-span-3 lg:col-span-4 bg-gradient-to-r from-neon-pink/20 via-[#0D1117] to-accent-purple/20 border border-gray-800 hover:border-neon-pink/50 rounded-3xl p-6 flex items-center justify-between transition-all">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-neon-pink/20 border border-neon-pink flex items-center justify-center text-neon-pink shadow-[0_0_15px_rgba(255,0,255,0.4)]">
+            <div className="w-12 h-12 rounded-full bg-neon-pink/20 border border-neon-pink flex items-center justify-center text-neon-pink neon-glow-theme">
               <Trophy size={24} />
             </div>
             <div>
@@ -155,12 +155,12 @@ export default function ProfilePage() {
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {error ? (
-              <div className="col-span-full text-center text-red-500 py-10 border border-dashed border-red-500/50 rounded-xl bg-red-500/10">
+              <div className="col-span-full text-center text-theme-accent py-10 border border-dashed border-theme-accent/50 rounded-xl bg-theme-accent/10">
                 <AlertTriangle size={48} className="mx-auto mb-4 opacity-50" />
                 <p className="text-lg font-bold">{error}</p>
                 <button 
                   onClick={() => fetchUserData(user.id)} 
-                  className="mt-4 px-4 py-2 bg-red-500/20 text-red-400 border border-red-500/50 rounded hover:bg-red-500/40 transition"
+                  className="mt-4 px-4 py-2 bg-theme-accent/20 text-theme-accent border border-theme-accent/50 rounded hover:bg-theme-accent/40 transition"
                 >
                   Tekrar Dene
                 </button>

@@ -65,7 +65,7 @@ class _IdeasScreenState extends State<IdeasScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.error_outline, color: AppTheme.neonPink, size: 48),
+                      Icon(Icons.error_outline, color: Theme.of(context).primaryColor, size: 48),
                       const SizedBox(height: 16),
                       Text(error!, style: const TextStyle(color: Colors.white70)),
                       const SizedBox(height: 16),
@@ -77,8 +77,8 @@ class _IdeasScreenState extends State<IdeasScreen> {
                           });
                           fetchIdeas();
                         },
-                        style: ElevatedButton.styleFrom(backgroundColor: AppTheme.neonPink.withOpacity(0.2)),
-                        child: const Text('Tekrar Dene', style: TextStyle(color: AppTheme.neonPink)),
+                        style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).primaryColor.withOpacity(0.2)),
+                        child: Text('Tekrar Dene', style: TextStyle(color: Theme.of(context).primaryColor)),
                       )
                     ],
                   ),
@@ -105,8 +105,8 @@ class _IdeasScreenState extends State<IdeasScreen> {
                             children: [
                               Text(
                                 category.toUpperCase(),
-                                style: const TextStyle(
-                                  color: AppTheme.accentPurple,
+                                style: TextStyle(
+                                  color: Theme.of(context).primaryColor,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 12,
                                   letterSpacing: 1.5,
@@ -146,7 +146,7 @@ class _IdeasScreenState extends State<IdeasScreen> {
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
                                       border: Border.all(
-                                        color: role == 'DEVELOPER' ? AppTheme.accentPurple : Theme.of(context).primaryColor,
+                                        color: role == 'DEVELOPER' ? Theme.of(context).primaryColor : Theme.of(context).primaryColor,
                                         width: 1.5,
                                       ),
                                     ),

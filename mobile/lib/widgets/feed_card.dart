@@ -19,15 +19,15 @@ class FeedCard extends StatelessWidget {
     Color getTypeColor() {
       switch (type) {
         case 'PROJECT':
-          return AppTheme.neonYellow;
+          return Theme.of(context).primaryColor;
         case 'ROADMAP':
-          return AppTheme.neonGreen;
+          return Theme.of(context).primaryColor;
         case 'SOLUTION':
           return Theme.of(context).primaryColor;
         case 'QUESTION':
-          return AppTheme.neonPink;
+          return Theme.of(context).primaryColor;
         default:
-          return AppTheme.accentPurple;
+          return Theme.of(context).primaryColor;
       }
     }
 

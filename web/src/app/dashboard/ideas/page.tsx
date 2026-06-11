@@ -90,7 +90,7 @@ export default function IdeasPage() {
       {/* Fikir Modalı (Neon Form) */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-[100] flex items-center justify-center p-4">
-          <div className="bg-card-bg border border-accent-purple/50 rounded-xl shadow-[0_0_30px_rgba(188,19,254,0.15)] w-full max-w-3xl overflow-hidden flex flex-col max-h-[90vh]">
+          <div className="bg-card-bg border border-accent-purple/50 rounded-xl neon-glow-theme w-full max-w-3xl overflow-hidden flex flex-col max-h-[90vh]">
             <div className="p-5 border-b border-gray-800 flex justify-between items-center bg-gray-900/50">
               <h2 className="text-xl font-bold text-accent-purple text-glow-purple flex items-center gap-2">
                 <Lightbulb size={24} /> Yeni Fikir Paylaş
@@ -184,7 +184,7 @@ export default function IdeasPage() {
                   <button 
                     type="submit" 
                     disabled={isSubmitting}
-                    className="px-6 py-2 bg-accent-purple/20 text-accent-purple border border-accent-purple hover:bg-accent-purple hover:text-white font-bold tracking-wide rounded-md transition-all shadow-[0_0_10px_rgba(188,19,254,0.2)] disabled:opacity-50"
+                    className="px-6 py-2 bg-accent-purple/20 text-accent-purple border border-accent-purple hover:bg-accent-purple hover:text-white font-bold tracking-wide rounded-md transition-all neon-glow-theme disabled:opacity-50"
                   >
                     {isSubmitting ? "Gönderiliyor..." : "Fikri Yayına Al"}
                   </button>
@@ -208,12 +208,12 @@ export default function IdeasPage() {
         </div>
 
         {error ? (
-          <div className="text-center text-red-500 py-10 border border-dashed border-red-500/50 rounded-xl bg-red-500/10 mb-6">
+          <div className="text-center text-theme-accent py-10 border border-dashed border-theme-accent/50 rounded-xl bg-theme-accent/10 mb-6">
             <AlertTriangle size={48} className="mx-auto mb-4 opacity-50" />
             <p className="text-lg font-bold">{error}</p>
             <button 
               onClick={fetchIdeas} 
-              className="mt-4 px-4 py-2 bg-red-500/20 text-red-400 border border-red-500/50 rounded hover:bg-red-500/40 transition"
+              className="mt-4 px-4 py-2 bg-theme-accent/20 text-theme-accent border border-theme-accent/50 rounded hover:bg-theme-accent/40 transition"
             >
               Tekrar Dene
             </button>

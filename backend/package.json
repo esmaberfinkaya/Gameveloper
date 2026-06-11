@@ -11,7 +11,7 @@
   "author": "",
   "license": "ISC",
   "prisma": {
-    "seed": "node prisma/seed.js"
+    "seed": "npx tsx prisma/seed.ts"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
@@ -22,6 +22,7 @@
     "jsonwebtoken": "^9.0.3"
   },
   "devDependencies": {
-    "prisma": "^5.22.0"
+    "prisma": "^5.22.0",
+    "tsx": "^4.19.0"
   }
 }

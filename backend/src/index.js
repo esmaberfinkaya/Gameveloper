@@ -97,19 +97,18 @@ app.post('/api/questions', async (req, res) => {
   }
 
   try {
-    const newQuestion = await prisma.question.create({
+    const newPost = await prisma.post.create({
       data: {
         title,
         content,
         category,
         imageUrl,
+        postType: 'QUESTION',
         userId: parseInt(userId, 10),
       },
     });
 
-    // Kullanıcının Trust Score değerini 5 artır (İPTAL EDİLDİ - Sadece topluluk değerlendirmesi puan kazandırır)
-    
-    res.status(201).json({ message: 'Soru başarıyla eklendi.', question: newQuestion });
+    res.status(201).json({ message: 'Soru başarıyla eklendi.', question: newPost });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -118,13 +117,14 @@ app.post('/api/questions', async (req, res) => {
 // Sorular (Questions) Katmanı: Soruları Listele
 app.get('/api/questions', async (req, res) => {
   try {
-    const questions = await prisma.question.findMany({
+    const posts = await prisma.post.findMany({
+      where: { postType: 'QUESTION' },
       orderBy: { createdAt: 'desc' },
       include: {
         user: {
           select: { id: true, name: true, role: true, trustScore: true }
         },
-        responses: {
+        comments: {
           orderBy: { createdAt: 'asc' },
           include: {
             user: { select: { id: true, name: true, role: true, trustScore: true } }
@@ -132,7 +132,50 @@ app.get('/api/questions', async (req, res) => {
         }
       }
     });
+
+    // Map comments to responses for frontend compatibility
+    const questions = posts.map(post => {
+      const { comments, ...rest } = post;
+      return {
+        ...rest,
+        responses: comments
+      };
+    });
+
     res.json(questions);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Sorunlar (Issues) Katmanı: Sorunları Listele (Aynı format)
+app.get('/api/issues', async (req, res) => {
+  try {
+    const posts = await prisma.post.findMany({
+      where: { postType: 'QUESTION' },
+      orderBy: { createdAt: 'desc' },
+      include: {
+        user: {
+          select: { id: true, name: true, role: true, trustScore: true }
+        },
+        comments: {
+          orderBy: { createdAt: 'asc' },
+          include: {
+            user: { select: { id: true, name: true, role: true, trustScore: true } }
+          }
+        }
+      }
+    });
+
+    const issues = posts.map(post => {
+      const { comments, ...rest } = post;
+      return {
+        ...rest,
+        responses: comments
+      };
+    });
+
+    res.json(issues);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -153,19 +196,19 @@ app.post('/api/questions/:id/responses', async (req, res) => {
       return res.status(403).json({ error: 'Sadece geliştiriciler (DEVELOPER) çözüm sunabilir.' });
     }
 
-    const newResponse = await prisma.questionResponse.create({
+    const newComment = await prisma.comment.create({
       data: {
         content,
-        type,
+        type, // "COMMENT" or "SOLUTION"
         userId: parseInt(userId, 10),
-        questionId: parseInt(id, 10),
+        postId: parseInt(id, 10),
       },
       include: {
         user: { select: { id: true, name: true, role: true, trustScore: true } }
       }
     });
 
-    res.status(201).json({ message: 'Yanıt başarıyla eklendi.', response: newResponse });
+    res.status(201).json({ message: 'Yanıt başarıyla eklendi.', response: newComment });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -177,32 +220,32 @@ app.patch('/api/questions/:questionId/responses/:responseId/accept', async (req,
   const { userId } = req.body;
 
   try {
-    const question = await prisma.question.findUnique({ where: { id: parseInt(questionId, 10) } });
-    if (question.userId !== parseInt(userId, 10)) {
+    const post = await prisma.post.findUnique({ where: { id: parseInt(questionId, 10) } });
+    if (post.userId !== parseInt(userId, 10)) {
       return res.status(403).json({ error: 'Sadece soruyu soran kişi çözümü onaylayabilir.' });
     }
 
-    const response = await prisma.questionResponse.findUnique({ where: { id: parseInt(responseId, 10) } });
-    if (response.type !== 'SOLUTION') {
+    const comment = await prisma.comment.findUnique({ where: { id: parseInt(responseId, 10) } });
+    if (comment.type !== 'SOLUTION') {
       return res.status(400).json({ error: 'Sadece çözüm önerileri onaylanabilir.' });
     }
 
-    const updatedResponse = await prisma.questionResponse.update({
+    const updatedComment = await prisma.comment.update({
       where: { id: parseInt(responseId, 10) },
       data: { isAccepted: true },
     });
 
-    await prisma.question.update({
+    await prisma.post.update({
       where: { id: parseInt(questionId, 10) },
       data: { isResolved: true },
     });
 
     const updatedUser = await prisma.user.update({
-      where: { id: response.userId },
+      where: { id: comment.userId },
       data: { trustScore: { increment: 25 } },
     });
 
-    res.json({ message: 'Çözüm onaylandı! Geliştiriciye +25 Puan verildi.', response: updatedResponse, trustScore: updatedUser.trustScore });
+    res.json({ message: 'Çözüm onaylandı! Geliştiriciye +25 Puan verildi.', response: updatedComment, trustScore: updatedUser.trustScore });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -212,7 +255,8 @@ app.patch('/api/questions/:questionId/responses/:responseId/accept', async (req,
 app.get('/api/ideas', async (req, res) => {
   const currentUserId = parseInt(req.query.userId, 10);
   try {
-    const ideas = await prisma.idea.findMany({
+    const posts = await prisma.post.findMany({
+      where: { postType: 'IDEA' },
       orderBy: { createdAt: 'desc' },
       include: {
         user: { select: { id: true, name: true, role: true, trustScore: true } },
@@ -225,12 +269,12 @@ app.get('/api/ideas', async (req, res) => {
       }
     });
 
-    const filteredIdeas = ideas.map(idea => {
-      const filteredComments = idea.comments.filter(c => {
+    const filteredIdeas = posts.map(post => {
+      const filteredComments = post.comments.filter(c => {
         if (!c.isPrivate) return true;
-        return currentUserId === idea.userId || currentUserId === c.userId;
+        return currentUserId === post.userId || currentUserId === c.userId;
       });
-      return { ...idea, comments: filteredComments };
+      return { ...post, comments: filteredComments };
     });
 
     res.json(filteredIdeas);
@@ -243,12 +287,19 @@ app.get('/api/ideas', async (req, res) => {
 app.post('/api/ideas', async (req, res) => {
   const { title, story, visuals, gameplay, category, userId } = req.body;
   try {
-    const newIdea = await prisma.idea.create({
+    const newPost = await prisma.post.create({
       data: {
-        title, story, visuals, gameplay, category, userId: parseInt(userId, 10)
+        title,
+        content: story || '',
+        story,
+        visuals,
+        gameplay,
+        category,
+        postType: 'IDEA',
+        userId: parseInt(userId, 10)
       }
     });
-    res.status(201).json(newIdea);
+    res.status(201).json(newPost);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -263,8 +314,9 @@ app.post('/api/ideas/:id/comments', async (req, res) => {
       data: {
         content,
         isPrivate: isPrivate || false,
+        type: 'COMMENT',
         userId: parseInt(userId, 10),
-        ideaId: parseInt(id, 10)
+        postId: parseInt(id, 10)
       }
     });
     res.status(201).json(newComment);
@@ -282,17 +334,7 @@ app.get('/api/explore', async (req, res) => {
     const user = currentUserId ? await prisma.user.findUnique({ where: { id: currentUserId } }) : null;
     const userRole = user ? user.role : 'GAMER';
 
-    const questions = await prisma.question.findMany({
-      include: {
-        user: { select: { id: true, name: true, role: true, trustScore: true } },
-        responses: {
-          orderBy: { createdAt: 'asc' },
-          include: { user: { select: { id: true, name: true, role: true, trustScore: true } } }
-        }
-      }
-    });
-
-    const ideas = await prisma.idea.findMany({
+    const posts = await prisma.post.findMany({
       include: {
         user: { select: { id: true, name: true, role: true, trustScore: true } },
         comments: {
@@ -302,30 +344,41 @@ app.get('/api/explore', async (req, res) => {
       }
     });
 
-    const mappedQuestions = questions.map(q => ({ ...q, feedType: 'QUESTION' }));
-    const mappedIdeas = ideas.map(i => {
-      const filteredComments = i.comments.filter(c => {
+    let mappedFeed = posts.map(post => {
+      const { comments, ...rest } = post;
+      const filteredComments = comments.filter(c => {
         if (!c.isPrivate) return true;
-        return currentUserId === i.userId || currentUserId === c.userId;
+        return currentUserId === post.userId || currentUserId === c.userId;
       });
-      return { ...i, comments: filteredComments, feedType: 'IDEA' };
+
+      if (post.postType === 'QUESTION') {
+        return {
+          ...rest,
+          feedType: 'QUESTION',
+          responses: filteredComments
+        };
+      } else {
+        return {
+          ...rest,
+          feedType: post.postType,
+          comments: filteredComments
+        };
+      }
     });
 
-    let mixFeed = [...mappedQuestions, ...mappedIdeas];
-
     if (filter === 'unresolved') {
-      mixFeed = mappedQuestions.filter(q => !q.isResolved);
+      mappedFeed = mappedFeed.filter(p => p.feedType === 'QUESTION' && !p.isResolved);
     } else if (filter === 'popular') {
-      mixFeed.sort((a, b) => {
+      mappedFeed.sort((a, b) => {
         const scoreA = (a.responses?.length || 0) + (a.comments?.length || 0);
         const scoreB = (b.responses?.length || 0) + (b.comments?.length || 0);
         return scoreB - scoreA;
       });
     } else if (filter === 'newest') {
-      mixFeed.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      mappedFeed.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     } else {
       // Sana Özel (For You)
-      mixFeed.sort((a, b) => {
+      mappedFeed.sort((a, b) => {
         if (userRole === 'DEVELOPER') {
           const aPriority = (a.feedType === 'QUESTION' && !a.isResolved) ? 1 : 0;
           const bPriority = (b.feedType === 'QUESTION' && !b.isResolved) ? 1 : 0;
@@ -339,7 +392,45 @@ app.get('/api/explore', async (req, res) => {
       });
     }
 
-    res.json(mixFeed);
+    res.json(mappedFeed);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Proje Ortaklıkları (Partnerships) Katmanı: Listeleme
+app.get('/api/partnerships', async (req, res) => {
+  try {
+    const partnerships = await prisma.partnership.findMany({
+      orderBy: { createdAt: 'desc' },
+      include: {
+        user: { select: { id: true, name: true, role: true, trustScore: true } }
+      }
+    });
+    res.json(partnerships);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Proje Ortaklıkları: Ekleme
+app.post('/api/partnerships', async (req, res) => {
+  const { title, description, requiredRole, isUrgent, userId } = req.body;
+  if (!title || !description || !requiredRole || !userId) {
+    return res.status(400).json({ error: 'Başlık, açıklama, aranan rol ve kullanıcı kimliği zorunludur.' });
+  }
+
+  try {
+    const newPartnership = await prisma.partnership.create({
+      data: {
+        title,
+        description,
+        requiredRole,
+        isUrgent: isUrgent || false,
+        userId: parseInt(userId, 10)
+      }
+    });
+    res.status(201).json(newPartnership);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

@@ -46,11 +46,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   };
 
   const getThemeAccent = (path: string) => {
-    if (path.includes("/dashboard/ideas")) return "var(--neon-yellow)";
-    if (path.includes("/dashboard/profile")) return "var(--neon-deep-red)";
-    if (path.includes("/dashboard/partners")) return "var(--neon-purple)";
-    if (path.includes("/dashboard/roadmaps")) return "var(--neon-deep-blue)";
-    return "var(--neon-deep-green)";
+    if (path.includes("/dashboard/ideas")) return "#f7ef02";
+    if (path.includes("/dashboard/profile")) return "#e00202";
+    if (path.includes("/dashboard/partners")) return "#fc03cf";
+    if (path.includes("/dashboard/roadmaps")) return "#0505e3";
+    return "#03fc1c";
   };
 
   const themeAccent = getThemeAccent(pathname);
@@ -150,7 +150,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
 
         {/* Logout Button */}
-        <div className="p-4 border-t border-accent-purple/30">
+        <div className="p-4 border-t border-theme-accent/30">
           <button 
             onClick={handleLogout}
             className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-md text-theme-accent hover:text-white hover:bg-theme-accent/20 border border-transparent hover:border-theme-accent/50 transition-all duration-300"

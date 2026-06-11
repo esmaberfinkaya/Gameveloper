@@ -91,9 +91,9 @@ export default function ExplorePage() {
       {/* Soru Modalı (Neon Form) */}
       {isQuestionModalOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[100] flex items-center justify-center p-4">
-          <div className="bg-card-bg border border-neon-cyan/50 rounded-xl neon-glow-theme w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
+          <div className="bg-card-bg border border-theme-accent/50 rounded-xl neon-glow-theme w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
             <div className="p-5 border-b border-gray-800 flex justify-between items-center bg-gray-900/50">
-              <h2 className="text-xl font-bold text-neon-cyan text-glow-cyan flex items-center gap-2">
+              <h2 className="text-xl font-bold text-theme-accent text-glow-theme flex items-center gap-2">
                 <MessageSquarePlus size={24} /> Yeni Soru Sor
               </h2>
               <button onClick={() => setIsQuestionModalOpen(false)} className="text-gray-400 hover:text-white transition">
@@ -111,7 +111,7 @@ export default function ExplorePage() {
                     value={formData.title}
                     onChange={(e) => setFormData({...formData, title: e.target.value})}
                     placeholder="Karşılaştığın sorunu özetle..."
-                    className="w-full bg-[#0D1117] border border-gray-700 rounded-md px-4 py-2 text-white focus:outline-none focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan transition"
+                    className="w-full bg-[#0D1117] border border-gray-700 rounded-md px-4 py-2 text-white focus:outline-none focus:border-theme-accent focus:ring-1 focus:ring-theme-accent transition"
                   />
                 </div>
 
@@ -120,7 +120,7 @@ export default function ExplorePage() {
                   <select 
                     value={formData.category}
                     onChange={(e) => setFormData({...formData, category: e.target.value})}
-                    className="w-full bg-[#0D1117] border border-gray-700 rounded-md px-4 py-2 text-white focus:outline-none focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan transition"
+                    className="w-full bg-[#0D1117] border border-gray-700 rounded-md px-4 py-2 text-white focus:outline-none focus:border-theme-accent focus:ring-1 focus:ring-theme-accent transition"
                   >
                     {CATEGORIES.map(cat => (
                       <option key={cat} value={cat}>{cat}</option>
@@ -131,7 +131,7 @@ export default function ExplorePage() {
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-1 flex justify-between">
                     <span>Detaylar (Markdown & YouTube Link Destekli)</span>
-                    <span className="text-xs text-neon-pink">Kod blokları için ``` kullan</span>
+                    <span className="text-xs text-theme-accent">Kod blokları için ``` kullan</span>
                   </label>
                   <textarea 
                     required
@@ -139,20 +139,20 @@ export default function ExplorePage() {
                     value={formData.content}
                     onChange={(e) => setFormData({...formData, content: e.target.value})}
                     placeholder="Hata detayını, kodlarını veya YouTube linkini buraya yapıştır..."
-                    className="w-full bg-[#0D1117] border border-gray-700 rounded-md px-4 py-2 text-white focus:outline-none focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan transition font-mono text-sm resize-none custom-scrollbar"
+                    className="w-full bg-[#0D1117] border border-gray-700 rounded-md px-4 py-2 text-white focus:outline-none focus:border-theme-accent focus:ring-1 focus:ring-theme-accent transition font-mono text-sm resize-none custom-scrollbar"
                   ></textarea>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-1 flex items-center gap-2">
-                    <ImageIcon size={16} className="text-accent-purple" /> Görsel URL (Opsiyonel)
+                    <ImageIcon size={16} className="text-theme-accent" /> Görsel URL (Opsiyonel)
                   </label>
                   <input 
                     type="url" 
                     value={formData.imageUrl}
                     onChange={(e) => setFormData({...formData, imageUrl: e.target.value})}
                     placeholder="https://example.com/image.png"
-                    className="w-full bg-[#0D1117] border border-gray-700 rounded-md px-4 py-2 text-white focus:outline-none focus:border-accent-purple focus:ring-1 focus:ring-accent-purple transition"
+                    className="w-full bg-[#0D1117] border border-gray-700 rounded-md px-4 py-2 text-white focus:outline-none focus:border-theme-accent focus:ring-1 focus:ring-theme-accent transition"
                   />
                 </div>
 
@@ -171,7 +171,7 @@ export default function ExplorePage() {
                     <button 
                       type="submit" 
                       disabled={isSubmitting}
-                      className="px-6 py-2 bg-neon-cyan/20 text-neon-cyan border border-neon-cyan hover:bg-neon-cyan hover:text-black font-bold tracking-wide rounded-md transition-all neon-glow-theme disabled:opacity-50 flex items-center gap-2"
+                      className="px-6 py-2 bg-theme-accent/20 text-theme-accent border border-theme-accent hover:bg-theme-accent hover:text-black font-bold tracking-wide rounded-md transition-all neon-glow-theme disabled:opacity-50 flex items-center gap-2"
                     >
                       {isSubmitting ? "Gönderiliyor..." : "Paylaş"}
                     </button>
@@ -184,7 +184,7 @@ export default function ExplorePage() {
       )}
 
       {/* ROL BAZLI UYARI BANNER */}
-      <div className="bg-neon-cyan/10 border border-neon-cyan/30 text-neon-cyan px-4 py-3 rounded-lg mb-6 flex items-center gap-3 text-sm">
+      <div className="bg-theme-accent/10 border border-theme-accent/30 text-theme-accent px-4 py-3 rounded-lg mb-6 flex items-center gap-3 text-sm">
         <AlertTriangle size={18} className="shrink-0" />
         <p><strong>Topluluk Kuralları:</strong> Geliştiriciler (DEVELOPER) detaylı çözümler paylaşır ve yön gösterir. Oyuncular (GAMER) ise ağırlıklı olarak fikir belirtir ve tartışmalara katılır. Soru sorarken dürüst olun ve saygıyı koruyun.</p>
       </div>
@@ -195,7 +195,7 @@ export default function ExplorePage() {
         <div className="md:hidden flex justify-end mb-4">
           <button 
             onClick={() => setIsQuestionModalOpen(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-neon-cyan/20 text-neon-cyan border border-neon-cyan rounded-md text-sm font-bold neon-glow-theme"
+            className="flex items-center gap-2 px-4 py-2 bg-theme-accent/20 text-theme-accent border border-theme-accent rounded-md text-sm font-bold neon-glow-theme"
           >
             <MessageSquarePlus size={16} /> Yeni Soru
           </button>
@@ -203,12 +203,12 @@ export default function ExplorePage() {
 
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
           <h1 className="text-3xl font-black text-white tracking-widest uppercase flex items-center gap-3">
-            <Compass size={32} className="text-neon-cyan" /> Dashboard
+            <Compass size={32} className="text-theme-accent" /> Dashboard
           </h1>
           
           <button 
             onClick={() => setIsQuestionModalOpen(true)}
-            className="hidden md:flex items-center gap-2 px-4 py-2 bg-neon-cyan/10 text-neon-cyan border border-neon-cyan/50 hover:bg-neon-cyan hover:text-black transition-all rounded-md text-sm font-bold"
+            className="hidden md:flex items-center gap-2 px-4 py-2 bg-theme-accent/10 text-theme-accent border border-theme-accent/50 hover:bg-theme-accent hover:text-black transition-all rounded-md text-sm font-bold"
           >
             <MessageSquarePlus size={16} /> Yeni Soru
           </button>
@@ -218,13 +218,13 @@ export default function ExplorePage() {
         <div className="flex flex-wrap items-center gap-2 mb-8 border-b border-gray-800 pb-4">
           <button 
             onClick={() => setActiveFilter("global")}
-            className={`px-6 py-2.5 rounded-full text-sm font-bold flex items-center gap-2 transition-all ${activeFilter === "global" ? 'bg-accent-purple text-white neon-glow-theme border border-accent-purple' : 'bg-[#0D1117] text-gray-400 border border-gray-800 hover:border-accent-purple/50'}`}
+            className={`px-6 py-2.5 rounded-full text-sm font-bold flex items-center gap-2 transition-all ${activeFilter === "global" ? 'bg-theme-accent text-white neon-glow-theme border border-theme-accent' : 'bg-[#0D1117] text-gray-400 border border-gray-800 hover:border-theme-accent/50'}`}
           >
             <Globe size={18} /> Global Akış
           </button>
           <button 
             onClick={() => setActiveFilter("problems")}
-            className={`px-6 py-2.5 rounded-full text-sm font-bold flex items-center gap-2 transition-all ${activeFilter === "problems" ? 'bg-neon-pink text-white neon-glow-theme border border-neon-pink' : 'bg-[#0D1117] text-gray-400 border border-gray-800 hover:border-neon-pink/50'}`}
+            className={`px-6 py-2.5 rounded-full text-sm font-bold flex items-center gap-2 transition-all ${activeFilter === "problems" ? 'bg-theme-accent text-white neon-glow-theme border border-theme-accent' : 'bg-[#0D1117] text-gray-400 border border-gray-800 hover:border-theme-accent/50'}`}
           >
             <Target size={18} /> Sorunlar
           </button>

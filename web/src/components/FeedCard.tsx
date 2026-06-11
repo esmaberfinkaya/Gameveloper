@@ -83,7 +83,7 @@ export default function FeedCard({ id, title, content, category, imageUrl, creat
   };
 
   return (
-    <div className={`bg-card-bg/80 border ${isResolved ? 'border-theme-accent/40' : 'border-gray-800'} hover:border-accent-purple/50 rounded-xl transition-all duration-300 backdrop-blur-sm shadow-lg hover:neon-glow-theme group relative overflow-hidden`}>
+    <div className={`bg-card-bg/80 border ${isResolved ? 'border-theme-accent/40' : 'border-gray-800'} hover:border-theme-accent/50 rounded-xl transition-all duration-300 backdrop-blur-sm shadow-lg hover:neon-glow-theme group relative overflow-hidden`}>
       
       {/* SOLVED Badge Top Left */}
       {isResolved && (
@@ -104,7 +104,7 @@ export default function FeedCard({ id, title, content, category, imageUrl, creat
           <div className="w-10 h-10 rounded-full border border-gray-700 flex items-center justify-center bg-[#0D1117] relative">
             <span className="text-gray-300 font-bold text-lg">{user?.name?.charAt(0).toUpperCase()}</span>
             {user?.trustScore > 0 && (
-              <div className="absolute -bottom-1 -right-1 bg-neon-pink text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full neon-glow-theme border border-[#0D1117]">
+              <div className="absolute -bottom-1 -right-1 bg-theme-accent text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full neon-glow-theme border border-[#0D1117]">
                 TS: {user.trustScore}
               </div>
             )}
@@ -112,7 +112,7 @@ export default function FeedCard({ id, title, content, category, imageUrl, creat
           <div className="flex-1">
             <div className="text-sm font-bold text-gray-200">{user?.name || "Anonim"}</div>
             <div className="flex items-center gap-2 text-xs text-gray-500 mt-0.5">
-              <span className="uppercase text-[9px] tracking-widest text-accent-purple font-semibold">{user?.role || "GAMER"}</span>
+              <span className="uppercase text-[9px] tracking-widest text-theme-accent font-semibold">{user?.role || "GAMER"}</span>
               <span>•</span>
               <span>{new Date(createdAt).toLocaleDateString("tr-TR", {day: "numeric", month: "short", hour: "2-digit", minute:"2-digit"})}</span>
             </div>
@@ -133,7 +133,7 @@ export default function FeedCard({ id, title, content, category, imageUrl, creat
                   if (ytMatch) {
                     if (isExplore) return <span className="text-theme-accent">[YouTube Video]</span>;
                     return (
-                      <div className="my-6 aspect-video rounded-xl overflow-hidden border border-accent-purple/30 neon-glow-theme relative group/video">
+                      <div className="my-6 aspect-video rounded-xl overflow-hidden border border-theme-accent/30 neon-glow-theme relative group/video">
                         <div className="absolute inset-0 bg-theme-accent/5 pointer-events-none group-hover/video:bg-transparent transition-colors"></div>
                         <iframe
                           className="w-full h-full relative z-10"
@@ -159,7 +159,7 @@ export default function FeedCard({ id, title, content, category, imageUrl, creat
 
           {/* Optional Image */}
           {imageUrl && !isExplore && (
-            <div className="mt-4 rounded-lg overflow-hidden border border-gray-800 relative group-hover:border-accent-purple/30 transition-colors max-h-96">
+            <div className="mt-4 rounded-lg overflow-hidden border border-gray-800 relative group-hover:border-theme-accent/30 transition-colors max-h-96">
               <img src={imageUrl} alt="İçerik görseli" className="w-full h-full object-cover" />
             </div>
           )}
@@ -167,8 +167,8 @@ export default function FeedCard({ id, title, content, category, imageUrl, creat
         
         {/* Modüler Alt Butonlar (Beğen, Çözümler & Yorumlar, Paylaş) */}
         <div className="pt-4 flex items-center gap-6 text-gray-500 text-xs font-medium border-t border-gray-800/50 mt-4">
-          <button className="flex items-center gap-1.5 hover:text-neon-pink transition-colors group/btn">
-            <ThumbsUp size={16} className="group-hover/btn:text-glow-pink" />
+          <button className="flex items-center gap-1.5 hover:text-theme-accent transition-colors group/btn">
+            <ThumbsUp size={16} className="group-hover/btn:text-glow-theme" />
             <span>Beğen</span>
           </button>
           <button 
@@ -179,8 +179,8 @@ export default function FeedCard({ id, title, content, category, imageUrl, creat
             <span>Çözümler & Yorumlar ({responses.length})</span>
             {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
           </button>
-          <button className="flex items-center gap-1.5 hover:text-accent-purple transition-colors group/btn">
-            <Share2 size={16} className="group-hover/btn:text-glow-purple" />
+          <button className="flex items-center gap-1.5 hover:text-theme-accent transition-colors group/btn">
+            <Share2 size={16} className="group-hover/btn:text-glow-theme" />
             <span>Paylaş</span>
           </button>
         </div>
@@ -226,7 +226,7 @@ export default function FeedCard({ id, title, content, category, imageUrl, creat
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center gap-2">
                             <span className="font-bold text-gray-300 text-sm">{res.user?.name}</span>
-                            <span className="text-[9px] bg-accent-purple/20 text-accent-purple px-1.5 rounded">{res.user?.role}</span>
+                            <span className="text-[9px] bg-theme-accent/20 text-theme-accent px-1.5 rounded">{res.user?.role}</span>
                             <span className="text-xs text-gray-600">• TS: {res.user?.trustScore}</span>
                           </div>
                           
@@ -259,7 +259,7 @@ export default function FeedCard({ id, title, content, category, imageUrl, creat
                     <form onSubmit={handleSubmitResponse} className="mt-4 pt-4 border-t border-gray-800 space-y-3">
                       <div className="flex justify-between items-center text-xs text-gray-400">
                         <span>Çözüm Önerisi Sun (Markdown Destekli)</span>
-                        <span className="text-neon-pink">Kod: ``` </span>
+                        <span className="text-theme-accent">Kod: ``` </span>
                       </div>
                       <textarea 
                         required

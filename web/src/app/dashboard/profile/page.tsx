@@ -65,23 +65,23 @@ export default function ProfilePage() {
     <div className="max-w-6xl mx-auto pb-20">
       
       <div className="flex items-center gap-3 mb-8">
-        <User size={32} className="text-accent-purple" />
-        <h1 className="text-3xl font-black text-white tracking-widest uppercase">Geliştirici <span className="text-accent-purple">Profili</span></h1>
+        <User size={32} className="text-theme-accent" />
+        <h1 className="text-3xl font-black text-white tracking-widest uppercase">Geliştirici <span className="text-theme-accent">Profili</span></h1>
       </div>
 
       {/* BENTO GRID LAYOUT */}
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 auto-rows-[minmax(180px,auto)]">
         
         {/* Main Profile Identity (Span 2x2) */}
-        <div className="col-span-1 md:col-span-2 lg:col-span-2 row-span-2 bg-card-bg/80 border border-accent-purple/40 hover:border-accent-purple neon-glow-theme rounded-3xl p-8 backdrop-blur-sm relative overflow-hidden group flex flex-col items-center justify-center text-center transition-all">
-          <div className="absolute top-0 right-0 w-full h-full bg-accent-purple/5 rounded-full blur-[100px] pointer-events-none"></div>
+        <div className="col-span-1 md:col-span-2 lg:col-span-2 row-span-2 bg-card-bg/80 border border-theme-accent/40 hover:border-theme-accent neon-glow-theme rounded-3xl p-8 backdrop-blur-sm relative overflow-hidden group flex flex-col items-center justify-center text-center transition-all">
+          <div className="absolute top-0 right-0 w-full h-full bg-theme-accent/5 rounded-full blur-[100px] pointer-events-none"></div>
           
-          <div className="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-accent-purple flex items-center justify-center bg-[#0D1117] neon-glow-theme mb-6 relative z-10 group-hover:scale-105 transition-transform duration-500">
-            <span className="text-accent-purple font-black text-6xl">{user.name.charAt(0).toUpperCase()}</span>
+          <div className="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-theme-accent flex items-center justify-center bg-[#0D1117] neon-glow-theme mb-6 relative z-10 group-hover:scale-105 transition-transform duration-500">
+            <span className="text-theme-accent font-black text-6xl">{user.name.charAt(0).toUpperCase()}</span>
           </div>
           
           <h2 className="text-3xl md:text-4xl font-black text-white tracking-widest uppercase mb-2 relative z-10">{user.name}</h2>
-          <div className="text-sm text-neon-cyan uppercase tracking-widest font-bold mb-4 inline-block px-4 py-1.5 bg-neon-cyan/10 border border-neon-cyan/30 rounded-full neon-glow-theme relative z-10">
+          <div className="text-sm text-theme-accent uppercase tracking-widest font-bold mb-4 inline-block px-4 py-1.5 bg-theme-accent/10 border border-theme-accent/30 rounded-full neon-glow-theme relative z-10">
             {user.role}
           </div>
           <p className="text-gray-400 text-sm max-w-sm mx-auto relative z-10">
@@ -90,15 +90,15 @@ export default function ProfilePage() {
         </div>
 
         {/* Trust Score Box (Span 1x2) */}
-        <div className="col-span-1 md:col-span-1 lg:col-span-1 row-span-2 bg-[#05070a] border border-neon-cyan/50 hover:border-neon-cyan neon-glow-theme hover:neon-glow-theme rounded-3xl p-8 flex flex-col items-center justify-center relative overflow-hidden transition-all group">
-          <div className="absolute -bottom-10 -right-10 text-neon-cyan/5 group-hover:text-neon-cyan/10 transition-colors">
+        <div className="col-span-1 md:col-span-1 lg:col-span-1 row-span-2 bg-[#05070a] border border-theme-accent/50 hover:border-theme-accent neon-glow-theme hover:neon-glow-theme rounded-3xl p-8 flex flex-col items-center justify-center relative overflow-hidden transition-all group">
+          <div className="absolute -bottom-10 -right-10 text-theme-accent/5 group-hover:text-theme-accent/10 transition-colors">
             <Zap size={180} />
           </div>
           
-          <Zap size={48} className="text-neon-cyan mb-4 animate-pulse relative z-10 drop-neon-glow-theme" />
+          <Zap size={48} className="text-theme-accent mb-4 animate-pulse relative z-10 drop-neon-glow-theme" />
           <h3 className="text-sm text-gray-400 uppercase tracking-[0.2em] mb-2 relative z-10 font-bold">Trust Score</h3>
-          <div className="text-7xl font-black text-neon-cyan text-glow-cyan relative z-10">{user.trustScore}</div>
-          <p className="text-xs text-neon-cyan/60 mt-4 text-center relative z-10 uppercase tracking-wider">Topluluk <br/> Güvenilirlik Puanı</p>
+          <div className="text-7xl font-black text-theme-accent text-glow-theme relative z-10">{user.trustScore}</div>
+          <p className="text-xs text-theme-accent/60 mt-4 text-center relative z-10 uppercase tracking-wider">Topluluk <br/> Güvenilirlik Puanı</p>
         </div>
 
         {/* Stats 1: Solutions (Span 1x1) */}
@@ -128,9 +128,9 @@ export default function ProfilePage() {
         </div>
 
         {/* Achievements Banner (Span Full Width) */}
-        <div className="col-span-1 md:col-span-3 lg:col-span-4 bg-gradient-to-r from-neon-pink/20 via-[#0D1117] to-accent-purple/20 border border-gray-800 hover:border-neon-pink/50 rounded-3xl p-6 flex items-center justify-between transition-all">
+        <div className="col-span-1 md:col-span-3 lg:col-span-4 bg-gradient-to-r from-neon-pink/20 via-[#0D1117] to-accent-purple/20 border border-gray-800 hover:border-theme-accent/50 rounded-3xl p-6 flex items-center justify-between transition-all">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-neon-pink/20 border border-neon-pink flex items-center justify-center text-neon-pink neon-glow-theme">
+            <div className="w-12 h-12 rounded-full bg-theme-accent/20 border border-theme-accent flex items-center justify-center text-theme-accent neon-glow-theme">
               <Trophy size={24} />
             </div>
             <div>
@@ -150,7 +150,7 @@ export default function ProfilePage() {
         {/* Content Section (Span Full Width but split internally) */}
         <div className="col-span-1 md:col-span-3 lg:col-span-4 mt-4">
           <h3 className="text-xl font-bold text-white tracking-widest uppercase flex items-center gap-2 mb-6 pb-2 border-b border-gray-800">
-            <Share2 size={20} className="text-neon-cyan" /> Son Paylaşımlar
+            <Share2 size={20} className="text-theme-accent" /> Son Paylaşımlar
           </h3>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

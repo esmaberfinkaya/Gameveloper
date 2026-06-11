@@ -82,7 +82,7 @@ export default function IdeasPage() {
   return (
     <>
       {/* ROL BAZLI UYARI BANNER */}
-      <div className="bg-accent-purple/10 border border-accent-purple/30 text-accent-purple px-4 py-3 rounded-lg mb-6 flex items-center gap-3 text-sm">
+      <div className="bg-theme-accent/10 border border-theme-accent/30 text-theme-accent px-4 py-3 rounded-lg mb-6 flex items-center gap-3 text-sm">
         <AlertTriangle size={18} className="shrink-0" />
         <p><strong>Fikir Havuzu:</strong> Geliştiriciler oyun mekanikleri ve teknik fikirlerini paylaşır. Tüm tartışmalar telif hakkı korkusu olmadan yapılabilir. Fikirler "Gizli Yorum" olarak işaretlenirse sadece yazar ve yorumu yapan arasında kalır.</p>
       </div>
@@ -90,9 +90,9 @@ export default function IdeasPage() {
       {/* Fikir Modalı (Neon Form) */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-[100] flex items-center justify-center p-4">
-          <div className="bg-card-bg border border-accent-purple/50 rounded-xl neon-glow-theme w-full max-w-3xl overflow-hidden flex flex-col max-h-[90vh]">
+          <div className="bg-card-bg border border-theme-accent/50 rounded-xl neon-glow-theme w-full max-w-3xl overflow-hidden flex flex-col max-h-[90vh]">
             <div className="p-5 border-b border-gray-800 flex justify-between items-center bg-gray-900/50">
-              <h2 className="text-xl font-bold text-accent-purple text-glow-purple flex items-center gap-2">
+              <h2 className="text-xl font-bold text-theme-accent text-glow-theme flex items-center gap-2">
                 <Lightbulb size={24} /> Yeni Fikir Paylaş
               </h2>
               <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-white transition">
@@ -111,7 +111,7 @@ export default function IdeasPage() {
                       value={formData.title}
                       onChange={(e) => setFormData({...formData, title: e.target.value})}
                       placeholder="Örn: Zamanı Donduran Kılıç Ustası..."
-                      className="w-full bg-[#0D1117] border border-gray-700 rounded-md px-4 py-2 text-white focus:outline-none focus:border-accent-purple focus:ring-1 focus:ring-accent-purple transition"
+                      className="w-full bg-[#0D1117] border border-gray-700 rounded-md px-4 py-2 text-white focus:outline-none focus:border-theme-accent focus:ring-1 focus:ring-theme-accent transition"
                     />
                   </div>
                   <div>
@@ -119,7 +119,7 @@ export default function IdeasPage() {
                     <select 
                       value={formData.category}
                       onChange={(e) => setFormData({...formData, category: e.target.value})}
-                      className="w-full bg-[#0D1117] border border-gray-700 rounded-md px-4 py-2 text-white focus:outline-none focus:border-accent-purple focus:ring-1 focus:ring-accent-purple transition"
+                      className="w-full bg-[#0D1117] border border-gray-700 rounded-md px-4 py-2 text-white focus:outline-none focus:border-theme-accent focus:ring-1 focus:ring-theme-accent transition"
                     >
                       {CATEGORIES.map(cat => (
                         <option key={cat} value={cat}>{cat}</option>
@@ -131,7 +131,7 @@ export default function IdeasPage() {
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-1 flex justify-between">
                     <span>1. Hikaye (Story)</span>
-                    <span className="text-[10px] text-accent-purple">Markdown Destekli</span>
+                    <span className="text-[10px] text-theme-accent">Markdown Destekli</span>
                   </label>
                   <textarea 
                     required
@@ -139,14 +139,14 @@ export default function IdeasPage() {
                     value={formData.story}
                     onChange={(e) => setFormData({...formData, story: e.target.value})}
                     placeholder="Oyunun geçtiği evren, ana karakterin amacı..."
-                    className="w-full bg-[#0D1117] border border-gray-700 rounded-md px-4 py-2 text-white focus:outline-none focus:border-accent-purple focus:ring-1 focus:ring-accent-purple transition font-mono text-sm resize-none"
+                    className="w-full bg-[#0D1117] border border-gray-700 rounded-md px-4 py-2 text-white focus:outline-none focus:border-theme-accent focus:ring-1 focus:ring-theme-accent transition font-mono text-sm resize-none"
                   ></textarea>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-1 flex justify-between">
                     <span>2. Görüntü (Visuals)</span>
-                    <span className="text-[10px] text-accent-purple">Markdown Destekli</span>
+                    <span className="text-[10px] text-theme-accent">Markdown Destekli</span>
                   </label>
                   <textarea 
                     required
@@ -154,14 +154,14 @@ export default function IdeasPage() {
                     value={formData.visuals}
                     onChange={(e) => setFormData({...formData, visuals: e.target.value})}
                     placeholder="Kamera açısı, sanat stili (örn: Low poly, Cyberpunk, 2D Pixel Art)..."
-                    className="w-full bg-[#0D1117] border border-gray-700 rounded-md px-4 py-2 text-white focus:outline-none focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan transition font-mono text-sm resize-none"
+                    className="w-full bg-[#0D1117] border border-gray-700 rounded-md px-4 py-2 text-white focus:outline-none focus:border-theme-accent focus:ring-1 focus:ring-theme-accent transition font-mono text-sm resize-none"
                   ></textarea>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-1 flex justify-between">
                     <span>3. Oynanış (Gameplay)</span>
-                    <span className="text-[10px] text-accent-purple">Markdown Destekli</span>
+                    <span className="text-[10px] text-theme-accent">Markdown Destekli</span>
                   </label>
                   <textarea 
                     required
@@ -169,7 +169,7 @@ export default function IdeasPage() {
                     value={formData.gameplay}
                     onChange={(e) => setFormData({...formData, gameplay: e.target.value})}
                     placeholder="Temel mekanikler, oyuncunun etkileşimleri, ilerleme sistemi..."
-                    className="w-full bg-[#0D1117] border border-gray-700 rounded-md px-4 py-2 text-white focus:outline-none focus:border-neon-pink focus:ring-1 focus:ring-neon-pink transition font-mono text-sm resize-none"
+                    className="w-full bg-[#0D1117] border border-gray-700 rounded-md px-4 py-2 text-white focus:outline-none focus:border-theme-accent focus:ring-1 focus:ring-theme-accent transition font-mono text-sm resize-none"
                   ></textarea>
                 </div>
 
@@ -184,7 +184,7 @@ export default function IdeasPage() {
                   <button 
                     type="submit" 
                     disabled={isSubmitting}
-                    className="px-6 py-2 bg-accent-purple/20 text-accent-purple border border-accent-purple hover:bg-accent-purple hover:text-white font-bold tracking-wide rounded-md transition-all neon-glow-theme disabled:opacity-50"
+                    className="px-6 py-2 bg-theme-accent/20 text-theme-accent border border-theme-accent hover:bg-theme-accent hover:text-white font-bold tracking-wide rounded-md transition-all neon-glow-theme disabled:opacity-50"
                   >
                     {isSubmitting ? "Gönderiliyor..." : "Fikri Yayına Al"}
                   </button>
@@ -197,11 +197,11 @@ export default function IdeasPage() {
 
       <div className="max-w-4xl mx-auto space-y-6 pb-20">
         <div className="flex items-center justify-between mb-6 border-b border-gray-800 pb-2">
-          <h1 className="text-2xl font-bold text-gray-200 tracking-wider">Fikir Havuzu <span className="text-accent-purple animate-pulse ml-1">_</span></h1>
+          <h1 className="text-2xl font-bold text-gray-200 tracking-wider">Fikir Havuzu <span className="text-theme-accent animate-pulse ml-1">_</span></h1>
           
           <button 
             onClick={() => setIsModalOpen(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-accent-purple/10 text-accent-purple border border-accent-purple/50 hover:bg-accent-purple hover:text-white transition-all rounded-md text-sm font-bold"
+            className="flex items-center gap-2 px-4 py-2 bg-theme-accent/10 text-theme-accent border border-theme-accent/50 hover:bg-theme-accent hover:text-white transition-all rounded-md text-sm font-bold"
           >
             <Lightbulb size={16} /> Fikir Paylaş
           </button>

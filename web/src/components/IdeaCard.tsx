@@ -62,10 +62,10 @@ export default function IdeaCard({ id, title, story, visuals, gameplay, category
   };
 
   return (
-    <div className="bg-card-bg/80 border border-gray-800 hover:border-accent-purple/50 rounded-xl transition-all duration-300 backdrop-blur-sm shadow-lg group relative overflow-hidden mb-6">
+    <div className="bg-card-bg/80 border border-gray-800 hover:border-theme-accent/50 rounded-xl transition-all duration-300 backdrop-blur-sm shadow-lg group relative overflow-hidden mb-6">
       
       {/* Category Badge Top Right */}
-      <div className="absolute top-4 right-4 bg-gray-900 border border-gray-700 text-gray-300 text-[10px] uppercase tracking-wider px-3 py-1 rounded-full group-hover:border-accent-purple/50 group-hover:text-accent-purple transition-colors z-10">
+      <div className="absolute top-4 right-4 bg-gray-900 border border-gray-700 text-gray-300 text-[10px] uppercase tracking-wider px-3 py-1 rounded-full group-hover:border-theme-accent/50 group-hover:text-theme-accent transition-colors z-10">
         {category}
       </div>
 
@@ -78,14 +78,14 @@ export default function IdeaCard({ id, title, story, visuals, gameplay, category
           <div className="flex-1">
             <div className="text-sm font-bold text-gray-200">{user?.name || "Anonim"}</div>
             <div className="flex items-center gap-2 text-xs text-gray-500 mt-0.5">
-              <span className="uppercase text-[9px] tracking-widest text-accent-purple font-semibold">{user?.role || "GAMER"}</span>
+              <span className="uppercase text-[9px] tracking-widest text-theme-accent font-semibold">{user?.role || "GAMER"}</span>
               <span>•</span>
               <span>{new Date(createdAt).toLocaleDateString("tr-TR", {day: "numeric", month: "short"})}</span>
             </div>
           </div>
         </div>
 
-        <h3 className={`text-xl font-bold text-white group-hover:text-glow-purple transition-colors ${isExplore ? 'truncate' : ''}`}>{title}</h3>
+        <h3 className={`text-xl font-bold text-white group-hover:text-glow-theme transition-colors ${isExplore ? 'truncate' : ''}`}>{title}</h3>
 
         {/* IDEA TABS: Hikaye, Görüntü, Oynanış */}
         <div className="pt-2 border border-gray-800 rounded-lg overflow-hidden bg-[#05070a]">
@@ -93,7 +93,7 @@ export default function IdeaCard({ id, title, story, visuals, gameplay, category
             <div className="flex border-b border-gray-800">
               <button 
                 onClick={() => setActiveTab("STORY")}
-                className={`flex-1 py-2 text-xs font-bold tracking-widest uppercase transition-all ${activeTab === "STORY" ? 'text-accent-purple border-b-2 border-accent-purple bg-accent-purple/5' : 'text-gray-500 hover:text-gray-300'}`}
+                className={`flex-1 py-2 text-xs font-bold tracking-widest uppercase transition-all ${activeTab === "STORY" ? 'text-theme-accent border-b-2 border-theme-accent bg-theme-accent/5' : 'text-gray-500 hover:text-gray-300'}`}
               >
                 Hikaye
               </button>
@@ -105,7 +105,7 @@ export default function IdeaCard({ id, title, story, visuals, gameplay, category
               </button>
               <button 
                 onClick={() => setActiveTab("GAMEPLAY")}
-                className={`flex-1 py-2 text-xs font-bold tracking-widest uppercase transition-all ${activeTab === "GAMEPLAY" ? 'text-neon-pink border-b-2 border-neon-pink bg-neon-pink/5' : 'text-gray-500 hover:text-gray-300'}`}
+                className={`flex-1 py-2 text-xs font-bold tracking-widest uppercase transition-all ${activeTab === "GAMEPLAY" ? 'text-theme-accent border-b-2 border-theme-accent bg-theme-accent/5' : 'text-gray-500 hover:text-gray-300'}`}
               >
                 Oynanış
               </button>
@@ -126,16 +126,16 @@ export default function IdeaCard({ id, title, story, visuals, gameplay, category
         </div>
 
         {isExplore && (
-           <button className="text-accent-purple text-xs font-bold mt-2 hover:underline">Fikri İncele...</button>
+           <button className="text-theme-accent text-xs font-bold mt-2 hover:underline">Fikri İncele...</button>
         )}
 
         {/* Action Buttons */}
         <div className="pt-4 flex items-center gap-6 text-gray-500 text-xs font-medium mt-4">
           <button 
             onClick={() => setIsCommentsExpanded(!isCommentsExpanded)}
-            className={`flex items-center gap-1.5 transition-colors group/btn ${isCommentsExpanded ? 'text-accent-purple' : 'hover:text-accent-purple'}`}
+            className={`flex items-center gap-1.5 transition-colors group/btn ${isCommentsExpanded ? 'text-theme-accent' : 'hover:text-theme-accent'}`}
           >
-            <MessageSquarePlus size={16} className="group-hover/btn:text-glow-purple" />
+            <MessageSquarePlus size={16} className="group-hover/btn:text-glow-theme" />
             <span>Tartışmalar ({comments.length})</span>
           </button>
           <button className="flex items-center gap-1.5 hover:text-theme-accent transition-colors group/btn">
@@ -153,9 +153,9 @@ export default function IdeaCard({ id, title, story, visuals, gameplay, category
               <div className="text-center text-gray-600 text-xs py-4">Henüz yorum yapılmamış. Fikre katkıda bulun!</div>
             ) : (
               comments.map((c) => (
-                <div key={c.id} className={`p-3 rounded-lg border ${c.isPrivate ? 'border-accent-purple/50 bg-accent-purple/5' : 'border-gray-800/50 bg-[#0D1117]'} relative`}>
+                <div key={c.id} className={`p-3 rounded-lg border ${c.isPrivate ? 'border-theme-accent/50 bg-theme-accent/5' : 'border-gray-800/50 bg-[#0D1117]'} relative`}>
                   {c.isPrivate && (
-                    <div className="absolute top-2 right-2 text-accent-purple flex items-center gap-1 text-[9px] uppercase tracking-wider font-bold">
+                    <div className="absolute top-2 right-2 text-theme-accent flex items-center gap-1 text-[9px] uppercase tracking-wider font-bold">
                       <EyeOff size={12} /> Gizli Yorum
                     </div>
                   )}
@@ -163,7 +163,7 @@ export default function IdeaCard({ id, title, story, visuals, gameplay, category
                     <span className="font-bold text-gray-300 text-xs">{c.user?.name}</span>
                     <span className="text-[8px] bg-gray-800 text-gray-400 px-1 rounded">{c.user?.role}</span>
                   </div>
-                  <div className={`text-xs ${c.isPrivate ? 'text-accent-purple/90 font-medium' : 'text-gray-400'}`}>
+                  <div className={`text-xs ${c.isPrivate ? 'text-theme-accent/90 font-medium' : 'text-gray-400'}`}>
                     {c.content}
                   </div>
                 </div>
@@ -178,7 +178,7 @@ export default function IdeaCard({ id, title, story, visuals, gameplay, category
               value={commentContent}
               onChange={(e) => setCommentContent(e.target.value)}
               placeholder="Fikir hakkında ne düşünüyorsun?"
-              className="w-full bg-background border border-gray-700 focus:border-accent-purple focus:ring-1 focus:ring-accent-purple rounded-md p-3 text-sm text-white resize-none"
+              className="w-full bg-background border border-gray-700 focus:border-theme-accent focus:ring-1 focus:ring-theme-accent rounded-md p-3 text-sm text-white resize-none"
             />
             <div className="flex justify-between items-center">
               <label className="flex items-center gap-2 text-xs text-gray-400 cursor-pointer hover:text-gray-300 transition-colors">
@@ -186,12 +186,12 @@ export default function IdeaCard({ id, title, story, visuals, gameplay, category
                   type="checkbox" 
                   checked={isPrivate}
                   onChange={(e) => setIsPrivate(e.target.checked)}
-                  className="w-4 h-4 rounded border-gray-700 text-accent-purple focus:ring-accent-purple bg-[#0D1117]"
+                  className="w-4 h-4 rounded border-gray-700 text-theme-accent focus:ring-theme-accent bg-[#0D1117]"
                 />
-                {isPrivate ? <Lock size={14} className="text-accent-purple" /> : <Unlock size={14} />}
+                {isPrivate ? <Lock size={14} className="text-theme-accent" /> : <Unlock size={14} />}
                 Gizli Yorum (Sadece sen ve fikir sahibi görür)
               </label>
-              <button disabled={isSubmitting} className="bg-accent-purple/20 text-accent-purple border border-accent-purple hover:bg-accent-purple hover:text-white px-4 py-2 rounded-md text-xs font-bold transition-all">
+              <button disabled={isSubmitting} className="bg-theme-accent/20 text-theme-accent border border-theme-accent hover:bg-theme-accent hover:text-white px-4 py-2 rounded-md text-xs font-bold transition-all">
                 {isSubmitting ? "Gönderiliyor..." : "Yorum Gönder"}
               </button>
             </div>

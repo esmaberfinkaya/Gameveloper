@@ -8,12 +8,6 @@
   --neon-pink: #FF00FF;
   --accent-purple: #BD93F9;
   
-  --neon-deep-green: #03fc1c;
-  --neon-deep-blue: #0505e3;
-  --neon-yellow: #f7ef02;
-  --neon-deep-red: #e00202;
-  --neon-purple: #fc03cf;
-
   --theme-accent: var(--neon-cyan);
 }
 
@@ -61,16 +55,18 @@ body {
 }
 
 .neon-glow-theme {
-  box-shadow: 0 0 10px var(--theme-accent), 0 0 20px var(--theme-accent), inset 0 0 5px var(--theme-accent);
+  box-shadow: 0 0 5px #fff, 0 0 15px var(--theme-accent);
+  border-color: color-mix(in srgb, var(--theme-accent) 70%, white);
 }
 
 .neon-glow-theme-hover:hover {
-  box-shadow: 0 0 15px var(--theme-accent), 0 0 30px var(--theme-accent), inset 0 0 10px var(--theme-accent);
-  text-shadow: 0 0 5px var(--theme-accent);
+  box-shadow: 0 0 8px #fff, 0 0 20px var(--theme-accent);
+  border-color: color-mix(in srgb, var(--theme-accent) 50%, white);
+  text-shadow: 0 0 2px #fff, 0 0 5px #fff, 0 0 10px var(--theme-accent), 0 0 20px var(--theme-accent);
 }
 
 .text-glow-theme {
-  text-shadow: 0 0 8px var(--theme-accent);
+  text-shadow: 0 0 2px #fff, 0 0 5px #fff, 0 0 10px var(--theme-accent), 0 0 20px var(--theme-accent);
 }
 
 .input-cyber {

@@ -55,18 +55,18 @@ body {
 }
 
 .neon-glow-theme {
-  box-shadow: 0 0 5px #fff, 0 0 15px var(--theme-accent);
-  border-color: color-mix(in srgb, var(--theme-accent) 70%, white);
+  box-shadow: 0 0 1px rgba(255, 255, 255, 0.4), 0 0 6px var(--theme-accent), 0 0 15px var(--theme-accent);
+  border-color: var(--theme-accent);
 }
 
 .neon-glow-theme-hover:hover {
-  box-shadow: 0 0 8px #fff, 0 0 20px var(--theme-accent);
-  border-color: color-mix(in srgb, var(--theme-accent) 50%, white);
-  text-shadow: 0 0 2px #fff, 0 0 5px #fff, 0 0 10px var(--theme-accent), 0 0 20px var(--theme-accent);
+  box-shadow: 0 0 1px rgba(255, 255, 255, 0.4), 0 0 8px var(--theme-accent), 0 0 20px var(--theme-accent);
+  border-color: var(--theme-accent);
+  text-shadow: 0 0 1px rgba(255, 255, 255, 0.4), 0 0 6px var(--theme-accent), 0 0 15px var(--theme-accent);
 }
 
 .text-glow-theme {
-  text-shadow: 0 0 2px #fff, 0 0 5px #fff, 0 0 10px var(--theme-accent), 0 0 20px var(--theme-accent);
+  text-shadow: 0 0 1px rgba(255, 255, 255, 0.4), 0 0 6px var(--theme-accent), 0 0 15px var(--theme-accent);
 }
 
 .input-cyber {

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import '../theme/app_theme.dart';
 import '../widgets/cyber_card.dart';
 
@@ -12,39 +14,47 @@ class IssuesScreen extends StatefulWidget {
 class _IssuesScreenState extends State<IssuesScreen> {
   final List<String> tags = ['Hepsi', '#Unity', '#Blender', '#C#', '#Unreal', '#Godot'];
   String selectedTag = 'Hepsi';
-
-  final List<Map<String, dynamic>> mockIssues = [
-    {
-      'title': 'NullReferenceException at PlayerMovement.cs',
-      'content': 'Karakter zıplama kodunu yazarken Rigidbody bileseni null dönüyor. GetComponent() metodunu Awake icinde cagirdim ama ise yaramadi.',
-      'tag': '#Unity',
-      'isSolved': true,
-      'username': 'CyberDev',
-      'role': 'DEVELOPER'
-    },
-    {
-      'title': 'Blender FBX export scale sorunu',
-      'content': 'Blender\'dan Unity\'e model aktarirken modelim devasa oluyor. Scale apply yapmama ragmen duzelmedi. Export ayarlarinda neyi gozden kaciriyorum?',
-      'tag': '#Blender',
-      'isSolved': false,
-      'username': 'BlenderMaster',
-      'role': 'DEVELOPER'
-    },
-    {
-      'title': 'Lightmap baking cok uzun suruyor',
-      'content': 'Sahnemde cok fazla statik obje var, lightmap hesaplamasi saatler suruyor. Progressive GPU kullaniyorum.',
-      'tag': '#Unity',
-      'isSolved': false,
-      'username': 'LevelDesigner',
-      'role': 'DEVELOPER'
-    }
-  ];
+  
+  List<dynamic> issues = [];
+  bool isLoading = true;
+  String? error;
 
   @override
+  void initState() {
+    super.initState();
+    fetchIssues();
+  }
+
+  Future<void> fetchIssues() async {
+    try {
+      final response = await http.get(Uri.parse('http://10.0.2.2:5000/api/issues'));
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        setState(() {
+          issues = data;
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          error = 'Sunucuya ulaşılamadı. Kod: ${response.statusCode}';
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        error = 'Bağlantı hatası: $e';
+        isLoading = false;
+      });
+    }
+  }
   Widget build(BuildContext context) {
     final filteredIssues = selectedTag == 'Hepsi'
-        ? mockIssues
-        : mockIssues.where((issue) => issue['tag'] == selectedTag).toList();
+        ? issues
+        : issues.where((issue) {
+            final category = issue['category'] as String?;
+            final tag = category != null ? '#$category' : '#Genel';
+            return tag == selectedTag;
+          }).toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -57,8 +67,33 @@ class _IssuesScreenState extends State<IssuesScreen> {
           )
         ],
       ),
-      body: Column(
-        children: [
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator(color: AppTheme.neonCyan))
+          : error != null
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.error_outline, color: AppTheme.neonPink, size: 48),
+                      const SizedBox(height: 16),
+                      Text(error!, style: const TextStyle(color: Colors.white70)),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            isLoading = true;
+                            error = null;
+                          });
+                          fetchIssues();
+                        },
+                        style: ElevatedButton.styleFrom(backgroundColor: AppTheme.neonPink.withOpacity(0.2)),
+                        child: const Text('Tekrar Dene', style: TextStyle(color: AppTheme.neonPink)),
+                      )
+                    ],
+                  ),
+                )
+              : Column(
+                  children: [
           // Horizontal Tags
           SizedBox(
             height: 60,
@@ -108,7 +143,10 @@ class _IssuesScreenState extends State<IssuesScreen> {
               itemCount: filteredIssues.length,
               itemBuilder: (context, index) {
                 final issue = filteredIssues[index];
-                final isSolved = issue['isSolved'] as bool;
+                final isSolved = issue['isResolved'] == true;
+                final tag = issue['category'] != null ? '#${issue['category']}' : '#Genel';
+                final username = issue['user']?['name'] ?? 'Unknown';
+                final role = issue['user']?['role'] ?? 'GAMER';
 
                 return CyberCard(
                   glowColor: isSolved ? AppTheme.neonGreen : AppTheme.neonPink,
@@ -123,7 +161,7 @@ class _IssuesScreenState extends State<IssuesScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            issue['tag'],
+                            tag,
                             style: const TextStyle(
                               color: AppTheme.accentPurple,
                               fontWeight: FontWeight.bold,
@@ -160,50 +198,52 @@ class _IssuesScreenState extends State<IssuesScreen> {
                       ),
                       const SizedBox(height: 12),
                       
-                      // Issue Title
+                      // Issue
                       Text(
-                        issue['title'],
+                        issue['title'] ?? '',
                         style: const TextStyle(
-                          color: AppTheme.textPrimary,
+                          color: Colors.white,
                           fontSize: 18,
-                          fontWeight: FontWeight.w900,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.0,
                         ),
                       ),
                       const SizedBox(height: 8),
-                      
-                      // Issue Content
                       Text(
-                        issue['content'],
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
+                        issue['content'] ?? '',
                         style: const TextStyle(
-                          color: AppTheme.textSecondary,
+                          color: Colors.white70,
                           fontSize: 14,
                           height: 1.5,
                         ),
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: 16),
-                      
-                      Divider(color: Colors.white.withOpacity(0.1)),
-                      const SizedBox(height: 8),
-                      
-                      // Footer: User and Actions
+                      const SizedBox(height: 20),
+                      // Footer: User and Interactions
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Row(
                             children: [
-                              CircleAvatar(
-                                radius: 12,
-                                backgroundColor: Colors.white10,
-                                child: Text(
-                                  issue['username'][0],
-                                  style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                              Container(
+                                padding: const EdgeInsets.all(2),
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: role == 'DEVELOPER' ? AppTheme.accentPurple : AppTheme.neonCyan,
+                                    width: 1.5,
+                                  ),
+                                ),
+                                child: const CircleAvatar(
+                                  radius: 12,
+                                  backgroundColor: Colors.transparent,
+                                  child: Icon(Icons.person, size: 16, color: Colors.white),
                                 ),
                               ),
                               const SizedBox(width: 8),
                               Text(
-                                issue['username'],
+                                username,
                                 style: const TextStyle(color: Colors.white70, fontSize: 12),
                               ),
                             ],

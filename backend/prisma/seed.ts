@@ -71,7 +71,7 @@ async function main() {
       gameplay: 'Duvar koşusu ve dash mekanikleri.',
       category: 'Showcase',
       imageUrl: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070&auto=format&fit=crop',
-      postType: PostType.IDEA,
+      postType: PostType.PROJECT,
       userId: esma.id,
     },
   });
@@ -109,7 +109,7 @@ async function main() {
       content: 'Blender Eevee kullanarak hazırladığım yeni çevre tasarımı. Işıklandırma konusunda fikirlerinizi merak ediyorum.',
       category: 'Art',
       imageUrl: 'https://images.unsplash.com/photo-1614729939124-032f0b56c9ce?q=80&w=2070&auto=format&fit=crop',
-      postType: PostType.IDEA,
+      postType: PostType.PROJECT,
       userId: blenderMaster.id,
     },
   });

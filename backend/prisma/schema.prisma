@@ -17,7 +17,7 @@ enum PostType {
   QUESTION
   IDEA
   ROADMAP
-  ASSET
+  PROJECT
 }
 
 model User {

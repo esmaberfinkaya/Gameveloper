@@ -14,6 +14,7 @@ export default function ExplorePage() {
   // Feed States
   const [mixFeed, setMixFeed] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState("global"); // global, problems
 
   // Modal States
@@ -43,73 +44,18 @@ export default function ExplorePage() {
 
   const fetchExploreFeed = async () => {
     setIsLoading(true);
+    setError(null);
     try {
       const res = await fetch(`http://localhost:5000/api/explore?filter=${activeFilter === "problems" ? "unresolved" : "newest"}&userId=${user?.id}`);
-      if (res.ok) {
-        const data = await res.json();
-        
-        let finalFeed = data;
-        
-        if (activeFilter === "global" || activeFilter === "problems") {
-          const mockItems = [
-            {
-              id: 901,
-              feedType: "PROJECT",
-              title: "Cyber Neon - Fast Paced Shooter",
-              description: "Merhaba arkadaşlar, 6 aydır üzerinde çalıştığım neon temalı cyberpunk FPS oyunumun ilk oynanış videosu ve Steam sayfası yayında. Hızlı hareket mekanikleri ve duvar koşusu ekledim. Unity HDRP kullanarak optimize ettim. Geri bildirimlerinizi bekliyorum!",
-              imageUrl: "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070&auto=format&fit=crop",
-              link: "https://gameveloper.com",
-              category: "Showcase",
-              createdAt: new Date().toISOString(),
-              user: { id: 1, name: "Esma", role: "DEVELOPER" }
-            },
-            {
-              id: 902,
-              feedType: "QUESTION",
-              title: "NullReferenceException at PlayerMovement.cs",
-              content: "Karakter zıplama kodunu yazarken Rigidbody bileseni null dönüyor. GetComponent() metodunu Awake icinde cagirdim ama ise yaramadi.",
-              category: "Unity",
-              isResolved: true,
-              resolvedBy: { id: 1, name: "Esma" }, // Esma onayladı
-              createdAt: new Date(Date.now() - 3600000).toISOString(),
-              user: { id: 2, name: "CyberDev", role: "DEVELOPER" }
-            },
-            {
-              id: 903,
-              feedType: "IDEA",
-              title: "Zamanı Donduran Kılıç Ustası",
-              story: "Ana karakter zamanı yavaşlatabiliyor ancak hareket ettikçe kendi canı azalıyor.",
-              visuals: "Karanlık ve neon ışıklı bir metropolis, low poly karakter tasarımı.",
-              gameplay: "Hack and slash mekanikleri ve ritim tabanlı combo sistemi.",
-              createdAt: new Date(Date.now() - 7200000).toISOString(),
-              user: { id: 4, name: "AlphaGamer", role: "GAMER" }
-            },
-            {
-              id: 904,
-              feedType: "PROJECT",
-              title: "Sci-Fi Koridor Render",
-              description: "Blender Eevee kullanarak hazırladığım yeni çevre tasarımı. Işıklandırma konusunda fikirlerinizi merak ediyorum.",
-              imageUrl: "https://images.unsplash.com/photo-1614729939124-032f0b56c9ce?q=80&w=2070&auto=format&fit=crop",
-              category: "Art",
-              createdAt: new Date(Date.now() - 10800000).toISOString(),
-              user: { id: 3, name: "BlenderMaster", role: "DEVELOPER" }
-            }
-          ];
-          
-          if (activeFilter === "global") {
-            finalFeed = [...data, ...mockItems].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-          } else {
-            // For problems, show only questions, including our mock question
-            const apiQuestions = data.filter((item: any) => item.feedType === "QUESTION");
-            const mockQuestions = mockItems.filter(item => item.feedType === "QUESTION");
-            finalFeed = [...apiQuestions, ...mockQuestions];
-          }
-        }
-        
-        setMixFeed(finalFeed);
+      if (!res.ok) {
+        throw new Error("API yanıt vermedi");
       }
+      const data = await res.json();
+      setMixFeed(data);
     } catch (err) {
       console.error("Akış çekilemedi", err);
+      setError("Sunucuya bağlanılamadı. Lütfen backend'in çalıştığından emin olun.");
+      setMixFeed([]);
     } finally {
       setIsLoading(false);
     }
@@ -286,7 +232,18 @@ export default function ExplorePage() {
 
         {/* GRID LAYOUT - Now with dynamic columns based on content, but max 2 for better visibility of wide cards */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {isLoading ? (
+          {error ? (
+            <div className="col-span-full text-center text-red-500 py-20 border border-dashed border-red-500/50 rounded-xl bg-red-500/10">
+              <AlertTriangle size={48} className="mx-auto mb-4 opacity-50" />
+              <p className="text-lg font-bold">{error}</p>
+              <button 
+                onClick={fetchExploreFeed} 
+                className="mt-4 px-4 py-2 bg-red-500/20 text-red-400 border border-red-500/50 rounded hover:bg-red-500/40 transition"
+              >
+                Tekrar Dene
+              </button>
+            </div>
+          ) : isLoading ? (
             // Skeleton Posts
             [1, 2, 3, 4].map((item) => (
               <div key={item} className="bg-card-bg/60 border border-gray-800/80 p-5 rounded-xl space-y-4 opacity-60 animate-pulse backdrop-blur-sm h-48">

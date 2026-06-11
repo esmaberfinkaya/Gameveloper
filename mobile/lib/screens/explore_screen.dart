@@ -1,42 +1,49 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import '../widgets/feed_card.dart';
 import '../theme/app_theme.dart';
 
-class ExploreScreen extends StatelessWidget {
+class ExploreScreen extends StatefulWidget {
   const ExploreScreen({super.key});
 
-  final List<Map<String, dynamic>> mockFeed = const [
-    {
-      'type': 'PROJECT',
-      'title': 'Cyber Neon - Fast Paced Shooter',
-      'content': 'Merhaba arkadaşlar, 6 aydır üzerinde çalıştığım neon temalı cyberpunk FPS oyunumun ilk oynanış videosu ve Steam sayfası yayında. Hızlı hareket mekanikleri ve duvar koşusu ekledim. Unity HDRP kullanarak optimize ettim. Geri bildirimlerinizi bekliyorum!',
-      'imageUrl': 'https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070&auto=format&fit=crop',
-      'username': 'Esma',
-      'role': 'DEVELOPER',
-    },
-    {
-      'type': 'QUESTION',
-      'title': 'NullReferenceException at PlayerMovement.cs',
-      'content': 'Karakter zıplama kodunu yazarken Rigidbody bileseni null dönüyor. GetComponent() metodunu Awake icinde cagirdim ama ise yaramadi.',
-      'username': 'CyberDev',
-      'role': 'DEVELOPER',
-    },
-    {
-      'type': 'IDEA',
-      'title': 'Zamanı Donduran Kılıç Ustası',
-      'content': 'Ana karakter zamanı yavaşlatabiliyor ancak hareket ettikçe kendi canı azalıyor. Karanlık ve neon ışıklı bir metropolis, low poly karakter tasarımı. Hack and slash mekanikleri ve ritim tabanlı combo sistemi.',
-      'username': 'AlphaGamer',
-      'role': 'GAMER',
-    },
-    {
-      'type': 'PROJECT',
-      'title': 'Sci-Fi Koridor Render',
-      'content': 'Blender Eevee kullanarak hazırladığım yeni çevre tasarımı. Işıklandırma konusunda fikirlerinizi merak ediyorum.',
-      'imageUrl': 'https://images.unsplash.com/photo-1614729939124-032f0b56c9ce?q=80&w=2070&auto=format&fit=crop',
-      'username': 'BlenderMaster',
-      'role': 'DEVELOPER',
+  @override
+  State<ExploreScreen> createState() => _ExploreScreenState();
+}
+
+class _ExploreScreenState extends State<ExploreScreen> {
+  List<dynamic> feed = [];
+  bool isLoading = true;
+  String? error;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchFeed();
+  }
+
+  Future<void> fetchFeed() async {
+    try {
+      final response = await http.get(Uri.parse('http://10.0.2.2:5000/api/explore'));
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        setState(() {
+          feed = data;
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          error = 'Sunucuya ulaşılamadı. Kod: ${response.statusCode}';
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        error = 'Bağlantı hatası: $e';
+        isLoading = false;
+      });
     }
-  ];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,13 +58,46 @@ class ExploreScreen extends StatelessWidget {
           )
         ],
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16.0),
-        itemCount: mockFeed.length,
-        itemBuilder: (context, index) {
-          return FeedCard(data: mockFeed[index]);
-        },
-      ),
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator(color: AppTheme.neonCyan))
+          : error != null
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.error_outline, color: AppTheme.neonPink, size: 48),
+                      const SizedBox(height: 16),
+                      Text(error!, style: const TextStyle(color: Colors.white70)),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            isLoading = true;
+                            error = null;
+                          });
+                          fetchFeed();
+                        },
+                        style: ElevatedButton.styleFrom(backgroundColor: AppTheme.neonPink.withOpacity(0.2)),
+                        child: const Text('Tekrar Dene', style: TextStyle(color: AppTheme.neonPink)),
+                      )
+                    ],
+                  ),
+                )
+              : ListView.builder(
+                  padding: const EdgeInsets.all(16.0),
+                  itemCount: feed.length,
+                  itemBuilder: (context, index) {
+                    final item = feed[index];
+                    return FeedCard(data: {
+                      'type': item['feedType'],
+                      'title': item['title'],
+                      'content': item['content'] ?? item['description'] ?? item['story'] ?? '',
+                      'imageUrl': item['imageUrl'],
+                      'username': item['user']?['name'] ?? 'Unknown',
+                      'role': item['user']?['role'] ?? 'GAMER',
+                    });
+                  },
+                ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
         backgroundColor: AppTheme.neonCyan.withOpacity(0.2),

@@ -1,25 +1,113 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import '../widgets/cyber_card.dart';
+import '../widgets/feed_card.dart';
 import '../theme/app_theme.dart';
 
-class ProfileScreen extends StatelessWidget {
-  final String username;
-  final String role;
-  final int trustScore;
-  final int solvedIssues;
-  final int completedProjects;
+class ProfileScreen extends StatefulWidget {
+  final int userId;
   
   const ProfileScreen({
     super.key,
-    this.username = 'ESMA',
-    this.role = 'DEVELOPER',
-    this.trustScore = 1250,
-    this.solvedIssues = 15,
-    this.completedProjects = 4,
+    this.userId = 1, // Defaulting to Esma
   });
 
   @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  Map<String, dynamic>? userData;
+  List<dynamic> userPosts = [];
+  bool isLoading = true;
+  String? error;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
+
+  Future<void> fetchData() async {
+    try {
+      final userRes = await http.get(Uri.parse('http://10.0.2.2:5000/api/users/${widget.userId}'));
+      final exploreRes = await http.get(Uri.parse('http://10.0.2.2:5000/api/explore?userId=${widget.userId}'));
+      
+      if (userRes.statusCode == 200 && exploreRes.statusCode == 200) {
+        final Map<String, dynamic> userJson = json.decode(userRes.body);
+        final List<dynamic> exploreJson = json.decode(exploreRes.body);
+        
+        final myPosts = exploreJson.where((p) => p['userId'] == widget.userId).toList();
+        
+        setState(() {
+          userData = userJson;
+          userPosts = myPosts;
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          error = 'Sunucuya ulaşılamadı.';
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        error = 'Bağlantı hatası: $e';
+        isLoading = false;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator(color: AppTheme.neonCyan)),
+      );
+    }
+    
+    if (error != null) {
+      return Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline, color: AppTheme.neonPink, size: 48),
+              const SizedBox(height: 16),
+              Text(error!, style: const TextStyle(color: Colors.white70)),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    isLoading = true;
+                    error = null;
+                  });
+                  fetchData();
+                },
+                style: ElevatedButton.styleFrom(backgroundColor: AppTheme.neonPink.withOpacity(0.2)),
+                child: const Text('Tekrar Dene', style: TextStyle(color: AppTheme.neonPink)),
+              )
+            ],
+          ),
+        ),
+      );
+    }
+
+    final username = userData?['name'] ?? 'UNKNOWN';
+    final role = userData?['role'] ?? 'GAMER';
+    final trustScore = userData?['trustScore'] ?? 0;
+    
+    int solvedIssues = 0;
+    int completedProjects = role == 'DEVELOPER' ? 4 : 1; // Defaulting for demo
+    
+    // Count resolved questions from posts
+    for (var post in userPosts) {
+      if (post['feedType'] == 'QUESTION' && post['isResolved'] == true) {
+        solvedIssues++;
+      }
+    }
+
     return Scaffold(
       body: CustomScrollView(
         slivers: [
@@ -62,7 +150,7 @@ class ProfileScreen extends StatelessWidget {
                         ),
                         child: Center(
                           child: Text(
-                            username[0].toUpperCase(),
+                            username.isNotEmpty ? username[0].toUpperCase() : '?',
                             style: const TextStyle(
                               fontSize: 40,
                               fontWeight: FontWeight.w900,
@@ -239,29 +327,48 @@ class ProfileScreen extends StatelessWidget {
             ),
           ),
 
-          // Placeholder for empty feed list
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Container(
-                height: 150,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.white12, style: BorderStyle.solid),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.dashboard_customize, color: Colors.white24, size: 48),
-                      const SizedBox(height: 16),
-                      const Text('Henüz hiçbir içerik paylaşılmadı.', style: TextStyle(color: Colors.white54)),
-                    ],
+          userPosts.isEmpty
+              ? SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Container(
+                      height: 150,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.white12, style: BorderStyle.solid),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.dashboard_customize, color: Colors.white24, size: 48),
+                            const SizedBox(height: 16),
+                            const Text('Henüz hiçbir içerik paylaşılmadı.', style: TextStyle(color: Colors.white54)),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+              : SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      final item = userPosts[index];
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                        child: FeedCard(data: {
+                          'type': item['feedType'],
+                          'title': item['title'],
+                          'content': item['content'] ?? item['description'] ?? item['story'] ?? '',
+                          'imageUrl': item['imageUrl'],
+                          'username': item['user']?['name'] ?? 'Unknown',
+                          'role': item['user']?['role'] ?? 'GAMER',
+                        }),
+                      );
+                    },
+                    childCount: userPosts.length,
                   ),
                 ),
-              ),
-            ),
-          ),
           
           const SliverToBoxAdapter(child: SizedBox(height: 100)),
         ],

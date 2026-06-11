@@ -89,6 +89,23 @@ app.get('/api/users', async (req, res) => {
   }
 });
 
+// Single user info
+app.get('/api/users/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: parseInt(id, 10) },
+      select: { id: true, name: true, email: true, role: true, trustScore: true, createdAt: true }
+    });
+    if (!user) {
+      return res.status(404).json({ error: 'Kullanıcı bulunamadı.' });
+    }
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Sorular (Questions) Katmanı: Yeni Soru Sor
 app.post('/api/questions', async (req, res) => {
   const { title, content, category, imageUrl, userId } = req.body;

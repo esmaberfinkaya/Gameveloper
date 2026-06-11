@@ -1,77 +1,59 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { User, Zap, Activity, MessageSquare, Heart, Share2, Hexagon, Trophy, Code, Target } from "lucide-react";
+import { User, Zap, Activity, MessageSquare, Heart, Share2, Hexagon, Trophy, Code, Target, AlertTriangle } from "lucide-react";
 import FeedCard from "@/components/FeedCard";
 import IdeaCard from "@/components/IdeaCard";
+import ProjectCard from "@/components/ProjectCard";
+import SolutionCard from "@/components/SolutionCard";
+import RoadmapCard from "@/components/RoadmapCard";
 
 export default function ProfilePage() {
   const [user, setUser] = useState<any>(null);
   const [userPosts, setUserPosts] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (userData) {
       const parsedUser = JSON.parse(userData);
-      setUser(parsedUser);
-      fetchUserPosts(parsedUser.id);
+      fetchUserData(parsedUser.id);
     }
   }, []);
 
-  const fetchUserPosts = async (userId: number) => {
-    setIsLoading(true);
+  const fetchUserData = async (userId: number) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/explore?userId=${userId}`);
+      const res = await fetch(`http://localhost:5000/api/users/${userId}`);
       if (res.ok) {
-        const data = await res.json();
-        let myPosts = data.filter((item: any) => item.userId === userId);
-        
-        const mockItems = [
-          {
-            id: 901,
-            feedType: "PROJECT",
-            title: "Cyber Neon - Fast Paced Shooter",
-            description: "Merhaba arkadaşlar, 6 aydır üzerinde çalıştığım neon temalı cyberpunk FPS oyunumun ilk oynanış videosu ve Steam sayfası yayında.",
-            category: "Showcase",
-            createdAt: new Date().toISOString(),
-            user: { id: 1, name: "Esma", role: "DEVELOPER" }
-          },
-          {
-            id: 902,
-            feedType: "QUESTION",
-            title: "NullReferenceException at PlayerMovement.cs",
-            content: "Karakter zıplama kodunu yazarken Rigidbody bileseni null dönüyor.",
-            category: "Unity",
-            isResolved: true,
-            createdAt: new Date(Date.now() - 3600000).toISOString(),
-            user: { id: 2, name: "CyberDev", role: "DEVELOPER" }
-          },
-          {
-            id: 903,
-            feedType: "IDEA",
-            title: "Zamanı Donduran Kılıç Ustası",
-            story: "Ana karakter zamanı yavaşlatabiliyor ancak hareket ettikçe kendi canı azalıyor.",
-            category: "Aksiyon",
-            createdAt: new Date(Date.now() - 7200000).toISOString(),
-            user: { id: 4, name: "AlphaGamer", role: "GAMER" }
-          },
-          {
-            id: 904,
-            feedType: "PROJECT",
-            title: "Sci-Fi Koridor Render",
-            description: "Blender Eevee kullanarak hazırladığım yeni çevre tasarımı.",
-            category: "Art",
-            createdAt: new Date(Date.now() - 10800000).toISOString(),
-            user: { id: 3, name: "BlenderMaster", role: "DEVELOPER" }
-          }
-        ];
-        
-        const myMocks = mockItems.filter(item => item.user.name === user.name);
-        setUserPosts([...myPosts, ...myMocks]);
+        const fullUser = await res.json();
+        setUser(fullUser);
+        fetchUserPosts(userId);
+      } else {
+        throw new Error("Kullanıcı bilgisi çekilemedi.");
       }
     } catch (err) {
+      console.error(err);
+      setError("Profil bilgileri yüklenemedi.");
+      setIsLoading(false);
+    }
+  };
+
+  const fetchUserPosts = async (userId: number) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(`http://localhost:5000/api/explore?userId=${userId}`);
+      if (!res.ok) {
+        throw new Error("API yanıt vermedi");
+      }
+      const data = await res.json();
+      let myPosts = data.filter((item: any) => item.userId === userId);
+      setUserPosts(myPosts);
+    } catch (err) {
       console.error("Gönderiler çekilemedi", err);
+      setError("Sunucuya bağlanılamadı. Lütfen backend'in çalıştığından emin olun.");
+      setUserPosts([]);
     } finally {
       setIsLoading(false);
     }
@@ -172,7 +154,18 @@ export default function ProfilePage() {
           </h3>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {isLoading ? (
+            {error ? (
+              <div className="col-span-full text-center text-red-500 py-10 border border-dashed border-red-500/50 rounded-xl bg-red-500/10">
+                <AlertTriangle size={48} className="mx-auto mb-4 opacity-50" />
+                <p className="text-lg font-bold">{error}</p>
+                <button 
+                  onClick={() => fetchUserData(user.id)} 
+                  className="mt-4 px-4 py-2 bg-red-500/20 text-red-400 border border-red-500/50 rounded hover:bg-red-500/40 transition"
+                >
+                  Tekrar Dene
+                </button>
+              </div>
+            ) : isLoading ? (
               <div className="col-span-full text-center text-gray-500 py-10">Yükleniyor...</div>
             ) : userPosts.length === 0 ? (
               <div className="col-span-full text-center text-gray-500 py-20 border border-dashed border-gray-800 rounded-3xl bg-card-bg/30 flex flex-col items-center justify-center">
@@ -186,6 +179,12 @@ export default function ProfilePage() {
                   return <FeedCard key={`q-${item.id}`} {...item} currentUser={user} onUpdate={() => fetchUserPosts(user.id)} isExplore={true} />;
                 } else if (item.feedType === 'IDEA') {
                   return <IdeaCard key={`i-${item.id}`} {...item} currentUser={user} onUpdate={() => fetchUserPosts(user.id)} isExplore={true} />;
+                } else if (item.feedType === 'PROJECT') {
+                  return <ProjectCard key={`p-${item.id}`} {...item} />;
+                } else if (item.feedType === 'SOLUTION') {
+                  return <SolutionCard key={`s-${item.id}`} {...item} />;
+                } else if (item.feedType === 'ROADMAP') {
+                  return <RoadmapCard key={`r-${item.id}`} {...item} />;
                 }
                 return null;
               })

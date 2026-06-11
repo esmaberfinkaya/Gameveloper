@@ -8,6 +8,7 @@ export default function IdeasPage() {
   const [user, setUser] = useState<any>(null);
   const [ideas, setIdeas] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Modal States
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -37,26 +38,17 @@ export default function IdeasPage() {
 
   const fetchIdeas = async () => {
     setIsLoading(true);
+    setError(null);
     try {
       const res = await fetch(`http://localhost:5000/api/ideas?userId=${user?.id}`);
-      if (res.ok) {
-        const data = await res.json();
-        
-        const mockIdea = {
-          id: 903,
-          title: "Zamanı Donduran Kılıç Ustası",
-          story: "Ana karakter zamanı yavaşlatabiliyor ancak hareket ettikçe kendi canı azalıyor.",
-          visuals: "Karanlık ve neon ışıklı bir metropolis, low poly karakter tasarımı.",
-          gameplay: "Hack and slash mekanikleri ve ritim tabanlı combo sistemi.",
-          category: "Aksiyon",
-          createdAt: new Date(Date.now() - 7200000).toISOString(),
-          user: { id: 4, name: "AlphaGamer", role: "GAMER" }
-        };
-        
-        setIdeas([...data, mockIdea]);
+      if (!res.ok) {
+        throw new Error("Sunucu yanıt vermedi");
       }
+      const data = await res.json();
+      setIdeas(data);
     } catch (err) {
       console.error("Fikirler çekilemedi", err);
+      setError("Sunucu bağlantısı kurulamadı. Lütfen backend'in çalıştığından emin olun.");
     } finally {
       setIsLoading(false);
     }
@@ -215,7 +207,18 @@ export default function IdeasPage() {
           </button>
         </div>
 
-        {isLoading ? (
+        {error ? (
+          <div className="text-center text-red-500 py-10 border border-dashed border-red-500/50 rounded-xl bg-red-500/10 mb-6">
+            <AlertTriangle size={48} className="mx-auto mb-4 opacity-50" />
+            <p className="text-lg font-bold">{error}</p>
+            <button 
+              onClick={fetchIdeas} 
+              className="mt-4 px-4 py-2 bg-red-500/20 text-red-400 border border-red-500/50 rounded hover:bg-red-500/40 transition"
+            >
+              Tekrar Dene
+            </button>
+          </div>
+        ) : isLoading ? (
           // Skeleton
           [1, 2].map((item) => (
             <div key={item} className="bg-card-bg/60 border border-gray-800/80 p-5 md:p-6 rounded-xl space-y-4 opacity-60 animate-pulse backdrop-blur-sm mb-6">

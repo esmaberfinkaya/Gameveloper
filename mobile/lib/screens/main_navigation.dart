@@ -3,6 +3,7 @@ import '../theme/app_theme.dart';
 import 'explore_screen.dart';
 import 'profile_screen.dart';
 import 'issues_screen.dart';
+import 'ideas_screen.dart';
 import 'partnership_screen.dart';
 
 class MainNavigation extends StatefulWidget {
@@ -17,6 +18,7 @@ class _MainNavigationState extends State<MainNavigation> {
 
   final List<Widget> _screens = [
     const ExploreScreen(),
+    const IdeasScreen(),
     const IssuesScreen(),
     const PartnershipScreen(),
     const ProfileScreen(),
@@ -50,6 +52,11 @@ class _MainNavigationState extends State<MainNavigation> {
               label: 'Keşfet',
             ),
             BottomNavigationBarItem(
+              icon: Icon(Icons.lightbulb_outline),
+              activeIcon: Icon(Icons.lightbulb),
+              label: 'Fikirler',
+            ),
+            BottomNavigationBarItem(
               icon: Icon(Icons.bug_report_outlined),
               activeIcon: Icon(Icons.bug_report),
               label: 'Sorunlar',
@@ -65,6 +72,7 @@ class _MainNavigationState extends State<MainNavigation> {
               label: 'Profil',
             ),
           ],
+          type: BottomNavigationBarType.fixed,
         ),
       ),
     );

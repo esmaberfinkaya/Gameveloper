@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../theme/app_theme.dart';
 import '../widgets/cyber_card.dart';
+import '../widgets/access_gate.dart';
 
 class IssuesScreen extends StatefulWidget {
   const IssuesScreen({super.key});
@@ -248,12 +249,15 @@ class _IssuesScreenState extends State<IssuesScreen> {
                               ),
                             ],
                           ),
-                          Row(
-                            children: const [
-                              Icon(Icons.mode_comment_outlined, color: Colors.white70, size: 16),
-                              SizedBox(width: 4),
-                              Text('Yanıtla', style: TextStyle(color: Colors.white70, fontSize: 12)),
-                            ],
+                          AccessGate(
+                            allowedRoles: const ['DEVELOPER'],
+                            child: Row(
+                              children: const [
+                                Icon(Icons.mode_comment_outlined, color: Colors.white70, size: 16),
+                                SizedBox(width: 4),
+                                Text('Yanıtla', style: TextStyle(color: Colors.white70, fontSize: 12)),
+                              ],
+                            ),
                           ),
                         ],
                       ),

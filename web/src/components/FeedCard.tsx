@@ -2,6 +2,7 @@ import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { MessageSquarePlus, ThumbsUp, Share2, CheckCircle2, ChevronDown, ChevronUp, AlertCircle, Lock } from "lucide-react";
+import AccessGate from "./AccessGate";
 
 interface FeedCardProps {
   id: number;
@@ -253,30 +254,28 @@ export default function FeedCard({ id, title, content, category, imageUrl, creat
                   <div className="bg-green-500/5 border border-green-500/20 text-green-400 p-3 rounded-lg text-sm text-center flex items-center justify-center gap-2">
                     <CheckCircle2 size={16} /> Bu sorunun çözümü onaylanmış ve kapatılmıştır.
                   </div>
-                ) : currentUser?.role === "DEVELOPER" ? (
-                  <form onSubmit={handleSubmitResponse} className="mt-4 pt-4 border-t border-gray-800 space-y-3">
-                    <div className="flex justify-between items-center text-xs text-gray-400">
-                      <span>Çözüm Önerisi Sun (Markdown Destekli)</span>
-                      <span className="text-neon-pink">Kod: ``` </span>
-                    </div>
-                    <textarea 
-                      required
-                      value={responseContent}
-                      onChange={(e) => setResponseContent(e.target.value)}
-                      placeholder="Teknik detayları ve kodları paylaşarak çözümü yaz..."
-                      className="w-full bg-background border border-gray-700 focus:border-green-400 focus:ring-1 focus:ring-green-400 rounded-md p-3 text-sm text-white resize-none custom-scrollbar font-mono"
-                      rows={4}
-                    />
-                    <div className="flex justify-end">
-                      <button disabled={isSubmitting} className="bg-green-400/20 text-green-400 border border-green-400 hover:bg-green-400 hover:text-black px-4 py-2 rounded-md text-xs font-bold transition-all flex items-center gap-2">
-                        {isSubmitting ? "Gönderiliyor..." : "Çözüm Gönder"}
-                      </button>
-                    </div>
-                  </form>
                 ) : (
-                  <div className="bg-gray-900 border border-gray-800 text-gray-500 p-4 rounded-lg text-sm flex items-center justify-center gap-3">
-                    <Lock size={16} /> Sadece geliştiriciler (DEVELOPER) çözüm sunabilir.
-                  </div>
+                  <AccessGate allowedRoles={["DEVELOPER"]}>
+                    <form onSubmit={handleSubmitResponse} className="mt-4 pt-4 border-t border-gray-800 space-y-3">
+                      <div className="flex justify-between items-center text-xs text-gray-400">
+                        <span>Çözüm Önerisi Sun (Markdown Destekli)</span>
+                        <span className="text-neon-pink">Kod: ``` </span>
+                      </div>
+                      <textarea 
+                        required
+                        value={responseContent}
+                        onChange={(e) => setResponseContent(e.target.value)}
+                        placeholder="Teknik detayları ve kodları paylaşarak çözümü yaz..."
+                        className="w-full bg-background border border-gray-700 focus:border-green-400 focus:ring-1 focus:ring-green-400 rounded-md p-3 text-sm text-white resize-none custom-scrollbar font-mono"
+                        rows={4}
+                      />
+                      <div className="flex justify-end">
+                        <button disabled={isSubmitting} className="bg-green-400/20 text-green-400 border border-green-400 hover:bg-green-400 hover:text-black px-4 py-2 rounded-md text-xs font-bold transition-all flex items-center gap-2">
+                          {isSubmitting ? "Gönderiliyor..." : "Çözüm Gönder"}
+                        </button>
+                      </div>
+                    </form>
+                  </AccessGate>
                 )}
               </>
             )}

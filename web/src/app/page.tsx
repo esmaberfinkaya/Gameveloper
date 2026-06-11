@@ -55,19 +55,59 @@ export default function AuthPage() {
     }
   };
 
+  const handleFastLogin = async (role: "DEVELOPER" | "GAMER") => {
+    setError("");
+    setSuccess("");
+    // Esma: esma@test.com (varsayılan seed), AlphaGamer: alpha@test.com
+    const testEmail = role === "DEVELOPER" ? "esma@test.com" : "alpha@test.com";
+    const testPassword = "password123";
+
+    try {
+      const res = await fetch(`http://localhost:5000/api/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: testEmail, password: testPassword }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Sunucu hatası.");
+
+      setSuccess(`Hoş geldin, ${data.user.name}! Hızlı giriş başarılı.`);
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 800);
+    } catch (err: any) {
+      setError(err.message + " Lütfen backend'de seed işleminin ('npx prisma db seed') yapıldığından emin olun.");
+    }
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center p-4" style={{ backgroundImage: 'radial-gradient(ellipse at bottom, #0D1117 0%, #05070a 100%)' }}>
+    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden" style={{ backgroundImage: 'radial-gradient(ellipse at bottom, #0D1117 0%, #05070a 100%)' }}>
+      
+      {/* Glitch Overlay Lines */}
+      <div className="absolute inset-0 pointer-events-none opacity-10 flex flex-col justify-between">
+        {[...Array(20)].map((_, i) => (
+          <div key={i} className={`h-[1px] w-full ${i % 2 === 0 ? 'bg-neon-cyan' : 'bg-neon-pink'} animate-pulse`} style={{ animationDelay: `${i * 0.1}s` }}></div>
+        ))}
+      </div>
       <div className="relative w-full max-w-md">
         
         {/* Glow Background effect behind card */}
         <div className="absolute -inset-1 bg-gradient-to-r from-neon-cyan to-neon-pink rounded-xl blur opacity-30"></div>
         
-        {/* Main Card */}
-        <div className="relative bg-card-bg p-8 rounded-xl border border-accent-purple/30 shadow-2xl">
+        <div className="relative bg-card-bg/90 backdrop-blur-xl p-8 rounded-xl border border-accent-purple/30 shadow-[0_0_40px_rgba(0,255,255,0.1),0_0_40px_rgba(255,0,255,0.1)]">
           
-          <h1 className="text-3xl font-bold text-center mb-8 tracking-widest text-glow-cyan text-neon-cyan uppercase">
-            Gameveloper
-          </h1>
+          <div className="relative mb-8 text-center">
+            <h1 className="text-4xl font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan via-white to-neon-pink uppercase relative inline-block">
+              <span className="absolute -left-[2px] -top-[2px] text-neon-cyan opacity-50 mix-blend-screen animate-pulse">Gameveloper</span>
+              <span className="absolute left-[2px] top-[2px] text-neon-pink opacity-50 mix-blend-screen animate-pulse" style={{ animationDelay: '0.1s' }}>Gameveloper</span>
+              Gameveloper
+            </h1>
+            <p className="text-gray-500 text-xs tracking-[0.3em] mt-2 uppercase">Sistem Erişimi</p>
+          </div>
 
           {/* Tabs */}
           <div className="flex mb-8 border-b border-accent-purple/50">
@@ -145,11 +185,32 @@ export default function AuthPage() {
 
             <button 
               type="submit" 
-              className={`w-full py-3 rounded-md font-bold tracking-widest text-[#0D1117] uppercase transition-all duration-300 ${isLogin ? 'bg-neon-cyan neon-glow-cyan neon-glow-cyan-hover' : 'bg-neon-pink neon-glow-pink hover:shadow-[0_0_20px_#FF00FF,inset_0_0_10px_#FF00FF]'}`}
+              className={`w-full py-3 rounded-md font-bold tracking-widest text-[#0D1117] uppercase transition-all duration-300 ${isLogin ? 'bg-neon-cyan neon-glow-cyan hover:shadow-[0_0_20px_#00FFFF,inset_0_0_10px_#00FFFF]' : 'bg-neon-pink neon-glow-pink hover:shadow-[0_0_20px_#FF00FF,inset_0_0_10px_#FF00FF]'}`}
             >
-              {isLogin ? 'Bağlan' : 'Sisteme Katıl'}
+              {isLogin ? 'Sisteme Bağlan' : 'Ağa Katıl'}
             </button>
           </form>
+
+          {/* Hızlı Giriş (Test) */}
+          <div className="mt-8 pt-6 border-t border-gray-800/80">
+            <p className="text-center text-xs text-gray-500 uppercase tracking-widest mb-4">Hızlı Test Girişi</p>
+            <div className="flex gap-4">
+              <button 
+                onClick={() => handleFastLogin("DEVELOPER")}
+                className="flex-1 py-2 px-2 border border-neon-cyan/50 rounded bg-neon-cyan/10 text-neon-cyan hover:bg-neon-cyan/20 transition-all text-xs font-bold flex flex-col items-center gap-1"
+              >
+                <span>Esma</span>
+                <span className="text-[9px] opacity-70">(DEVELOPER)</span>
+              </button>
+              <button 
+                onClick={() => handleFastLogin("GAMER")}
+                className="flex-1 py-2 px-2 border border-neon-pink/50 rounded bg-neon-pink/10 text-neon-pink hover:bg-neon-pink/20 transition-all text-xs font-bold flex flex-col items-center gap-1"
+              >
+                <span>AlphaGamer</span>
+                <span className="text-[9px] opacity-70">(GAMER)</span>
+              </button>
+            </div>
+          </div>
 
         </div>
       </div>

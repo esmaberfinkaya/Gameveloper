@@ -23,7 +23,7 @@ class FeedCard extends StatelessWidget {
         case 'ROADMAP':
           return AppTheme.neonGreen;
         case 'SOLUTION':
-          return AppTheme.neonCyan;
+          return Theme.of(context).primaryColor;
         case 'QUESTION':
           return AppTheme.neonPink;
         default:

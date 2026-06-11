@@ -53,13 +53,13 @@ class _IdeasScreenState extends State<IdeasScreen> {
         leading: const Icon(Icons.lightbulb_outline),
         actions: [
           IconButton(
-            icon: const Icon(Icons.add, color: AppTheme.neonCyan),
+            icon: Icon(Icons.add, color: Theme.of(context).primaryColor),
             onPressed: () {},
           )
         ],
       ),
       body: isLoading
-          ? const Center(child: CircularProgressIndicator(color: AppTheme.neonCyan))
+          ? Center(child: CircularProgressIndicator(color: Theme.of(context).primaryColor))
           : error != null
               ? Center(
                   child: Column(
@@ -93,7 +93,7 @@ class _IdeasScreenState extends State<IdeasScreen> {
                     final category = idea['category'] ?? 'Genel';
 
                     return CyberCard(
-                      glowColor: AppTheme.neonCyan,
+                      glowColor: Theme.of(context).primaryColor,
                       hasGlow: false,
                       borderWidth: 1.5,
                       padding: const EdgeInsets.all(20.0),
@@ -146,7 +146,7 @@ class _IdeasScreenState extends State<IdeasScreen> {
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
                                       border: Border.all(
-                                        color: role == 'DEVELOPER' ? AppTheme.accentPurple : AppTheme.neonCyan,
+                                        color: role == 'DEVELOPER' ? AppTheme.accentPurple : Theme.of(context).primaryColor,
                                         width: 1.5,
                                       ),
                                     ),

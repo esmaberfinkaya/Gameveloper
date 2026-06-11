@@ -17,22 +17,51 @@ class _MainNavigationState extends State<MainNavigation> {
   int _currentIndex = 0;
 
   final List<Widget> _screens = [
-    const ExploreScreen(),
-    const IdeasScreen(),
+    ExploreScreen(),
+    IdeasScreen(),
     const IssuesScreen(),
-    const PartnershipScreen(),
-    const ProfileScreen(),
+    PartnershipScreen(),
+    ProfileScreen(),
   ];
+
+  Color _getThemeColor(int index) {
+    switch (index) {
+      case 1:
+        return AppTheme.neonYellow;
+      case 2:
+        return AppTheme.neonDeepBlue;
+      case 3:
+        return AppTheme.accentPurple;
+      case 4:
+        return AppTheme.neonDeepRed;
+      case 0:
+      default:
+        return AppTheme.neonDeepBlue;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: _screens[_currentIndex],
+    final accentColor = _getThemeColor(_currentIndex);
+    final theme = Theme.of(context);
+    final customTheme = theme.copyWith(
+      primaryColor: accentColor,
+      colorScheme: theme.colorScheme.copyWith(primary: accentColor),
+      bottomNavigationBarTheme: theme.bottomNavigationBarTheme.copyWith(
+        selectedItemColor: accentColor,
+      ),
+      iconTheme: theme.iconTheme.copyWith(color: accentColor),
+    );
+
+    return Theme(
+      data: customTheme,
+      child: Scaffold(
+        body: _screens[_currentIndex],
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           boxShadow: [
             BoxShadow(
-              color: AppTheme.neonCyan.withOpacity(0.1),
+              color: accentColor.withOpacity(0.1),
               blurRadius: 20,
               spreadRadius: 2,
             ),
@@ -75,7 +104,7 @@ class _MainNavigationState extends State<MainNavigation> {
           type: BottomNavigationBarType.fixed,
         ),
       ),
-    );
+    ));
   }
 }
 

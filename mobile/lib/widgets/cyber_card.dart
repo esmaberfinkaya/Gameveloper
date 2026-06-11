@@ -4,7 +4,7 @@ import '../theme/app_theme.dart';
 class CyberCard extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry padding;
-  final Color glowColor;
+  final Color? glowColor;
   final bool hasGlow;
   final double borderWidth;
   final VoidCallback? onTap;
@@ -13,7 +13,7 @@ class CyberCard extends StatelessWidget {
     super.key,
     required this.child,
     this.padding = const EdgeInsets.all(16.0),
-    this.glowColor = AppTheme.neonCyan,
+    this.glowColor,
     this.hasGlow = false,
     this.borderWidth = 1.0,
     this.onTap,
@@ -21,6 +21,8 @@ class CyberCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final activeGlowColor = glowColor ?? Theme.of(context).primaryColor;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -31,10 +33,10 @@ class CyberCard extends StatelessWidget {
           // For simplicity and performance, we'll use a standard slight rounded border with aggressive colors.
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: hasGlow ? glowColor : glowColor.withOpacity(0.3),
+            color: hasGlow ? activeGlowColor : activeGlowColor.withOpacity(0.3),
             width: borderWidth,
           ),
-          boxShadow: hasGlow ? AppTheme.getGlow(glowColor, spread: 1, blur: 10) : [],
+          boxShadow: hasGlow ? AppTheme.getGlow(activeGlowColor, spread: 1, blur: 10) : [],
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(11),

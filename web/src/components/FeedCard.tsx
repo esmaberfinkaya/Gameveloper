@@ -95,7 +95,7 @@ export default function FeedCard({ id, title, content, category, imageUrl, creat
 
       <div className="p-5 md:p-6 space-y-4">
         {/* Category Badge Top Right */}
-        <div className="absolute top-4 right-4 bg-gray-900 border border-gray-700 text-gray-300 text-[10px] uppercase tracking-wider px-3 py-1 rounded-full group-hover:border-neon-cyan/50 group-hover:text-neon-cyan transition-colors z-10">
+        <div className="absolute top-4 right-4 bg-gray-900 border border-gray-700 text-gray-300 text-[10px] uppercase tracking-wider px-3 py-1 rounded-full group-hover:border-theme-accent/50 group-hover:text-theme-accent transition-colors z-10">
           {category}
         </div>
 
@@ -121,7 +121,7 @@ export default function FeedCard({ id, title, content, category, imageUrl, creat
 
         {/* Question Content */}
         <div className="pt-2">
-          <h3 className={`text-lg font-bold text-white mb-2 group-hover:text-glow-cyan transition-colors pr-20 ${isExplore ? 'truncate' : ''}`}>{title}</h3>
+          <h3 className={`text-lg font-bold text-white mb-2 group-hover:text-glow-theme transition-colors pr-20 ${isExplore ? 'truncate' : ''}`}>{title}</h3>
           
           <div className={`text-gray-300 text-sm leading-relaxed custom-markdown-body space-y-3 ${isExplore ? 'line-clamp-3 overflow-hidden max-h-20' : ''}`}>
             <ReactMarkdown
@@ -131,10 +131,10 @@ export default function FeedCard({ id, title, content, category, imageUrl, creat
                   const href = props.href || "";
                   const ytMatch = href.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i);
                   if (ytMatch) {
-                    if (isExplore) return <span className="text-neon-cyan">[YouTube Video]</span>;
+                    if (isExplore) return <span className="text-theme-accent">[YouTube Video]</span>;
                     return (
                       <div className="my-6 aspect-video rounded-xl overflow-hidden border border-accent-purple/30 shadow-[0_0_20px_rgba(188,19,254,0.15)] relative group/video">
-                        <div className="absolute inset-0 bg-neon-cyan/5 pointer-events-none group-hover/video:bg-transparent transition-colors"></div>
+                        <div className="absolute inset-0 bg-theme-accent/5 pointer-events-none group-hover/video:bg-transparent transition-colors"></div>
                         <iframe
                           className="w-full h-full relative z-10"
                           src={`https://www.youtube.com/embed/${ytMatch[1]}`}
@@ -146,7 +146,7 @@ export default function FeedCard({ id, title, content, category, imageUrl, creat
                       </div>
                     );
                   }
-                  return <a {...props} className="text-neon-cyan hover:underline hover:text-glow-cyan transition-all" target="_blank" rel="noopener noreferrer">{props.children}</a>;
+                  return <a {...props} className="text-theme-accent hover:underline hover:text-glow-theme transition-all" target="_blank" rel="noopener noreferrer">{props.children}</a>;
                 }
               }}
             >
@@ -154,7 +154,7 @@ export default function FeedCard({ id, title, content, category, imageUrl, creat
             </ReactMarkdown>
           </div>
           {isExplore && (
-             <button className="text-neon-cyan text-xs font-bold mt-2 hover:underline">Devamını Oku...</button>
+             <button className="text-theme-accent text-xs font-bold mt-2 hover:underline">Devamını Oku...</button>
           )}
 
           {/* Optional Image */}
@@ -173,9 +173,9 @@ export default function FeedCard({ id, title, content, category, imageUrl, creat
           </button>
           <button 
             onClick={() => setIsExpanded(!isExpanded)}
-            className={`flex items-center gap-1.5 transition-colors group/btn ${isExpanded ? 'text-neon-cyan' : 'hover:text-neon-cyan'}`}
+            className={`flex items-center gap-1.5 transition-colors group/btn ${isExpanded ? 'text-theme-accent' : 'hover:text-theme-accent'}`}
           >
-            <MessageSquarePlus size={16} className="group-hover/btn:text-glow-cyan" />
+            <MessageSquarePlus size={16} className="group-hover/btn:text-glow-theme" />
             <span>Çözümler & Yorumlar ({responses.length})</span>
             {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
           </button>
@@ -200,7 +200,7 @@ export default function FeedCard({ id, title, content, category, imageUrl, creat
             </button>
             <button 
               onClick={() => setActiveTab("COMMENT")}
-              className={`flex-1 py-3 text-sm font-bold tracking-widest uppercase transition-all flex justify-center items-center gap-2 ${activeTab === "COMMENT" ? 'text-neon-cyan border-b-2 border-neon-cyan bg-neon-cyan/5' : 'text-gray-500 hover:text-gray-300'}`}
+              className={`flex-1 py-3 text-sm font-bold tracking-widest uppercase transition-all flex justify-center items-center gap-2 ${activeTab === "COMMENT" ? 'text-theme-accent border-b-2 border-theme-accent bg-theme-accent/5' : 'text-gray-500 hover:text-gray-300'}`}
             >
               Yorumlar <span className="bg-gray-800 text-gray-300 text-[10px] px-2 py-0.5 rounded-full">{comments.length}</span>
             </button>
@@ -310,9 +310,9 @@ export default function FeedCard({ id, title, content, category, imageUrl, creat
                     value={responseContent}
                     onChange={(e) => setResponseContent(e.target.value)}
                     placeholder="Düşünceni paylaş (Düz Metin)..."
-                    className="flex-1 bg-background border border-gray-700 focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan rounded-md px-3 py-2 text-sm text-white"
+                    className="flex-1 bg-background border border-gray-700 focus:border-theme-accent focus:ring-1 focus:ring-theme-accent rounded-md px-3 py-2 text-sm text-white"
                   />
-                  <button disabled={isSubmitting} className="bg-neon-cyan/20 text-neon-cyan border border-neon-cyan hover:bg-neon-cyan hover:text-black px-4 py-2 rounded-md text-xs font-bold transition-all">
+                  <button disabled={isSubmitting} className="bg-theme-accent/20 text-theme-accent border border-theme-accent hover:bg-theme-accent hover:text-black px-4 py-2 rounded-md text-xs font-bold transition-all">
                     Gönder
                   </button>
                 </form>

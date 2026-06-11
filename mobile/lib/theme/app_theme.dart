@@ -9,6 +9,8 @@ class AppTheme {
   static const Color accentPurple = Color(0xFFBC13FE);
   static const Color neonGreen = Color(0xFF39FF14);
   static const Color neonYellow = Color(0xFFFFE300);
+  static const Color neonDeepBlue = Color(0xFF0088FF);
+  static const Color neonDeepRed = Color(0xFFFF003C);
 
   // Text Colors
   static const Color textPrimary = Colors.white;

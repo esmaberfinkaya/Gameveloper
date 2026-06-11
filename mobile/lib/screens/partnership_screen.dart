@@ -3,9 +3,9 @@ import '../theme/app_theme.dart';
 import '../widgets/cyber_card.dart';
 
 class PartnershipScreen extends StatelessWidget {
-  const PartnershipScreen({super.key});
+  PartnershipScreen({super.key});
 
-  final List<Map<String, dynamic>> mockPartnerships = const [
+  final List<Map<String, dynamic>> mockPartnerships = [
     {
       'title': 'Sci-Fi Çevre Tasarımı İçin Yardım',
       'description': 'Unity HDRP kullanarak geliştirdiğim projede sci-fi koridor ve dış mekan modellemeleri yapacak bir 3D artist arıyorum.',
@@ -36,17 +36,17 @@ class PartnershipScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('BOUNTY BOARD'),
-        leading: const Icon(Icons.group_add),
+        title: Text('BOUNTY BOARD'),
+        leading: Icon(Icons.group_add),
         actions: [
           IconButton(
-            icon: const Icon(Icons.sort, color: AppTheme.neonYellow),
+            icon: Icon(Icons.sort, color: AppTheme.neonYellow),
             onPressed: () {},
           )
         ],
       ),
       body: ListView.builder(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.0),
         itemCount: mockPartnerships.length,
         itemBuilder: (context, index) {
           final item = mockPartnerships[index];
@@ -56,7 +56,7 @@ class PartnershipScreen extends StatelessWidget {
             glowColor: AppTheme.neonYellow,
             hasGlow: true,
             borderWidth: 2,
-            padding: const EdgeInsets.all(20.0),
+            padding: EdgeInsets.all(20.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -65,7 +65,7 @@ class PartnershipScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
                         color: AppTheme.neonYellow.withOpacity(0.1),
                         border: Border.all(color: AppTheme.neonYellow),
@@ -74,7 +74,7 @@ class PartnershipScreen extends StatelessWidget {
                       ),
                       child: Text(
                         item['requiredRole'],
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: AppTheme.neonYellow,
                           fontSize: 10,
                           fontWeight: FontWeight.w900,
@@ -83,7 +83,7 @@ class PartnershipScreen extends StatelessWidget {
                       ),
                     ),
                     if (isUrgent)
-                      const Row(
+                      Row(
                         children: [
                           Icon(Icons.local_fire_department, color: Colors.deepOrangeAccent, size: 16),
                           SizedBox(width: 4),
@@ -100,30 +100,30 @@ class PartnershipScreen extends StatelessWidget {
                       ),
                   ],
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 
                 // Title
                 Text(
                   item['title'],
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppTheme.textPrimary,
                     fontSize: 20,
                     fontWeight: FontWeight.w900,
                     letterSpacing: 1.0,
                   ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 
                 // Description
                 Text(
                   item['description'],
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppTheme.textSecondary,
                     fontSize: 14,
                     height: 1.5,
                   ),
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
                 
                 // Footer: Trust Score & Apply Button
                 Row(
@@ -141,25 +141,25 @@ class PartnershipScreen extends StatelessWidget {
                               backgroundColor: Colors.white10,
                               child: Text(
                                 item['username'][0],
-                                style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                                style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
                               ),
                             ),
-                            const SizedBox(width: 6),
+                            SizedBox(width: 6),
                             Text(
                               item['username'],
-                              style: const TextStyle(color: Colors.white70, fontSize: 12),
+                              style: TextStyle(color: Colors.white70, fontSize: 12),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 8),
+                        SizedBox(height: 8),
                         Row(
                           children: [
-                            const Icon(Icons.bolt, color: AppTheme.neonCyan, size: 16),
-                            const SizedBox(width: 4),
+                            Icon(Icons.bolt, color: Theme.of(context).primaryColor, size: 16),
+                            SizedBox(width: 4),
                             Text(
                               'Trust Score: ${item['trustScore']}',
-                              style: const TextStyle(
-                                color: AppTheme.neonCyan,
+                              style: TextStyle(
+                                color: Theme.of(context).primaryColor,
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -177,12 +177,12 @@ class PartnershipScreen extends StatelessWidget {
                         foregroundColor: AppTheme.neonYellow,
                         elevation: 0,
                         shape: RoundedRectangleBorder(
-                          side: const BorderSide(color: AppTheme.neonYellow, width: 2),
+                          side: BorderSide(color: AppTheme.neonYellow, width: 2),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                       ),
-                      child: const Text(
+                      child: Text(
                         'BAŞVUR',
                         style: TextStyle(
                           fontWeight: FontWeight.w900,
@@ -202,10 +202,10 @@ class PartnershipScreen extends StatelessWidget {
         backgroundColor: AppTheme.neonYellow.withOpacity(0.2),
         elevation: 0,
         shape: RoundedRectangleBorder(
-          side: const BorderSide(color: AppTheme.neonYellow, width: 2),
+          side: BorderSide(color: AppTheme.neonYellow, width: 2),
           borderRadius: BorderRadius.circular(16),
         ),
-        child: const Icon(Icons.add, color: AppTheme.neonYellow),
+        child: Icon(Icons.add, color: AppTheme.neonYellow),
       ),
     );
   }

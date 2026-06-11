@@ -99,7 +99,7 @@ export default function IdeaCard({ id, title, story, visuals, gameplay, category
               </button>
               <button 
                 onClick={() => setActiveTab("VISUALS")}
-                className={`flex-1 py-2 text-xs font-bold tracking-widest uppercase transition-all ${activeTab === "VISUALS" ? 'text-neon-cyan border-b-2 border-neon-cyan bg-neon-cyan/5' : 'text-gray-500 hover:text-gray-300'}`}
+                className={`flex-1 py-2 text-xs font-bold tracking-widest uppercase transition-all ${activeTab === "VISUALS" ? 'text-theme-accent border-b-2 border-theme-accent bg-theme-accent/5' : 'text-gray-500 hover:text-gray-300'}`}
               >
                 Görüntü
               </button>
@@ -138,8 +138,8 @@ export default function IdeaCard({ id, title, story, visuals, gameplay, category
             <MessageSquarePlus size={16} className="group-hover/btn:text-glow-purple" />
             <span>Tartışmalar ({comments.length})</span>
           </button>
-          <button className="flex items-center gap-1.5 hover:text-neon-cyan transition-colors group/btn">
-            <Share2 size={16} className="group-hover/btn:text-glow-cyan" />
+          <button className="flex items-center gap-1.5 hover:text-theme-accent transition-colors group/btn">
+            <Share2 size={16} className="group-hover/btn:text-glow-theme" />
             <span>Paylaş</span>
           </button>
         </div>

@@ -59,7 +59,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
         ],
       ),
       body: isLoading
-          ? const Center(child: CircularProgressIndicator(color: AppTheme.neonCyan))
+          ? Center(child: CircularProgressIndicator(color: Theme.of(context).primaryColor))
           : error != null
               ? Center(
                   child: Column(
@@ -100,13 +100,13 @@ class _ExploreScreenState extends State<ExploreScreen> {
                 ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
-        backgroundColor: AppTheme.neonCyan.withOpacity(0.2),
+        backgroundColor: Theme.of(context).primaryColor.withOpacity(0.2),
         elevation: 0,
         shape: RoundedRectangleBorder(
-          side: const BorderSide(color: AppTheme.neonCyan, width: 2),
+          side: BorderSide(color: Theme.of(context).primaryColor, width: 2),
           borderRadius: BorderRadius.circular(16),
         ),
-        child: const Icon(Icons.add, color: AppTheme.neonCyan),
+        child: Icon(Icons.add, color: Theme.of(context).primaryColor),
       ),
     );
   }

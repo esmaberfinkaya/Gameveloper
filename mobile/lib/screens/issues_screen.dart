@@ -63,13 +63,13 @@ class _IssuesScreenState extends State<IssuesScreen> {
         leading: const Icon(Icons.bug_report),
         actions: [
           IconButton(
-            icon: const Icon(Icons.search, color: AppTheme.neonCyan),
+            icon: Icon(Icons.search, color: Theme.of(context).primaryColor),
             onPressed: () {},
           )
         ],
       ),
       body: isLoading
-          ? const Center(child: CircularProgressIndicator(color: AppTheme.neonCyan))
+          ? Center(child: CircularProgressIndicator(color: Theme.of(context).primaryColor))
           : error != null
               ? Center(
                   child: Column(
@@ -115,18 +115,18 @@ class _IssuesScreenState extends State<IssuesScreen> {
                     margin: const EdgeInsets.only(right: 12.0),
                     padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
                     decoration: BoxDecoration(
-                      color: isSelected ? AppTheme.neonCyan.withOpacity(0.2) : Colors.transparent,
+                      color: isSelected ? Theme.of(context).primaryColor.withOpacity(0.2) : Colors.transparent,
                       border: Border.all(
-                        color: isSelected ? AppTheme.neonCyan : Colors.white30,
+                        color: isSelected ? Theme.of(context).primaryColor : Colors.white30,
                         width: 1.5,
                       ),
                       borderRadius: BorderRadius.circular(20),
-                      boxShadow: isSelected ? AppTheme.getGlow(AppTheme.neonCyan, blur: 5) : [],
+                      boxShadow: isSelected ? AppTheme.getGlow(Theme.of(context).primaryColor, blur: 5) : [],
                     ),
                     child: Text(
                       tag,
                       style: TextStyle(
-                        color: isSelected ? AppTheme.neonCyan : Colors.white70,
+                        color: isSelected ? Theme.of(context).primaryColor : Colors.white70,
                         fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                         letterSpacing: 1.0,
                       ),
@@ -232,7 +232,7 @@ class _IssuesScreenState extends State<IssuesScreen> {
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   border: Border.all(
-                                    color: role == 'DEVELOPER' ? AppTheme.accentPurple : AppTheme.neonCyan,
+                                    color: role == 'DEVELOPER' ? AppTheme.accentPurple : Theme.of(context).primaryColor,
                                     width: 1.5,
                                   ),
                                 ),

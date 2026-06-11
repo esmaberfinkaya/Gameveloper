@@ -45,6 +45,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     router.push("/");
   };
 
+  const getThemeAccent = (path: string) => {
+    if (path.includes("/dashboard/ideas")) return "var(--neon-yellow)";
+    if (path.includes("/dashboard/profile")) return "var(--neon-deep-red)";
+    if (path.includes("/dashboard/partners")) return "var(--neon-purple)";
+    return "var(--neon-deep-blue)";
+  };
+
+  const themeAccent = getThemeAccent(pathname);
+
   if (!user) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -64,7 +73,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   ];
 
   return (
-    <div className="min-h-screen bg-background flex flex-col md:flex-row text-foreground overflow-hidden" style={{ backgroundImage: 'radial-gradient(ellipse at bottom right, #0D1117 0%, #05070a 100%)' }}>
+    <div 
+      className="min-h-screen bg-background flex flex-col md:flex-row text-foreground overflow-hidden transition-colors duration-500" 
+      style={{ 
+        backgroundImage: 'radial-gradient(ellipse at bottom right, #0D1117 0%, #05070a 100%)',
+        '--theme-accent': themeAccent 
+      } as React.CSSProperties}
+    >
       
       {/* MOBIL MENU OVERLAY */}
       {isMobileMenuOpen && (
@@ -78,27 +93,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             {navLinks.map((link) => {
               const Icon = link.icon;
               const isActive = pathname === link.href;
-              const mobileColorMap: Record<string, string> = {
-                "neon-cyan": isActive ? "text-neon-cyan" : "text-gray-300",
-                "accent-purple": isActive ? "text-accent-purple" : "text-gray-300",
-                "neon-pink": isActive ? "text-neon-pink" : "text-gray-300",
-                "green-400": isActive ? "text-green-400" : "text-gray-300",
-              };
-              const glowMap: Record<string, string> = {
-                "neon-cyan": isActive ? "text-glow-cyan" : "",
-                "accent-purple": isActive ? "text-glow-purple" : "",
-                "neon-pink": isActive ? "text-glow-pink" : "",
-                "green-400": isActive ? "text-glow-green" : "",
-              };
+              const mobileActiveClasses = isActive ? "text-theme-accent text-glow-theme" : "text-gray-300";
 
               return (
                 <Link 
                   key={link.href} 
                   href={link.href}
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={"flex items-center gap-4 text-xl transition-colors group " + mobileColorMap[link.color]}
+                  className={`flex items-center gap-4 text-xl transition-colors group ${mobileActiveClasses}`}
                 >
-                  <Icon size={24} className={glowMap[link.color]} /> 
+                  <Icon size={24} /> 
                   {link.name}
                 </Link>
               )
@@ -111,11 +115,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       )}
 
       {/* SOL SÜTUN: NAVİGASYON (Desktop) */}
-      <aside className="w-64 bg-card-bg border-r border-accent-purple/30 flex-col justify-between shrink-0 relative z-10 hidden md:flex">
+      <aside className="w-64 bg-card-bg border-r border-theme-accent/30 flex-col justify-between shrink-0 relative z-10 hidden md:flex transition-colors duration-500">
         <div>
           {/* Logo Area */}
-          <div className="h-20 flex items-center justify-center border-b border-accent-purple/30">
-            <h2 className="text-xl font-bold tracking-widest text-glow-cyan text-neon-cyan uppercase flex items-center gap-2">
+          <div className="h-20 flex items-center justify-center border-b border-theme-accent/30 transition-colors duration-500">
+            <h2 className="text-xl font-bold tracking-widest text-glow-theme text-theme-accent uppercase flex items-center gap-2 transition-colors duration-500">
               <Terminal size={24} />
               Gameveloper
             </h2>
@@ -126,20 +130,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             {navLinks.map((link) => {
               const Icon = link.icon;
               const isActive = pathname === link.href;
-              // We extract the base color (cyan, pink, purple) for dynamic classes where possible, or just hardcode some classes.
-              // To avoid tailwind purge issues, it's better to explicitly list classes or use simple mappings.
-              const colorMap: Record<string, string> = {
-                "neon-cyan": isActive ? "bg-neon-cyan/20 text-neon-cyan border-neon-cyan" : "hover:text-neon-cyan hover:bg-neon-cyan/10 hover:border-neon-cyan/50 text-gray-300 border-transparent",
-                "accent-purple": isActive ? "bg-accent-purple/20 text-accent-purple border-accent-purple" : "hover:text-accent-purple hover:bg-accent-purple/10 hover:border-accent-purple/50 text-gray-300 border-transparent",
-                "neon-pink": isActive ? "bg-neon-pink/20 text-neon-pink border-neon-pink" : "hover:text-neon-pink hover:bg-neon-pink/10 hover:border-neon-pink/50 text-gray-300 border-transparent",
-                "green-400": isActive ? "bg-green-400/20 text-green-400 border-green-400" : "hover:text-green-400 hover:bg-green-400/10 hover:border-green-400/50 text-gray-300 border-transparent",
-              };
+              const activeClasses = isActive 
+                ? "bg-theme-accent/20 text-theme-accent border-theme-accent" 
+                : "hover:text-theme-accent hover:bg-theme-accent/10 hover:border-theme-accent/50 text-gray-300 border-transparent";
 
               return (
                 <Link 
                   key={link.href} 
                   href={link.href} 
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-md border transition-all duration-300 group ${colorMap[link.color]}`}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-md border transition-all duration-300 group ${activeClasses}`}
                 >
                   <Icon size={20} className={isActive ? 'animate-pulse' : ''} />
                   <span className="font-medium tracking-wide">{link.name}</span>
@@ -164,12 +163,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* ORTA SÜTUN: İÇERİK */}
       <main className="flex-1 w-full lg:w-[65%] flex flex-col h-screen overflow-hidden relative">
         {/* Mobile Header */}
-        <header className="md:hidden h-20 bg-card-bg/80 backdrop-blur-md border-b border-accent-purple/30 flex items-center justify-between px-6 shrink-0 relative z-10">
+        <header className="md:hidden h-20 bg-card-bg/80 backdrop-blur-md border-b border-theme-accent/30 flex items-center justify-between px-6 shrink-0 relative z-10 transition-colors duration-500">
           <div className="flex items-center gap-4">
-            <button onClick={() => setIsMobileMenuOpen(true)} className="text-gray-300 hover:text-neon-cyan transition-colors">
+            <button onClick={() => setIsMobileMenuOpen(true)} className="text-gray-300 hover:text-theme-accent transition-colors">
               <Menu size={28} />
             </button>
-            <h2 className="text-xl font-bold tracking-widest text-glow-cyan text-neon-cyan uppercase">
+            <h2 className="text-xl font-bold tracking-widest text-glow-theme text-theme-accent uppercase transition-colors duration-500">
               <Terminal size={20} className="inline mr-2" />
               Gameveloper
             </h2>
@@ -178,7 +177,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         <div className="flex-1 overflow-y-auto custom-scrollbar relative">
           {/* Subtle background grid pattern */}
-          <div className="absolute inset-0 pointer-events-none opacity-[0.03] min-h-screen" style={{ backgroundImage: 'linear-gradient(var(--accent-purple) 1px, transparent 1px), linear-gradient(90deg, var(--accent-purple) 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+          <div className="absolute inset-0 pointer-events-none opacity-[0.03] min-h-screen transition-all duration-500" style={{ backgroundImage: 'linear-gradient(var(--theme-accent) 1px, transparent 1px), linear-gradient(90deg, var(--theme-accent) 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
           
           <div className="relative z-10 p-4 md:p-8">
             {children}
@@ -187,23 +186,23 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </main>
 
       {/* SAĞ SÜTUN: KULLANICI PANELİ */}
-      <aside className="w-[15%] bg-[#0D1117] border-l border-accent-purple/30 hidden lg:flex flex-col shrink-0">
+      <aside className="w-[15%] bg-[#0D1117] border-l border-theme-accent/30 hidden lg:flex flex-col shrink-0 transition-colors duration-500">
         
         {/* Kullanıcı Profili ve Trust Score Banner */}
         <div className="p-8 border-b border-gray-800 flex flex-col items-center justify-center relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-neon-cyan/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
+          <div className="absolute top-0 right-0 w-32 h-32 bg-theme-accent/5 rounded-full blur-3xl -mr-10 -mt-10 transition-colors duration-500"></div>
           
-          <div className="w-24 h-24 rounded-full border-4 border-neon-cyan flex items-center justify-center bg-[#0D1117] neon-glow-cyan shadow-[0_0_30px_rgba(0,255,255,0.4)] mb-4 relative z-10">
-            <span className="text-neon-cyan font-bold text-4xl">{user.name.charAt(0).toUpperCase()}</span>
+          <div className="w-24 h-24 rounded-full border-4 border-theme-accent flex items-center justify-center bg-[#0D1117] neon-glow-theme mb-4 relative z-10 transition-colors duration-500">
+            <span className="text-theme-accent font-bold text-4xl transition-colors duration-500">{user.name.charAt(0).toUpperCase()}</span>
           </div>
           
           <h3 className="text-xl font-bold text-white tracking-wider z-10">{user.name}</h3>
-          <div className="text-xs text-accent-purple uppercase tracking-widest font-semibold mt-1 mb-6 z-10">{user.role}</div>
+          <div className="text-xs text-theme-accent uppercase tracking-widest font-semibold mt-1 mb-6 z-10 transition-colors duration-500">{user.role}</div>
 
-          <div className="bg-card-bg border border-neon-cyan/50 px-6 py-4 rounded-xl shadow-[0_0_20px_rgba(0,255,255,0.2)] flex flex-col items-center justify-center w-full relative z-10">
-            <Zap size={24} className="text-neon-cyan mb-2 animate-pulse" />
+          <div className="bg-card-bg border border-theme-accent/50 px-6 py-4 rounded-xl flex flex-col items-center justify-center w-full relative z-10 transition-colors duration-500" style={{ boxShadow: '0 0 20px color-mix(in srgb, var(--theme-accent) 20%, transparent)' }}>
+            <Zap size={24} className="text-theme-accent mb-2 animate-pulse transition-colors duration-500" />
             <span className="text-xs text-gray-400 uppercase tracking-widest mb-1">Trust Score</span>
-            <span className="text-3xl font-black text-neon-cyan text-glow-cyan">{user.trustScore}</span>
+            <span className="text-3xl font-black text-theme-accent text-glow-theme transition-colors duration-500">{user.trustScore}</span>
           </div>
         </div>
 

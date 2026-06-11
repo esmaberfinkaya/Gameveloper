@@ -53,7 +53,7 @@ class _AccessGateState extends State<AccessGate> with SingleTickerProviderStateM
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Center(child: CircularProgressIndicator(color: AppTheme.neonCyan));
+      return Center(child: CircularProgressIndicator(color: Theme.of(context).primaryColor));
     }
 
     if (_userRole != null && widget.allowedRoles.contains(_userRole)) {

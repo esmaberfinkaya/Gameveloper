@@ -7,6 +7,13 @@
   --neon-cyan: #00FFFF;
   --neon-pink: #FF00FF;
   --accent-purple: #BD93F9;
+  
+  --neon-deep-blue: #0088FF;
+  --neon-yellow: #FFE300;
+  --neon-deep-red: #FF003C;
+  --neon-purple: #BC13FE;
+
+  --theme-accent: var(--neon-cyan);
 }
 
 @theme inline {
@@ -16,6 +23,7 @@
   --color-neon-cyan: var(--neon-cyan);
   --color-neon-pink: var(--neon-pink);
   --color-accent-purple: var(--accent-purple);
+  --color-theme-accent: var(--theme-accent);
   
   --font-sans: var(--font-geist-sans), "Inter", Arial, sans-serif;
   --font-mono: var(--font-geist-mono);
@@ -51,14 +59,27 @@ body {
   text-shadow: 0 0 8px var(--neon-pink);
 }
 
+.neon-glow-theme {
+  box-shadow: 0 0 10px var(--theme-accent), 0 0 20px var(--theme-accent), inset 0 0 5px var(--theme-accent);
+}
+
+.neon-glow-theme-hover:hover {
+  box-shadow: 0 0 15px var(--theme-accent), 0 0 30px var(--theme-accent), inset 0 0 10px var(--theme-accent);
+  text-shadow: 0 0 5px var(--theme-accent);
+}
+
+.text-glow-theme {
+  text-shadow: 0 0 8px var(--theme-accent);
+}
+
 .input-cyber {
   background-color: rgba(22, 27, 34, 0.8);
-  border: 1px solid var(--accent-purple);
+  border: 1px solid color-mix(in srgb, var(--theme-accent) 50%, transparent);
   color: var(--foreground);
   transition: all 0.3s ease;
 }
 .input-cyber:focus {
   outline: none;
-  border-color: var(--neon-cyan);
-  box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+  border-color: var(--theme-accent);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--theme-accent) 50%, transparent);
 }

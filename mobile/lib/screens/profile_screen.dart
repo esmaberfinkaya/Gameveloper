@@ -8,7 +8,7 @@ import '../theme/app_theme.dart';
 class ProfileScreen extends StatefulWidget {
   final int userId;
   
-  const ProfileScreen({
+  ProfileScreen({
     super.key,
     this.userId = 1, // Defaulting to Esma
   });
@@ -62,8 +62,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator(color: AppTheme.neonCyan)),
+      return Scaffold(
+        body: Center(child: CircularProgressIndicator(color: Theme.of(context).primaryColor)),
       );
     }
     
@@ -73,10 +73,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.error_outline, color: AppTheme.neonPink, size: 48),
-              const SizedBox(height: 16),
-              Text(error!, style: const TextStyle(color: Colors.white70)),
-              const SizedBox(height: 16),
+              Icon(Icons.error_outline, color: AppTheme.neonPink, size: 48),
+              SizedBox(height: 16),
+              Text(error!, style: TextStyle(color: Colors.white70)),
+              SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () {
                   setState(() {
@@ -86,7 +86,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   fetchData();
                 },
                 style: ElevatedButton.styleFrom(backgroundColor: AppTheme.neonPink.withOpacity(0.2)),
-                child: const Text('Tekrar Dene', style: TextStyle(color: AppTheme.neonPink)),
+                child: Text('Tekrar Dene', style: TextStyle(color: AppTheme.neonPink)),
               )
             ],
           ),
@@ -120,14 +120,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
             flexibleSpace: FlexibleSpaceBar(
               title: Text(
                 username.toUpperCase(),
-                style: const TextStyle(fontWeight: FontWeight.w900, letterSpacing: 4),
+                style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 4),
               ),
               centerTitle: true,
               background: Stack(
                 fit: StackFit.expand,
                 children: [
                   Container(
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       gradient: RadialGradient(
                         colors: [Color(0xFF2A0A4A), AppTheme.background],
                         radius: 1.0,
@@ -151,7 +151,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         child: Center(
                           child: Text(
                             username.isNotEmpty ? username[0].toUpperCase() : '?',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 40,
                               fontWeight: FontWeight.w900,
                               color: AppTheme.accentPurple,
@@ -167,16 +167,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     right: 0,
                     child: Center(
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                         decoration: BoxDecoration(
-                          color: AppTheme.neonCyan.withOpacity(0.1),
-                          border: Border.all(color: AppTheme.neonCyan.withOpacity(0.5)),
+                          color: Theme.of(context).primaryColor.withOpacity(0.1),
+                          border: Border.all(color: Theme.of(context).primaryColor.withOpacity(0.5)),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
                           role.toUpperCase(),
-                          style: const TextStyle(
-                            color: AppTheme.neonCyan,
+                          style: TextStyle(
+                            color: Theme.of(context).primaryColor,
                             fontSize: 10,
                             fontWeight: FontWeight.bold,
                             letterSpacing: 2,
@@ -189,13 +189,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             actions: [
-              IconButton(icon: const Icon(Icons.settings), onPressed: () {}),
+              IconButton(icon: Icon(Icons.settings), onPressed: () {}),
             ],
           ),
           
           // Bento Grid using SliverGrid
           SliverPadding(
-            padding: const EdgeInsets.all(16.0),
+            padding: EdgeInsets.all(16.0),
             sliver: SliverGrid.count(
               crossAxisCount: 2,
               mainAxisSpacing: 16.0,
@@ -203,15 +203,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
               children: [
                 // Trust Score Box
                 CyberCard(
-                  glowColor: AppTheme.neonCyan,
+                  glowColor: Theme.of(context).primaryColor,
                   hasGlow: true,
                   borderWidth: 2,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.bolt, color: AppTheme.neonCyan, size: 36),
-                      const SizedBox(height: 8),
-                      const Text(
+                      Icon(Icons.bolt, color: Theme.of(context).primaryColor, size: 36),
+                      SizedBox(height: 8),
+                      Text(
                         'TRUST SCORE',
                         style: TextStyle(
                           color: AppTheme.textSecondary,
@@ -219,14 +219,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           letterSpacing: 1.5,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      SizedBox(height: 4),
                       Text(
                         trustScore.toString(),
                         style: TextStyle(
-                          color: AppTheme.neonCyan,
+                          color: Theme.of(context).primaryColor,
                           fontSize: 36,
                           fontWeight: FontWeight.w900,
-                          shadows: AppTheme.getGlow(AppTheme.neonCyan, spread: 0, blur: 10),
+                          shadows: AppTheme.getGlow(Theme.of(context).primaryColor, spread: 0, blur: 10),
                         ),
                       ),
                     ],
@@ -242,15 +242,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     children: [
                       Expanded(
                         child: Container(
-                          decoration: const BoxDecoration(
+                          decoration: BoxDecoration(
                             border: Border(bottom: BorderSide(color: Colors.white10)),
                           ),
                           child: Center(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text(solvedIssues.toString(), style: const TextStyle(color: AppTheme.textPrimary, fontSize: 24, fontWeight: FontWeight.bold)),
-                                const Text('Çözülen Sorun', style: TextStyle(color: AppTheme.textSecondary, fontSize: 10)),
+                                Text(solvedIssues.toString(), style: TextStyle(color: AppTheme.textPrimary, fontSize: 24, fontWeight: FontWeight.bold)),
+                                Text('Çözülen Sorun', style: TextStyle(color: AppTheme.textSecondary, fontSize: 10)),
                               ],
                             ),
                           ),
@@ -261,8 +261,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(completedProjects.toString(), style: const TextStyle(color: AppTheme.neonYellow, fontSize: 24, fontWeight: FontWeight.bold)),
-                              const Text('Tamamlanan Proje', style: TextStyle(color: AppTheme.textSecondary, fontSize: 10)),
+                              Text(completedProjects.toString(), style: TextStyle(color: AppTheme.neonYellow, fontSize: 24, fontWeight: FontWeight.bold)),
+                              Text('Tamamlanan Proje', style: TextStyle(color: AppTheme.textSecondary, fontSize: 10)),
                             ],
                           ),
                         ),
@@ -278,27 +278,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
           
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
               child: CyberCard(
                 glowColor: AppTheme.neonPink,
                 hasGlow: true,
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(20),
                 child: Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(12),
+                      padding: EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         color: AppTheme.neonPink.withOpacity(0.1),
                         shape: BoxShape.circle,
                         border: Border.all(color: AppTheme.neonPink),
                       ),
-                      child: const Icon(Icons.emoji_events, color: AppTheme.neonPink),
+                      child: Icon(Icons.emoji_events, color: AppTheme.neonPink),
                     ),
-                    const SizedBox(width: 16),
+                    SizedBox(width: 16),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
+                        children: [
                           Text('Erken Erişim Üyesi', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
                           SizedBox(height: 4),
                           Text('Platformun ilk 100 kullanıcısından biri.', style: TextStyle(color: AppTheme.textSecondary, fontSize: 12)),
@@ -314,8 +314,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           // Content Title
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 32.0, bottom: 8.0),
-              child: const Text(
+              padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 32.0, bottom: 8.0),
+              child: Text(
                 'SON PAYLAŞIMLAR',
                 style: TextStyle(
                   color: AppTheme.textPrimary,
@@ -330,7 +330,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           userPosts.isEmpty
               ? SliverToBoxAdapter(
                   child: Padding(
-                    padding: const EdgeInsets.all(16.0),
+                    padding: EdgeInsets.all(16.0),
                     child: Container(
                       height: 150,
                       decoration: BoxDecoration(
@@ -342,8 +342,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(Icons.dashboard_customize, color: Colors.white24, size: 48),
-                            const SizedBox(height: 16),
-                            const Text('Henüz hiçbir içerik paylaşılmadı.', style: TextStyle(color: Colors.white54)),
+                            SizedBox(height: 16),
+                            Text('Henüz hiçbir içerik paylaşılmadı.', style: TextStyle(color: Colors.white54)),
                           ],
                         ),
                       ),
@@ -355,7 +355,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     (context, index) {
                       final item = userPosts[index];
                       return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                        padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                         child: FeedCard(data: {
                           'type': item['feedType'],
                           'title': item['title'],
@@ -370,7 +370,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
           
-          const SliverToBoxAdapter(child: SizedBox(height: 100)),
+          SliverToBoxAdapter(child: SizedBox(height: 100)),
         ],
       ),
     );

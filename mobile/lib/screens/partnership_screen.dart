@@ -520,7 +520,5 @@ class _ChatBottomSheetState extends State<ChatBottomSheet> {
             ],
           ),
         );
-      },
-    );
   }
 }

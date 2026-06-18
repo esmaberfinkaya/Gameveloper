@@ -95,12 +95,28 @@ app.get('/api/users/:id', async (req, res) => {
   try {
     const user = await prisma.user.findUnique({
       where: { id: parseInt(id, 10) },
-      select: { id: true, name: true, email: true, role: true, trustScore: true, createdAt: true }
+      select: { id: true, name: true, email: true, role: true, trustScore: true, createdAt: true, avatar: true }
     });
     if (!user) {
       return res.status(404).json({ error: 'Kullanıcı bulunamadı.' });
     }
     res.json(user);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Update user avatar
+app.patch('/api/users/:id/avatar', async (req, res) => {
+  const { id } = req.params;
+  const { avatar } = req.body;
+  try {
+    const updatedUser = await prisma.user.update({
+      where: { id: parseInt(id, 10) },
+      data: { avatar },
+      select: { id: true, avatar: true }
+    });
+    res.json({ message: 'Avatar güncellendi', user: updatedUser });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

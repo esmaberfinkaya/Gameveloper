@@ -4,6 +4,7 @@ import 'dart:convert';
 import '../widgets/cyber_card.dart';
 import '../widgets/feed_card.dart';
 import '../theme/app_theme.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ProfileScreen extends StatefulWidget {
   final int userId;
@@ -58,6 +59,46 @@ class _ProfileScreenState extends State<ProfileScreen> {
       });
     }
   }
+
+  Future<void> _pickAndUploadAvatar() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery, imageQuality: 50);
+    
+    if (pickedFile != null) {
+      final bytes = await pickedFile.readAsBytes();
+      
+      if (bytes.length > 2 * 1024 * 1024) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Dosya boyutu 2MB\'den küçük olmalıdır.')));
+        return;
+      }
+      
+      final base64String = 'data:image/jpeg;base64,' + base64Encode(bytes);
+      
+      try {
+        final res = await http.patch(
+          Uri.parse('http://10.0.2.2:5000/api/users/${widget.userId}/avatar'),
+          headers: {'Content-Type': 'application/json'},
+          body: json.encode({'avatar': base64String}),
+        );
+        
+        if (res.statusCode == 200) {
+          setState(() {
+            userData?['avatar'] = base64String;
+          });
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Avatar başarıyla güncellendi!')));
+        } else {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Avatar yüklenemedi: ${res.body}')));
+        }
+      } catch (e) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Bağlantı hatası')));
+      }
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -139,24 +180,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     left: 0,
                     right: 0,
                     child: Center(
-                      child: Container(
-                        width: 100,
-                        height: 100,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Theme.of(context).primaryColor, width: 3),
-                          boxShadow: AppTheme.getGlow(Theme.of(context).primaryColor, blur: 20),
-                          color: AppTheme.background,
-                        ),
-                        child: Center(
-                          child: Text(
-                            username.isNotEmpty ? username[0].toUpperCase() : '?',
-                            style: TextStyle(
-                              fontSize: 40,
-                              fontWeight: FontWeight.w900,
-                              color: Theme.of(context).primaryColor,
-                            ),
+                      child: GestureDetector(
+                        onTap: () => _pickAndUploadAvatar(),
+                        child: Container(
+                          width: 100,
+                          height: 100,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Theme.of(context).primaryColor, width: 3),
+                            boxShadow: AppTheme.getGlow(Theme.of(context).primaryColor, blur: 20),
+                            color: AppTheme.background,
+                            image: userData?['avatar'] != null ? DecorationImage(
+                              image: MemoryImage(base64Decode(userData!['avatar'].split(',').last)),
+                              fit: BoxFit.cover,
+                            ) : null,
                           ),
+                          child: userData?['avatar'] == null ? Center(
+                            child: Text(
+                              username.isNotEmpty ? username[0].toUpperCase() : '?',
+                              style: TextStyle(
+                                fontSize: 40,
+                                fontWeight: FontWeight.w900,
+                                color: Theme.of(context).primaryColor,
+                              ),
+                            ),
+                          ) : null,
                         ),
                       ),
                     ),

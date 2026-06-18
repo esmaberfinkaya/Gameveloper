@@ -14,6 +14,8 @@ export default function ProfilePage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const [isUploading, setIsUploading] = useState(false);
+
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (userData) {
@@ -21,6 +23,7 @@ export default function ProfilePage() {
       fetchUserData(parsedUser.id);
     }
   }, []);
+
 
   const fetchUserData = async (userId: number) => {
     try {
@@ -59,6 +62,43 @@ export default function ProfilePage() {
     }
   };
 
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+      alert("Dosya boyutu 2MB'den küçük olmalıdır.");
+      return;
+    }
+
+    setIsUploading(true);
+    const reader = new FileReader();
+    reader.onloadend = async () => {
+      const base64String = reader.result as string;
+      try {
+        const res = await fetch(`http://localhost:5000/api/users/${user.id}/avatar`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ avatar: base64String })
+        });
+        
+        if (res.ok) {
+          setUser({ ...user, avatar: base64String });
+          // Update local storage too so it persists across reloads quickly
+          const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
+          localStorage.setItem('user', JSON.stringify({ ...storedUser, avatar: base64String }));
+        }
+      } catch (err) {
+        console.error("Avatar yüklenemedi:", err);
+        alert("Avatar yüklenirken bir hata oluştu.");
+      } finally {
+        setIsUploading(false);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+
   if (!user) return null;
 
   return (
@@ -76,8 +116,28 @@ export default function ProfilePage() {
         <div className="col-span-1 md:col-span-2 lg:col-span-2 row-span-2 bg-card-bg/80 border border-theme-accent/40 hover:border-theme-accent neon-glow-theme rounded-3xl p-8 backdrop-blur-sm relative overflow-hidden group flex flex-col items-center justify-center text-center transition-all">
           <div className="absolute top-0 right-0 w-full h-full bg-theme-accent/5 rounded-full blur-[100px] pointer-events-none"></div>
           
-          <div className="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-theme-accent flex items-center justify-center bg-[#0D1117] neon-glow-theme mb-6 relative z-10 group-hover:scale-105 transition-transform duration-500">
-            <span className="text-theme-accent font-black text-6xl">{user.name.charAt(0).toUpperCase()}</span>
+          <div className="relative group/avatar cursor-pointer">
+            <div className={`w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-theme-accent flex items-center justify-center bg-[#0D1117] neon-glow-theme mb-6 relative z-10 transition-transform duration-500 ${isUploading ? 'animate-pulse' : 'group-hover/avatar:scale-105'}`}>
+              {user.avatar ? (
+                <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover rounded-full" />
+              ) : (
+                <span className="text-theme-accent font-black text-6xl">{user.name.charAt(0).toUpperCase()}</span>
+              )}
+              
+              {/* Upload Overlay */}
+              <div className="absolute inset-0 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover/avatar:opacity-100 transition-opacity">
+                <span className="text-white text-xs font-bold uppercase tracking-wider text-center px-2">
+                  {isUploading ? 'Yükleniyor...' : 'Avatar Yükle (Max 2MB)'}
+                </span>
+              </div>
+            </div>
+            <input 
+              type="file" 
+              accept="image/*" 
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20" 
+              onChange={handleAvatarUpload}
+              disabled={isUploading}
+            />
           </div>
           
           <h2 className="text-3xl md:text-4xl font-black text-white tracking-widest uppercase mb-2 relative z-10">{user.name}</h2>

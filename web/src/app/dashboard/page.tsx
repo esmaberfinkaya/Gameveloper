@@ -24,8 +24,12 @@ export default function ExplorePage() {
     title: "",
     content: "",
     category: "Unity",
+    suggestedCategory: "",
+    githubLink: "",
+    codeSnippet: "",
     imageUrl: ""
   });
+
 
   const CATEGORIES = ["Unity", "Blender", "Flutter", "Node.js", "Python"];
 
@@ -64,6 +68,12 @@ export default function ExplorePage() {
   const handleQuestionSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    if (formData.codeSnippet && formData.codeSnippet.split('\n').length > 150) {
+      alert("Hızlı kod bloğu maksimum 150 satır olabilir!");
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       const res = await fetch("http://localhost:5000/api/questions", {
         method: "POST",
@@ -76,7 +86,7 @@ export default function ExplorePage() {
 
       if (res.ok) {
         setIsQuestionModalOpen(false);
-        setFormData({ title: "", content: "", category: "Unity", imageUrl: "" });
+        setFormData({ title: "", content: "", category: "Unity", suggestedCategory: "", githubLink: "", codeSnippet: "", imageUrl: "" });
         fetchExploreFeed();
       }
     } catch (err) {
@@ -135,13 +145,72 @@ export default function ExplorePage() {
                   </label>
                   <textarea 
                     required
-                    rows={6}
+                    rows={4}
                     value={formData.content}
                     onChange={(e) => setFormData({...formData, content: e.target.value})}
-                    placeholder="Hata detayını, kodlarını veya YouTube linkini buraya yapıştır..."
-                    className="w-full bg-[#0D1117] border border-gray-700 rounded-md px-4 py-2 text-white focus:outline-none focus:border-theme-accent focus:ring-1 focus:ring-theme-accent transition font-mono text-sm resize-none custom-scrollbar"
+                    placeholder="Hata detayını, mantığı veya YouTube linkini buraya yapıştır..."
+                    className="w-full bg-[#0D1117] border border-gray-700 rounded-md px-4 py-2 text-white focus:outline-none focus:border-theme-accent focus:ring-1 focus:ring-theme-accent transition resize-none custom-scrollbar"
                   ></textarea>
                 </div>
+
+                {/* HIZLI KOD BLOĞU */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-1 flex justify-between">
+                    <span className="flex items-center gap-2"><span className="text-theme-accent font-mono">&gt;_</span> Hızlı Kod Bloğu</span>
+                    <span className="text-xs text-theme-accent/50">Maks. 150 Satır</span>
+                  </label>
+                  <div className="relative bg-[#05070a] border border-gray-700 rounded-md flex overflow-hidden">
+                    {/* Line numbers mock */}
+                    <div className="w-8 bg-gray-900 border-r border-gray-800 text-gray-600 text-xs font-mono text-right pr-2 py-2 select-none overflow-hidden">
+                       {Array.from({length: Math.max(1, (formData.codeSnippet.match(/\n/g) || []).length + 1)}).map((_, i) => <div key={i}>{i+1}</div>)}
+                    </div>
+                    <textarea 
+                      rows={4}
+                      value={formData.codeSnippet}
+                      onChange={(e) => setFormData({...formData, codeSnippet: e.target.value})}
+                      placeholder="// Kodunuzu buraya yapıştırın..."
+                      className="w-full bg-transparent border-none px-4 py-2 text-theme-accent font-mono text-sm focus:outline-none resize-y custom-scrollbar"
+                    ></textarea>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* GITHUB LINKI */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-1">GitHub Linki (Opsiyonel)</label>
+                    <input 
+                      type="url" 
+                      value={formData.githubLink}
+                      onChange={(e) => setFormData({...formData, githubLink: e.target.value})}
+                      placeholder="https://github.com/user/repo"
+                      className="w-full bg-[#0D1117] border border-gray-700 rounded-md px-4 py-2 text-white focus:outline-none focus:border-theme-accent focus:ring-1 focus:ring-theme-accent transition"
+                    />
+                    {formData.githubLink.includes('github.com') && (
+                      <div className="mt-2 p-2 border border-theme-accent/30 bg-theme-accent/5 rounded flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center">
+                          <img src="/github-mark.png" alt="GH" className="w-6 h-6 opacity-80" onError={(e) => e.currentTarget.style.display = 'none'} />
+                        </div>
+                        <div className="text-xs">
+                          <p className="text-white font-bold truncate max-w-[200px]">{formData.githubLink.split('github.com/')[1]}</p>
+                          <p className="text-theme-accent">Verified Repository</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* KATEGORI ONER */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-1">Kategori Öner</label>
+                    <input 
+                      type="text" 
+                      value={formData.suggestedCategory}
+                      onChange={(e) => setFormData({...formData, suggestedCategory: e.target.value})}
+                      placeholder="Örn: Godot, C++"
+                      className="w-full bg-[#0D1117] border border-gray-700 rounded-md px-4 py-2 text-white focus:outline-none focus:border-theme-accent focus:ring-1 focus:ring-theme-accent transition"
+                    />
+                  </div>
+                </div>
+
 
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-1 flex items-center gap-2">
@@ -215,20 +284,36 @@ export default function ExplorePage() {
         </div>
 
         {/* Filter Tabs */}
-        <div className="flex flex-wrap items-center gap-2 mb-8 border-b border-gray-800 pb-4">
-          <button 
-            onClick={() => setActiveFilter("global")}
-            className={`px-6 py-2.5 rounded-full text-sm font-bold flex items-center gap-2 transition-all ${activeFilter === "global" ? 'bg-theme-accent text-white neon-glow-theme border border-theme-accent' : 'bg-[#0D1117] text-gray-400 border border-gray-800 hover:border-theme-accent/50'}`}
-          >
-            <Globe size={18} /> Global Akış
-          </button>
-          <button 
-            onClick={() => setActiveFilter("problems")}
-            className={`px-6 py-2.5 rounded-full text-sm font-bold flex items-center gap-2 transition-all ${activeFilter === "problems" ? 'bg-theme-accent text-white neon-glow-theme border border-theme-accent' : 'bg-[#0D1117] text-gray-400 border border-gray-800 hover:border-theme-accent/50'}`}
-          >
-            <Target size={18} /> Sorunlar
-          </button>
+        <div className="flex flex-col gap-4 mb-8 border-b border-gray-800 pb-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <button 
+              onClick={() => setActiveFilter("global")}
+              className={`px-6 py-2.5 rounded-full text-sm font-bold flex items-center gap-2 transition-all ${activeFilter === "global" ? 'bg-theme-accent text-white neon-glow-theme border border-theme-accent' : 'bg-[#0D1117] text-gray-400 border border-gray-800 hover:border-theme-accent/50'}`}
+            >
+              <Globe size={18} /> Global Akış
+            </button>
+            <button 
+              onClick={() => setActiveFilter("problems")}
+              className={`px-6 py-2.5 rounded-full text-sm font-bold flex items-center gap-2 transition-all ${activeFilter === "problems" ? 'bg-theme-accent text-white neon-glow-theme border border-theme-accent' : 'bg-[#0D1117] text-gray-400 border border-gray-800 hover:border-theme-accent/50'}`}
+            >
+              <Target size={18} /> Sorunlar
+            </button>
+          </div>
+          
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-xs text-gray-500 uppercase tracking-widest mr-2">Kategoriler:</span>
+            {CATEGORIES.map(cat => (
+              <button 
+                key={cat}
+                onClick={() => setActiveFilter(cat)}
+                className={`px-4 py-1.5 rounded-md text-xs font-bold border transition-all ${activeFilter === cat ? 'bg-theme-accent/20 text-theme-accent border-theme-accent shadow-[0_0_10px_rgba(0,255,255,0.3)]' : 'bg-[#0D1117] text-gray-400 border-gray-800 hover:border-gray-600'}`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
         </div>
+
 
         {/* GRID LAYOUT - Now with dynamic columns based on content, but max 2 for better visibility of wide cards */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

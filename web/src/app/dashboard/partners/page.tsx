@@ -1,10 +1,62 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AlertTriangle, Users, X } from "lucide-react";
 
 export default function PartnersPage() {
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [partnerships, setPartnerships] = useState<any[]>([]);
+  const [user, setUser] = useState<any>(null);
+  
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    requiredRole: "DEVELOPER",
+    isUrgent: false
+  });
+
+  useEffect(() => {
+    const userData = localStorage.getItem("user");
+    if (userData) {
+      setUser(JSON.parse(userData));
+    }
+    fetchPartnerships();
+  }, []);
+
+  const fetchPartnerships = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/partnerships");
+      if (res.ok) {
+        const data = await res.json();
+        setPartnerships(data);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) return;
+    
+    try {
+      const res = await fetch("http://localhost:5000/api/partnerships", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...formData, userId: user.id })
+      });
+      if (res.ok) {
+        setIsModalOpen(false);
+        setFormData({ title: "", description: "", requiredRole: "DEVELOPER", isUrgent: false });
+        fetchPartnerships();
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+
   return (
     <>
       {/* ROL BAZLI UYARI BANNER */}
@@ -17,12 +69,101 @@ export default function PartnersPage() {
         <div className="flex items-center justify-between mb-6 border-b border-gray-800 pb-2">
           <h1 className="text-2xl font-bold text-gray-200 tracking-wider">Ortaklık Bul <span className="text-theme-accent animate-pulse ml-1">_</span></h1>
           
-          <button className="flex items-center gap-2 px-4 py-2 bg-theme-accent/10 text-theme-accent border border-theme-accent/50 hover:bg-theme-accent hover:text-white transition-all rounded-md text-sm font-bold">
+          <button onClick={() => setIsModalOpen(true)} className="flex items-center gap-2 px-4 py-2 bg-theme-accent/10 text-theme-accent border border-theme-accent/50 hover:bg-theme-accent hover:text-black transition-all rounded-md text-sm font-bold">
             <Users size={16} /> İlan Ver
           </button>
         </div>
 
+        {/* Ekleme Modalı */}
+        {isModalOpen && (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[100] flex items-center justify-center p-4">
+            <div className="bg-card-bg border border-theme-accent/50 rounded-xl neon-glow-theme w-full max-w-lg overflow-hidden flex flex-col">
+              <div className="p-5 border-b border-gray-800 flex justify-between items-center bg-gray-900/50">
+                <h2 className="text-xl font-bold text-theme-accent text-glow-theme flex items-center gap-2">
+                  <Users size={24} /> Yeni İlan
+                </h2>
+                <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-white transition">
+                  <X size={24} />
+                </button>
+              </div>
+              <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">Başlık</label>
+                  <input required type="text" value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} className="w-full bg-[#0D1117] border border-gray-700 rounded-md px-4 py-2 text-white focus:outline-none focus:border-theme-accent focus:ring-1 focus:ring-theme-accent transition" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">Açıklama</label>
+                  <textarea required rows={3} value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} className="w-full bg-[#0D1117] border border-gray-700 rounded-md px-4 py-2 text-white focus:outline-none focus:border-theme-accent focus:ring-1 focus:ring-theme-accent transition resize-none"></textarea>
+                </div>
+                <div className="flex gap-4">
+                  <div className="flex-1">
+                    <label className="block text-sm font-medium text-gray-300 mb-1">Aranan Rol</label>
+                    <select value={formData.requiredRole} onChange={(e) => setFormData({...formData, requiredRole: e.target.value})} className="w-full bg-[#0D1117] border border-gray-700 rounded-md px-4 py-2 text-white focus:outline-none focus:border-theme-accent focus:ring-1 focus:ring-theme-accent transition">
+                      <option value="DEVELOPER">Geliştirici (Kod)</option>
+                      <option value="ARTIST">3D/2D Artist</option>
+                      <option value="DESIGNER">Game Designer</option>
+                      <option value="MUSICIAN">Müzisyen/Ses</option>
+                      <option value="GAMER">Test Kullanıcısı (Gamer)</option>
+                    </select>
+                  </div>
+                  <div className="flex items-center mt-6">
+                    <label className="flex items-center gap-2 cursor-pointer text-gray-300">
+                      <input type="checkbox" checked={formData.isUrgent} onChange={(e) => setFormData({...formData, isUrgent: e.target.checked})} className="form-checkbox text-theme-accent rounded border-gray-700 bg-[#0D1117]" />
+                      Acil İlan (Urgent)
+                    </label>
+                  </div>
+                </div>
+                <div className="pt-4 flex justify-end gap-3 border-t border-gray-800">
+                  <button type="button" onClick={() => setIsModalOpen(false)} className="px-5 py-2 text-gray-400 hover:text-white transition font-bold">İptal</button>
+                  <button type="submit" className="px-5 py-2 bg-theme-accent text-black font-black rounded-md hover:shadow-[0_0_15px_rgba(0,255,255,0.6)] transition-all">YAYINLA</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Dinamik İlanlar */}
+        {partnerships.map((p) => (
+          <div key={p.id} className="bg-card-bg/80 border border-theme-accent/30 p-6 rounded-xl hover:border-theme-accent/70 hover:neon-glow-theme transition-all flex flex-col gap-4 relative overflow-hidden mb-6">
+            {p.isUrgent && <div className="absolute top-0 left-0 w-full h-1 bg-theme-accent neon-glow-theme"></div>}
+            
+            <div className="flex justify-between items-start">
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="px-2 py-1 bg-theme-accent/10 text-theme-accent text-xs font-bold rounded border border-theme-accent/50">{p.requiredRole} ARANIYOR</span>
+                  {p.isUrgent && (
+                    <span className="flex items-center gap-1 text-theme-accent text-xs font-bold animate-pulse">
+                      <AlertTriangle size={14} /> URGENT
+                    </span>
+                  )}
+                </div>
+                <h2 className="text-xl font-black text-white">{p.title}</h2>
+                <p className="text-sm text-gray-400 mt-2">{p.description}</p>
+              </div>
+            </div>
+            
+            <div className="flex justify-between items-end mt-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-white font-bold border border-gray-600">
+                  {p.user?.name.charAt(0).toUpperCase()}
+                </div>
+                <div>
+                  <p className="text-sm text-white font-bold">{p.user?.name}</p>
+                  <p className="text-xs text-theme-accent flex items-center gap-1">
+                    Trust Score: {p.user?.trustScore} <span className="text-theme-accent drop-neon-glow-theme">⚡</span>
+                  </p>
+                </div>
+              </div>
+              
+              <button onClick={() => setIsChatOpen(true)} className="px-6 py-2 bg-theme-accent/20 text-theme-accent border border-theme-accent font-bold rounded hover:bg-theme-accent hover:text-black transition-all neon-glow-theme">
+                BAŞVUR
+              </button>
+            </div>
+          </div>
+        ))}
+
         {/* MOCK DATA: URGENT Partnership from BlenderMaster */}
+
         <div className="bg-card-bg/80 border border-theme-accent/50 p-6 rounded-xl neon-glow-theme hover:neon-glow-theme transition-all flex flex-col gap-4 relative overflow-hidden">
           {/* Urgent Glow Line */}
           <div className="absolute top-0 left-0 w-full h-1 bg-theme-accent neon-glow-theme"></div>

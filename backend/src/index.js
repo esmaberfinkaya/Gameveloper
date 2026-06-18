@@ -504,6 +504,9 @@ app.get('/api/explore', async (req, res) => {
     const userRole = user ? user.role : 'GAMER';
 
     const posts = await prisma.post.findMany({
+      where: {
+        postType: { not: 'ROADMAP' }
+      },
       include: {
         user: { select: { id: true, name: true, role: true, trustScore: true } },
         comments: {

@@ -6,7 +6,6 @@ import FeedCard from "@/components/FeedCard";
 import IdeaCard from "@/components/IdeaCard";
 import ProjectCard from "@/components/ProjectCard";
 import SolutionCard from "@/components/SolutionCard";
-import RoadmapCard from "@/components/RoadmapCard";
 import ProjectDetailModal from "@/components/ProjectDetailModal";
 
 export default function ExplorePage() {
@@ -363,8 +362,6 @@ export default function ExplorePage() {
                 return <ProjectCard key={`p-${item.id}`} {...item} currentUser={user} onUpdate={fetchExploreFeed} onClick={() => { setSelectedProject(item); setIsProjectDetailModalOpen(true); }} />;
               } else if (item.feedType === 'SOLUTION') {
                 return <SolutionCard key={`s-${item.id}`} {...item} />;
-              } else if (item.feedType === 'ROADMAP') {
-                return <RoadmapCard key={`r-${item.id}`} {...item} />;
               }
               return null;
             })

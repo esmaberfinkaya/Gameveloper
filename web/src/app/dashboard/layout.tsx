@@ -70,7 +70,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     { name: "Sorunlar & Akış", href: "/dashboard", icon: MessageSquarePlus },
     { name: "Fikir Havuzu", href: "/dashboard/ideas", icon: Lightbulb },
     { name: "Ortaklık Bul", href: "/dashboard/partners", icon: Users },
-    { name: "Yol Haritaları", href: "/dashboard/roadmaps", icon: Map },
     { name: "Profilim", href: "/dashboard/profile", icon: User },
   ];
 

@@ -20,9 +20,9 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   Map<String, dynamic>? userData;
-  List<dynamic> userPosts = [];
   bool isLoading = true;
   String? error;
+  String activeFilter = 'issues';
 
   @override
   void initState() {
@@ -33,17 +33,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> fetchData() async {
     try {
       final userRes = await http.get(Uri.parse('http://10.0.2.2:5000/api/users/${widget.userId}'));
-      final exploreRes = await http.get(Uri.parse('http://10.0.2.2:5000/api/explore?userId=${widget.userId}'));
       
-      if (userRes.statusCode == 200 && exploreRes.statusCode == 200) {
+      if (userRes.statusCode == 200) {
         final Map<String, dynamic> userJson = json.decode(userRes.body);
-        final List<dynamic> exploreJson = json.decode(exploreRes.body);
-        
-        final myPosts = exploreJson.where((p) => p['userId'] == widget.userId).toList();
         
         setState(() {
           userData = userJson;
-          userPosts = myPosts;
           isLoading = false;
         });
       } else {
@@ -100,6 +95,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
 
+  Widget _buildFilterButton(String filterId, String text) {
+    final isActive = activeFilter == filterId;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          activeFilter = filterId;
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: isActive ? Theme.of(context).primaryColor.withOpacity(0.2) : Colors.transparent,
+          border: Border.all(color: isActive ? Theme.of(context).primaryColor : Colors.white24),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Text(
+          text,
+          style: TextStyle(
+            color: isActive ? Theme.of(context).primaryColor : Colors.white54,
+            fontWeight: FontWeight.bold,
+            fontSize: 12,
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
@@ -139,12 +161,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final role = userData?['role'] ?? 'GAMER';
     final trustScore = userData?['trustScore'] ?? 0;
     
-    int solvedIssues = 0;
-    int completedProjects = role == 'DEVELOPER' ? 4 : 1; // Defaulting for demo
+    final issuesList = userData?['issues'] as List<dynamic>? ?? [];
+    final ideasList = userData?['ideas'] as List<dynamic>? ?? [];
+    final partnershipsList = userData?['partnerships'] as List<dynamic>? ?? [];
+
+    List<dynamic> currentList = [];
+    if (activeFilter == 'issues') currentList = issuesList;
+    if (activeFilter == 'ideas') currentList = ideasList;
+    if (activeFilter == 'partnerships') currentList = partnershipsList;
     
-    // Count resolved questions from posts
-    for (var post in userPosts) {
-      if (post['feedType'] == 'QUESTION' && post['isResolved'] == true) {
+    int solvedIssues = 0;
+    int completedProjects = role == 'DEVELOPER' ? 4 : 1; 
+    
+    for (var post in issuesList) {
+      if (post['isResolved'] == true) {
         solvedIssues++;
       }
     }
@@ -362,36 +392,54 @@ class _ProfileScreenState extends State<ProfileScreen> {
           // Content Title
           SliverToBoxAdapter(
             child: Padding(
-              padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 32.0, bottom: 8.0),
-              child: Text(
-                'SON PAYLAŞIMLAR',
-                style: TextStyle(
-                  color: AppTheme.textPrimary,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 2,
-                ),
+              padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 32.0, bottom: 8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'KENDİ PAYLAŞIMLARIM',
+                    style: TextStyle(
+                      color: AppTheme.textPrimary,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 2,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        _buildFilterButton('issues', 'SORUNLARIM'),
+                        const SizedBox(width: 8),
+                        _buildFilterButton('ideas', 'FİKİRLERİM'),
+                        const SizedBox(width: 8),
+                        _buildFilterButton('partnerships', 'İLANLARIM'),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
 
-          userPosts.isEmpty
+          currentList.isEmpty
               ? SliverToBoxAdapter(
                   child: Padding(
-                    padding: EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.all(16.0),
                     child: Container(
                       height: 150,
                       decoration: BoxDecoration(
                         border: Border.all(color: Colors.white12, style: BorderStyle.solid),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: Center(
+                      child: const Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(Icons.dashboard_customize, color: Colors.white24, size: 48),
                             SizedBox(height: 16),
-                            Text('Henüz hiçbir içerik paylaşılmadı.', style: TextStyle(color: Colors.white54)),
+                            Text('Bu kategoride içerik bulunmuyor.', style: TextStyle(color: Colors.white54)),
                           ],
                         ),
                       ),
@@ -401,20 +449,50 @@ class _ProfileScreenState extends State<ProfileScreen> {
               : SliverList(
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
-                      final item = userPosts[index];
+                      final item = currentList[index];
+                      if (activeFilter == 'partnerships') {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                          child: CyberCard(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(item['title'] ?? '', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                                const SizedBox(height: 8),
+                                Text(item['description'] ?? '', style: const TextStyle(color: Colors.white70, fontSize: 14)),
+                                const SizedBox(height: 12),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(context).primaryColor.withOpacity(0.1),
+                                    border: Border.all(color: Theme.of(context).primaryColor.withOpacity(0.5)),
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: Text(
+                                    item['requiredRole'] ?? '',
+                                    style: TextStyle(color: Theme.of(context).primaryColor, fontSize: 10, fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }
+                      
                       return Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                         child: FeedCard(data: {
-                          'type': item['feedType'],
+                          'type': activeFilter == 'issues' ? 'QUESTION' : 'IDEA',
                           'title': item['title'],
                           'content': item['content'] ?? item['description'] ?? item['story'] ?? '',
                           'imageUrl': item['imageUrl'],
-                          'username': item['user']?['name'] ?? 'Unknown',
-                          'role': item['user']?['role'] ?? 'GAMER',
+                          'username': username,
+                          'role': role,
                         }),
                       );
                     },
-                    childCount: userPosts.length,
+                    childCount: currentList.length,
                   ),
                 ),
           

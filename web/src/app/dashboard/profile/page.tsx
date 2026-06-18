@@ -10,7 +10,7 @@ import RoadmapCard from "@/components/RoadmapCard";
 
 export default function ProfilePage() {
   const [user, setUser] = useState<any>(null);
-  const [userPosts, setUserPosts] = useState<any[]>([]);
+  const [activeFilter, setActiveFilter] = useState<'issues' | 'ideas' | 'partnerships'>('issues');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -31,32 +31,12 @@ export default function ProfilePage() {
       if (res.ok) {
         const fullUser = await res.json();
         setUser(fullUser);
-        fetchUserPosts(userId);
       } else {
         throw new Error("Kullanıcı bilgisi çekilemedi.");
       }
     } catch (err) {
       console.error(err);
       setError("Profil bilgileri yüklenemedi.");
-      setIsLoading(false);
-    }
-  };
-
-  const fetchUserPosts = async (userId: number) => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const res = await fetch(`http://localhost:5000/api/explore?userId=${userId}`);
-      if (!res.ok) {
-        throw new Error("API yanıt vermedi");
-      }
-      const data = await res.json();
-      let myPosts = data.filter((item: any) => item.userId === userId);
-      setUserPosts(myPosts);
-    } catch (err) {
-      console.error("Gönderiler çekilemedi", err);
-      setError("Sunucuya bağlanılamadı. Lütfen backend'in çalıştığından emin olun.");
-      setUserPosts([]);
     } finally {
       setIsLoading(false);
     }
@@ -170,7 +150,7 @@ export default function ProfilePage() {
             </div>
           </div>
           <div className="text-4xl font-black text-theme-accent mt-4 shadow-theme-accent/50 drop-shadow-md">
-            {userPosts.length * 3 + 12}
+            {((user.issues?.length || 0) + (user.ideas?.length || 0) + (user.partnerships?.length || 0)) * 3 + 12}
           </div>
         </div>
 
@@ -207,11 +187,33 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* Content Section (Span Full Width but split internally) */}
+        {/* Content Section */}
         <div className="col-span-1 md:col-span-3 lg:col-span-4 mt-4">
-          <h3 className="text-xl font-bold text-white tracking-widest uppercase flex items-center gap-2 mb-6 pb-2 border-b border-gray-800">
-            <Share2 size={20} className="text-theme-accent" /> Son Paylaşımlar
-          </h3>
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-4 border-b border-gray-800">
+            <h3 className="text-xl font-bold text-white tracking-widest uppercase flex items-center gap-2">
+              <Share2 size={20} className="text-theme-accent" /> Kendi Paylaşımlarım
+            </h3>
+            <div className="flex gap-2">
+              <button 
+                onClick={() => setActiveFilter('issues')}
+                className={`px-4 py-2 text-sm font-bold tracking-wider uppercase rounded-lg border transition-all ${activeFilter === 'issues' ? 'bg-theme-accent/20 border-theme-accent text-theme-accent neon-glow-theme' : 'bg-transparent border-gray-800 text-gray-500 hover:text-white'}`}
+              >
+                Sorunlarım
+              </button>
+              <button 
+                onClick={() => setActiveFilter('ideas')}
+                className={`px-4 py-2 text-sm font-bold tracking-wider uppercase rounded-lg border transition-all ${activeFilter === 'ideas' ? 'bg-theme-accent/20 border-theme-accent text-theme-accent neon-glow-theme' : 'bg-transparent border-gray-800 text-gray-500 hover:text-white'}`}
+              >
+                Fikirlerim
+              </button>
+              <button 
+                onClick={() => setActiveFilter('partnerships')}
+                className={`px-4 py-2 text-sm font-bold tracking-wider uppercase rounded-lg border transition-all ${activeFilter === 'partnerships' ? 'bg-theme-accent/20 border-theme-accent text-theme-accent neon-glow-theme' : 'bg-transparent border-gray-800 text-gray-500 hover:text-white'}`}
+              >
+                İlanlarım
+              </button>
+            </div>
+          </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {error ? (
@@ -227,24 +229,28 @@ export default function ProfilePage() {
               </div>
             ) : isLoading ? (
               <div className="col-span-full text-center text-gray-500 py-10">Yükleniyor...</div>
-            ) : userPosts.length === 0 ? (
+            ) : (activeFilter === 'issues' ? user.issues || [] : activeFilter === 'ideas' ? user.ideas || [] : user.partnerships || []).length === 0 ? (
               <div className="col-span-full text-center text-gray-500 py-20 border border-dashed border-gray-800 rounded-3xl bg-card-bg/30 flex flex-col items-center justify-center">
                 <Activity size={48} className="mb-4 opacity-20" />
-                <p className="text-lg font-medium">Henüz hiçbir içerik paylaşılmadı.</p>
-                <p className="text-sm text-gray-600 mt-2">Bu kullanıcının paylaşımları burada listelenecek.</p>
+                <p className="text-lg font-medium">Bu kategoride içerik bulunmuyor.</p>
+                <p className="text-sm text-gray-600 mt-2">Daha fazla paylaşım yaparak ekosisteme katkıda bulunun.</p>
               </div>
             ) : (
-              userPosts.map((item: any) => {
-                if (item.feedType === 'QUESTION') {
-                  return <FeedCard key={`q-${item.id}`} {...item} currentUser={user} onUpdate={() => fetchUserPosts(user.id)} isExplore={true} />;
-                } else if (item.feedType === 'IDEA') {
-                  return <IdeaCard key={`i-${item.id}`} {...item} currentUser={user} onUpdate={() => fetchUserPosts(user.id)} isExplore={true} />;
-                } else if (item.feedType === 'PROJECT') {
-                  return <ProjectCard key={`p-${item.id}`} {...item} />;
-                } else if (item.feedType === 'SOLUTION') {
-                  return <SolutionCard key={`s-${item.id}`} {...item} />;
-                } else if (item.feedType === 'ROADMAP') {
-                  return <RoadmapCard key={`r-${item.id}`} {...item} />;
+              (activeFilter === 'issues' ? user.issues || [] : activeFilter === 'ideas' ? user.ideas || [] : user.partnerships || []).map((item: any) => {
+                if (activeFilter === 'issues') {
+                  return <FeedCard key={`q-${item.id}`} {...item} currentUser={user} onUpdate={() => fetchUserData(user.id)} isExplore={true} />;
+                } else if (activeFilter === 'ideas') {
+                  return <IdeaCard key={`i-${item.id}`} {...item} currentUser={user} onUpdate={() => fetchUserData(user.id)} isExplore={true} />;
+                } else if (activeFilter === 'partnerships') {
+                  return (
+                    <div key={`p-${item.id}`} className="bg-card-bg/80 border border-theme-accent/40 rounded-xl p-6">
+                      <h4 className="text-lg font-bold text-white mb-2">{item.title}</h4>
+                      <p className="text-gray-400 text-sm mb-4">{item.description}</p>
+                      <div className="text-xs font-bold text-theme-accent px-3 py-1 bg-theme-accent/10 border border-theme-accent/30 rounded inline-block">
+                        {item.requiredRole}
+                      </div>
+                    </div>
+                  );
                 }
                 return null;
               })

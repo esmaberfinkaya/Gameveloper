@@ -145,12 +145,26 @@ app.get('/api/users/:id', async (req, res) => {
   try {
     const user = await prisma.user.findUnique({
       where: { id: parseInt(id, 10) },
-      select: { id: true, name: true, email: true, role: true, trustScore: true, createdAt: true, avatar: true }
+      include: {
+        posts: { orderBy: { createdAt: 'desc' } },
+        partnerships: { orderBy: { createdAt: 'desc' } }
+      }
     });
     if (!user) {
       return res.status(404).json({ error: 'Kullanıcı bulunamadı.' });
     }
-    res.json(user);
+    
+    if (user.password) delete user.password;
+    
+    const issues = user.posts ? user.posts.filter(p => p.postType === 'QUESTION') : [];
+    const ideas = user.posts ? user.posts.filter(p => p.postType === 'IDEA') : [];
+    
+    res.json({
+      ...user,
+      issues,
+      ideas,
+      partnerships: user.partnerships || []
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

@@ -5,7 +5,7 @@ interface ProjectCardProps {
   title: string;
   description: string;
   imageUrl: string;
-  link: string;
+  link?: string;
   category: string;
   createdAt: string;
   user: {
@@ -13,11 +13,12 @@ interface ProjectCardProps {
     name: string;
     role: string;
   };
+  onClick?: () => void;
 }
 
-export default function ProjectCard({ title, description, imageUrl, link, category, createdAt, user }: ProjectCardProps) {
+export default function ProjectCard({ title, description, imageUrl, link, category, createdAt, user, onClick }: ProjectCardProps) {
   return (
-    <div className="col-span-full mb-8 relative group overflow-hidden rounded-2xl border border-theme-accent/30 hover:border-theme-accent neon-glow-theme hover:neon-glow-theme transition-all duration-500 min-h-[400px] flex items-end">
+    <div onClick={onClick} className="col-span-full mb-8 relative group overflow-hidden rounded-2xl border border-theme-accent/30 hover:border-theme-accent neon-glow-theme hover:neon-glow-theme transition-all duration-500 min-h-[400px] flex items-end cursor-pointer">
       
       {/* Dynamic Background Image */}
       {imageUrl ? (
@@ -76,6 +77,7 @@ export default function ProjectCard({ title, description, imageUrl, link, catego
               href={link} 
               target="_blank" 
               rel="noreferrer" 
+              onClick={(e) => e.stopPropagation()}
               className="w-full md:w-auto flex items-center justify-center gap-3 bg-theme-accent text-black font-black uppercase tracking-widest px-8 py-4 rounded-xl hover:bg-theme-accent transition-all neon-glow-theme hover:neon-glow-theme hover:-translate-y-1"
             >
               Hemen İncele <ExternalLink size={20} />

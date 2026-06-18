@@ -24,7 +24,7 @@ interface IdeaCardProps {
   isExplore?: boolean;
 }
 
-export default function IdeaCard({ id, title, story, visuals, gameplay, animation, category, createdAt, user, comments, currentUser, onUpdate, isExplore = false }: IdeaCardProps) {
+export default function IdeaCard({ id, title, story, visuals, gameplay, animation, category, createdAt, user, comments = [], currentUser, onUpdate, isExplore = false }: IdeaCardProps) {
   const [activeTab, setActiveTab] = useState<"STORY" | "VISUALS" | "GAMEPLAY" | "ANIMATION">("STORY");
   const [isCommentsExpanded, setIsCommentsExpanded] = useState(false);
   const [commentContent, setCommentContent] = useState("");
@@ -163,7 +163,7 @@ export default function IdeaCard({ id, title, story, visuals, gameplay, animatio
             className={`flex items-center gap-1.5 transition-colors group/btn ${isCommentsExpanded ? 'text-theme-accent' : 'hover:text-theme-accent'}`}
           >
             <MessageSquarePlus size={16} className="group-hover/btn:text-glow-theme" />
-            <span>Tartışmalar ({comments.length})</span>
+            <span>Tartışmalar ({(comments || []).length})</span>
           </button>
           <button className="flex items-center gap-1.5 hover:text-theme-accent transition-colors group/btn">
             <Share2 size={16} className="group-hover/btn:text-glow-theme" />
@@ -176,10 +176,10 @@ export default function IdeaCard({ id, title, story, visuals, gameplay, animatio
       {isCommentsExpanded && (
         <div className="bg-[#05070a] border-t border-gray-800 p-5 space-y-6">
           <div className="space-y-4 max-h-80 overflow-y-auto custom-scrollbar pr-2">
-            {comments.length === 0 ? (
+            {!(comments && comments.length > 0) ? (
               <div className="text-center text-gray-600 text-xs py-4">Henüz yorum yapılmamış. Fikre katkıda bulun!</div>
             ) : (
-              comments.map((c) => (
+              (comments || []).map((c) => (
                 <div key={c.id} className={`p-3 rounded-lg border ${c.isPrivate ? 'border-theme-accent/50 bg-theme-accent/5' : 'border-gray-800/50 bg-[#0D1117]'} relative`}>
                   {c.isPrivate && (
                     <div className="absolute top-2 right-2 text-theme-accent flex items-center gap-1 text-[9px] uppercase tracking-wider font-bold">

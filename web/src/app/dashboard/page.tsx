@@ -7,6 +7,7 @@ import IdeaCard from "@/components/IdeaCard";
 import ProjectCard from "@/components/ProjectCard";
 import SolutionCard from "@/components/SolutionCard";
 import RoadmapCard from "@/components/RoadmapCard";
+import ProjectDetailModal from "@/components/ProjectDetailModal";
 
 export default function ExplorePage() {
   const [user, setUser] = useState<any>(null);
@@ -19,6 +20,8 @@ export default function ExplorePage() {
 
   // Modal States
   const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<any>(null);
+  const [isProjectDetailModalOpen, setIsProjectDetailModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
@@ -357,7 +360,7 @@ export default function ExplorePage() {
               } else if (item.feedType === 'IDEA') {
                 return <IdeaCard key={`i-${item.id}`} {...item} currentUser={user} onUpdate={fetchExploreFeed} isExplore={true} />;
               } else if (item.feedType === 'PROJECT') {
-                return <ProjectCard key={`p-${item.id}`} {...item} />;
+                return <ProjectCard key={`p-${item.id}`} {...item} onClick={() => { setSelectedProject(item); setIsProjectDetailModalOpen(true); }} />;
               } else if (item.feedType === 'SOLUTION') {
                 return <SolutionCard key={`s-${item.id}`} {...item} />;
               } else if (item.feedType === 'ROADMAP') {
@@ -377,6 +380,12 @@ export default function ExplorePage() {
         )}
 
       </div>
+
+      <ProjectDetailModal 
+        isOpen={isProjectDetailModalOpen} 
+        onClose={() => { setIsProjectDetailModalOpen(false); setSelectedProject(null); }} 
+        project={selectedProject} 
+      />
 
       {/* Global Style overrides for markdown tags */}
       <style dangerouslySetInnerHTML={{__html: `

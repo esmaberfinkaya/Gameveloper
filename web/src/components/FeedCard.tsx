@@ -31,8 +31,9 @@ export default function FeedCard({ id, title, content, category, imageUrl, creat
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
-  const solutions = responses.filter((r) => r.type === "SOLUTION");
-  const comments = responses.filter((r) => r.type === "COMMENT");
+  const safeResponses = responses || [];
+  const solutions = safeResponses.filter((r) => r.type === "SOLUTION");
+  const comments = safeResponses.filter((r) => r.type === "COMMENT");
 
   const handleSubmitResponse = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -238,7 +239,7 @@ export default function FeedCard({ id, title, content, category, imageUrl, creat
             className={`flex items-center gap-1.5 transition-colors group/btn ${isExpanded ? 'text-theme-accent' : 'hover:text-theme-accent'}`}
           >
             <MessageSquarePlus size={16} className="group-hover/btn:text-glow-theme" />
-            <span>Çözümler & Yorumlar ({responses.length})</span>
+            <span>Çözümler & Yorumlar ({safeResponses.length})</span>
             {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
           </button>
           <button onClick={handleShare} className="flex items-center gap-1.5 hover:text-theme-accent transition-colors group/btn">

@@ -535,6 +535,19 @@ app.get('/api/explore', async (req, res) => {
       }
     });
 
+    const projects = await prisma.project.findMany({
+      include: {
+        user: { select: { id: true, name: true, role: true, trustScore: true } }
+      }
+    });
+
+    const projectFeed = projects.map(p => ({
+      ...p,
+      feedType: 'PROJECT'
+    }));
+
+    mappedFeed = [...mappedFeed, ...projectFeed];
+
     if (filter === 'unresolved') {
       mappedFeed = mappedFeed.filter(p => p.feedType === 'QUESTION' && !p.isResolved);
     } else if (filter === 'popular') {

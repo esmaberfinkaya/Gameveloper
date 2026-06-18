@@ -171,7 +171,7 @@ class PartnershipScreen extends StatelessWidget {
                     
                     // Apply Button
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () => _showChatBottomSheet(context, item),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Theme.of(context).primaryColor.withOpacity(0.2),
                         foregroundColor: Theme.of(context).primaryColor,
@@ -207,6 +207,201 @@ class PartnershipScreen extends StatelessWidget {
         ),
         child: Icon(Icons.add, color: Theme.of(context).primaryColor),
       ),
+    );
+  }
+
+  void _showChatBottomSheet(BuildContext context, Map<String, dynamic> item) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Container(
+          height: MediaQuery.of(context).size.height * 0.85,
+          decoration: BoxDecoration(
+            color: const Color(0xFF05070A),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            border: Border(
+              top: BorderSide(color: Theme.of(context).primaryColor, width: 2),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Theme.of(context).primaryColor.withOpacity(0.2),
+                blurRadius: 30,
+                spreadRadius: 5,
+              ),
+            ],
+          ),
+          child: Column(
+            children: [
+              // Header
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  border: Border(bottom: BorderSide(color: Theme.of(context).primaryColor.withOpacity(0.5))),
+                  color: const Color(0xFF0D1117),
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).primaryColor.withOpacity(0.2),
+                            border: Border.all(color: Theme.of(context).primaryColor),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Center(
+                            child: Text(
+                              item['username'][0],
+                              style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(item['username'], style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                            Row(
+                              children: [
+                                Container(
+                                  width: 8,
+                                  height: 8,
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(context).primaryColor,
+                                    shape: BoxShape.circle,
+                                    boxShadow: [BoxShadow(color: Theme.of(context).primaryColor, blurRadius: 5)],
+                                  ),
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  'ONLINE',
+                                  style: TextStyle(color: Theme.of(context).primaryColor, fontSize: 10, letterSpacing: 2),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close, color: Colors.white54),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ],
+                ),
+              ),
+              // Chat Area
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    children: [
+                      const Text(
+                        '< SECURE CONNECTION ESTABLISHED >',
+                        style: TextStyle(color: Colors.white30, fontSize: 10, fontFamily: 'monospace'),
+                      ),
+                      const SizedBox(height: 16),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Container(
+                          margin: const EdgeInsets.only(right: 50, bottom: 16),
+                          padding: const EdgeInsets.all(12),
+                          decoration: const BoxDecoration(
+                            color: Colors.white10,
+                            borderRadius: BorderRadius.only(
+                              topRight: Radius.circular(16),
+                              bottomRight: Radius.circular(16),
+                              bottomLeft: Radius.circular(16),
+                            ),
+                            border: Border(left: BorderSide(color: Colors.white30, width: 2)),
+                          ),
+                          child: const Text(
+                            'Selam! İlanıma başvurduğun için teşekkürler. Portfolyonu inceleyebilir miyim?',
+                            style: TextStyle(color: Colors.white70, fontSize: 14),
+                          ),
+                        ),
+                      ),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Container(
+                          margin: const EdgeInsets.only(left: 50, bottom: 16),
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).primaryColor.withOpacity(0.1),
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(16),
+                              bottomLeft: Radius.circular(16),
+                              bottomRight: Radius.circular(16),
+                            ),
+                            border: Border(right: BorderSide(color: Theme.of(context).primaryColor, width: 2)),
+                          ),
+                          child: Text(
+                            'Merhaba! Tabi, hemen gönderiyorum: github.com/gameveloper',
+                            style: TextStyle(color: Theme.of(context).primaryColor, fontSize: 14),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              // Input
+              Container(
+                padding: EdgeInsets.only(
+                  left: 16, right: 16, top: 16,
+                  bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+                ),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF0D1117),
+                  border: Border(top: BorderSide(color: Theme.of(context).primaryColor.withOpacity(0.5))),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        style: TextStyle(color: Theme.of(context).primaryColor, fontFamily: 'monospace', fontSize: 14),
+                        decoration: InputDecoration(
+                          hintText: 'Mesajını yaz terminale...',
+                          hintStyle: TextStyle(color: Theme.of(context).primaryColor.withOpacity(0.5)),
+                          filled: true,
+                          fillColor: Colors.black,
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(color: Colors.white24),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(color: Theme.of(context).primaryColor),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).primaryColor,
+                        borderRadius: BorderRadius.circular(8),
+                        boxShadow: AppTheme.getGlow(Theme.of(context).primaryColor, blur: 10),
+                      ),
+                      child: IconButton(
+                        icon: const Icon(Icons.send, color: Colors.black),
+                        onPressed: () {},
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

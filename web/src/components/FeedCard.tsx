@@ -1,7 +1,7 @@
 import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { MessageSquarePlus, ThumbsUp, Share2, CheckCircle2, ChevronDown, ChevronUp, AlertCircle, Lock } from "lucide-react";
+import { MessageSquarePlus, ThumbsUp, Share2, CheckCircle2, ChevronDown, ChevronUp, AlertCircle, Lock, X } from "lucide-react";
 import AccessGate from "./AccessGate";
 
 interface FeedCardProps {
@@ -29,6 +29,7 @@ export default function FeedCard({ id, title, content, category, imageUrl, creat
   const [activeTab, setActiveTab] = useState<"SOLUTION" | "COMMENT">("SOLUTION");
   const [responseContent, setResponseContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
   const solutions = responses.filter((r) => r.type === "SOLUTION");
   const comments = responses.filter((r) => r.type === "COMMENT");
@@ -119,36 +120,13 @@ export default function FeedCard({ id, title, content, category, imageUrl, creat
           </div>
         </div>
 
-        {/* Question Content */}
-        <div className="pt-2">
+        {/* Question Content - Clickable to open modal */}
+        <div className="pt-2 cursor-pointer" onClick={() => setIsDetailModalOpen(true)}>
           <h3 className={`text-lg font-bold text-white mb-2 group-hover:text-glow-theme transition-colors pr-20 ${isExplore ? 'truncate' : ''}`}>{title}</h3>
           
           <div className={`text-gray-300 text-sm leading-relaxed custom-markdown-body space-y-3 ${isExplore ? 'line-clamp-3 overflow-hidden max-h-20' : ''}`}>
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
-              components={{
-                a: ({ node, ...props }) => {
-                  const href = props.href || "";
-                  const ytMatch = href.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i);
-                  if (ytMatch) {
-                    if (isExplore) return <span className="text-theme-accent">[YouTube Video]</span>;
-                    return (
-                      <div className="my-6 aspect-video rounded-xl overflow-hidden border border-theme-accent/30 neon-glow-theme relative group/video">
-                        <div className="absolute inset-0 bg-theme-accent/5 pointer-events-none group-hover/video:bg-transparent transition-colors"></div>
-                        <iframe
-                          className="w-full h-full relative z-10"
-                          src={`https://www.youtube.com/embed/${ytMatch[1]}`}
-                          title="YouTube video player"
-                          frameBorder="0"
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                          allowFullScreen
-                        ></iframe>
-                      </div>
-                    );
-                  }
-                  return <a {...props} className="text-theme-accent hover:underline hover:text-glow-theme transition-all" target="_blank" rel="noopener noreferrer">{props.children}</a>;
-                }
-              }}
             >
               {content}
             </ReactMarkdown>
@@ -164,6 +142,51 @@ export default function FeedCard({ id, title, content, category, imageUrl, creat
             </div>
           )}
         </div>
+        
+        {/* DETAIL MODAL */}
+        {isDetailModalOpen && (
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-[100] flex items-center justify-center p-4">
+            <div className="bg-[#05070a] border border-theme-accent/50 rounded-xl neon-glow-theme w-full max-w-3xl max-h-[90vh] overflow-y-auto custom-scrollbar flex flex-col">
+              <div className="p-5 border-b border-gray-800 flex justify-between items-center sticky top-0 bg-[#05070a]/90 backdrop-blur-sm z-10">
+                <h2 className="text-xl font-bold text-white truncate pr-4">{title}</h2>
+                <button onClick={() => setIsDetailModalOpen(false)} className="text-gray-400 hover:text-white p-1">
+                  <X size={24} />
+                </button>
+              </div>
+              
+              <div className="p-6 space-y-6">
+                {/* ONAYLANMIŞ ÇÖZÜM */}
+                {isResolved && solutions.some(s => s.isAccepted) && (
+                  <div className="border border-green-500 bg-green-500/10 p-4 rounded-lg shadow-[0_0_15px_rgba(34,197,94,0.3)]">
+                    <h4 className="text-green-400 font-bold flex items-center gap-2 mb-3">
+                      <CheckCircle2 size={18} /> ✅ ONAYLANMIŞ ÇÖZÜM
+                    </h4>
+                    {solutions.filter(s => s.isAccepted).map(res => (
+                       <div key={res.id} className="text-sm text-gray-200 custom-markdown-body">
+                         <ReactMarkdown remarkPlugins={[remarkGfm]}>{res.content}</ReactMarkdown>
+                       </div>
+                    ))}
+                  </div>
+                )}
+                
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="bg-theme-accent/20 text-theme-accent px-2 py-1 rounded text-xs font-bold">{category}</span>
+                  <span className="text-gray-400 text-xs">Gönderen: {user?.name} ({user?.role})</span>
+                </div>
+                
+                <div className="text-gray-300 text-sm leading-relaxed custom-markdown-body">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
+                </div>
+                
+                {imageUrl && (
+                  <div className="rounded-lg overflow-hidden border border-gray-800">
+                    <img src={imageUrl} alt="Hata Görseli" className="w-full object-contain max-h-[60vh]" />
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
         
         {/* Modüler Alt Butonlar (Beğen, Çözümler & Yorumlar, Paylaş) */}
         <div className="pt-4 flex items-center gap-6 text-gray-500 text-xs font-medium border-t border-gray-800/50 mt-4">

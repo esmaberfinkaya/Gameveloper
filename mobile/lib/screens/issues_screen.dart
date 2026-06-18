@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import '../theme/app_theme.dart';
 import '../widgets/cyber_card.dart';
 import '../widgets/access_gate.dart';
@@ -149,119 +150,122 @@ class _IssuesScreenState extends State<IssuesScreen> {
                 final username = issue['user']?['name'] ?? 'Unknown';
                 final role = issue['user']?['role'] ?? 'GAMER';
 
-                return CyberCard(
-                  glowColor: isSolved ? Theme.of(context).primaryColor : Theme.of(context).primaryColor,
-                  hasGlow: isSolved, // Add glow only if solved to highlight it, or maybe on both. Let's do both but different colors.
-                  borderWidth: 1.5,
-                  padding: const EdgeInsets.all(20.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Header Row: Tag and Status
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            tag,
-                            style: TextStyle(
-                              color: Theme.of(context).primaryColor,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12,
-                              letterSpacing: 1.5,
-                            ),
-                          ),
-                          if (isSolved)
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).primaryColor.withOpacity(0.2),
-                                border: Border.all(color: Theme.of(context).primaryColor),
-                                borderRadius: BorderRadius.circular(4),
-                                boxShadow: AppTheme.getGlow(Theme.of(context).primaryColor, blur: 8),
+                return GestureDetector(
+                  onTap: () => _showIssueDetailModal(context, issue),
+                  child: CyberCard(
+                    glowColor: isSolved ? Theme.of(context).primaryColor : Theme.of(context).primaryColor,
+                    hasGlow: isSolved, // Add glow only if solved to highlight it, or maybe on both. Let's do both but different colors.
+                    borderWidth: 1.5,
+                    padding: const EdgeInsets.all(20.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Header Row: Tag and Status
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              tag,
+                              style: TextStyle(
+                                color: Theme.of(context).primaryColor,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                                letterSpacing: 1.5,
                               ),
-                              child: Row(
-                                children: [
-                                  Icon(Icons.check, color: Theme.of(context).primaryColor, size: 12),
-                                  SizedBox(width: 4),
-                                  Text(
-                                    'SOLVED',
-                                    style: TextStyle(
-                                      color: Theme.of(context).primaryColor,
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.bold,
-                                      letterSpacing: 1.5,
+                            ),
+                            if (isSolved)
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).primaryColor.withOpacity(0.2),
+                                  border: Border.all(color: Theme.of(context).primaryColor),
+                                  borderRadius: BorderRadius.circular(4),
+                                  boxShadow: AppTheme.getGlow(Theme.of(context).primaryColor, blur: 8),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.check, color: Theme.of(context).primaryColor, size: 12),
+                                    SizedBox(width: 4),
+                                    Text(
+                                      'SOLVED',
+                                      style: TextStyle(
+                                        color: Theme.of(context).primaryColor,
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.bold,
+                                        letterSpacing: 1.5,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        
+                        // Issue
+                        Text(
+                          issue['title'] ?? '',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1.0,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          issue['content'] ?? '',
+                          style: const TextStyle(
+                            color: Colors.white70,
+                            fontSize: 14,
+                            height: 1.5,
+                          ),
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 20),
+                        // Footer: User and Interactions
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(2),
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: role == 'DEVELOPER' ? Theme.of(context).primaryColor : Theme.of(context).primaryColor,
+                                      width: 1.5,
                                     ),
                                   ),
+                                  child: const CircleAvatar(
+                                    radius: 12,
+                                    backgroundColor: Colors.transparent,
+                                    child: Icon(Icons.person, size: 16, color: Colors.white),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  username,
+                                  style: const TextStyle(color: Colors.white70, fontSize: 12),
+                                ),
+                              ],
+                            ),
+                            AccessGate(
+                              allowedRoles: ['DEVELOPER'],
+                              child: Row(
+                                children: [
+                                  Icon(Icons.mode_comment_outlined, color: Colors.white70, size: 16),
+                                  SizedBox(width: 4),
+                                  Text('Yanıtla', style: TextStyle(color: Colors.white70, fontSize: 12)),
                                 ],
                               ),
                             ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      
-                      // Issue
-                      Text(
-                        issue['title'] ?? '',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.0,
+                          ],
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        issue['content'] ?? '',
-                        style: const TextStyle(
-                          color: Colors.white70,
-                          fontSize: 14,
-                          height: 1.5,
-                        ),
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 20),
-                      // Footer: User and Interactions
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(2),
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: role == 'DEVELOPER' ? Theme.of(context).primaryColor : Theme.of(context).primaryColor,
-                                    width: 1.5,
-                                  ),
-                                ),
-                                child: const CircleAvatar(
-                                  radius: 12,
-                                  backgroundColor: Colors.transparent,
-                                  child: Icon(Icons.person, size: 16, color: Colors.white),
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                username,
-                                style: const TextStyle(color: Colors.white70, fontSize: 12),
-                              ),
-                            ],
-                          ),
-                          AccessGate(
-                            allowedRoles: ['DEVELOPER'],
-                            child: Row(
-                              children: [
-                                Icon(Icons.mode_comment_outlined, color: Colors.white70, size: 16),
-                                SizedBox(width: 4),
-                                Text('Yanıtla', style: TextStyle(color: Colors.white70, fontSize: 12)),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 );
               },
@@ -279,6 +283,133 @@ class _IssuesScreenState extends State<IssuesScreen> {
         ),
         child: Icon(Icons.add, color: Theme.of(context).primaryColor),
       ),
+    );
+  }
+
+  void _showIssueDetailModal(BuildContext context, dynamic issue) {
+    final isSolved = issue['isResolved'] == true;
+    final solutions = issue['responses'] as List<dynamic>? ?? [];
+    final acceptedSolutions = solutions.where((s) => s['isAccepted'] == true).toList();
+    
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          backgroundColor: const Color(0xFF05070A),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: BorderSide(color: Theme.of(context).primaryColor, width: 2),
+          ),
+          child: Container(
+            constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.8),
+            child: Column(
+              children: [
+                // Header
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF0D1117),
+                    borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                    border: Border(bottom: BorderSide(color: Theme.of(context).primaryColor.withOpacity(0.5))),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          issue['title'] ?? '',
+                          style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close, color: Colors.white54),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ],
+                  ),
+                ),
+                // Body
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // ONAYLANMIŞ ÇÖZÜM
+                        if (isSolved && acceptedSolutions.isNotEmpty) ...[
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Colors.green.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: Colors.greenAccent),
+                              boxShadow: [BoxShadow(color: Colors.greenAccent.withOpacity(0.2), blurRadius: 10)],
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(Icons.check_circle, color: Colors.greenAccent, size: 20),
+                                    SizedBox(width: 8),
+                                    Text('ONAYLANMIŞ ÇÖZÜM', style: TextStyle(color: Colors.greenAccent, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
+                                  ],
+                                ),
+                                SizedBox(height: 8),
+                                MarkdownBody(
+                                  data: acceptedSolutions.first['content'] ?? '',
+                                  styleSheet: MarkdownStyleSheet(p: const TextStyle(color: Colors.white)),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                        ],
+                        
+                        // User info
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).primaryColor.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                issue['category'] != null ? '#${issue['category']}' : '#Genel',
+                                style: TextStyle(color: Theme.of(context).primaryColor, fontSize: 10, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Text('Gönderen: ${issue['user']?['name'] ?? 'Unknown'}', style: const TextStyle(color: Colors.white54, fontSize: 12)),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        
+                        // Content
+                        MarkdownBody(
+                          data: issue['content'] ?? '',
+                          styleSheet: MarkdownStyleSheet(p: const TextStyle(color: Colors.white70)),
+                        ),
+                        
+                        // Optional image placeholder
+                        if (issue['imageUrl'] != null) ...[
+                          const SizedBox(height: 16),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.network(issue['imageUrl'], fit: BoxFit.cover),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

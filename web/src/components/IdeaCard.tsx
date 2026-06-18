@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MessageSquarePlus, Share2, Lock, Unlock, EyeOff } from "lucide-react";
+import { MessageSquarePlus, Share2, Lock, Unlock, EyeOff, X } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -9,6 +9,7 @@ interface IdeaCardProps {
   story: string;
   visuals: string;
   gameplay: string;
+  animation?: string;
   category: string;
   createdAt: string;
   user: {
@@ -23,12 +24,13 @@ interface IdeaCardProps {
   isExplore?: boolean;
 }
 
-export default function IdeaCard({ id, title, story, visuals, gameplay, category, createdAt, user, comments, currentUser, onUpdate, isExplore = false }: IdeaCardProps) {
-  const [activeTab, setActiveTab] = useState<"STORY" | "VISUALS" | "GAMEPLAY">("STORY");
+export default function IdeaCard({ id, title, story, visuals, gameplay, animation, category, createdAt, user, comments, currentUser, onUpdate, isExplore = false }: IdeaCardProps) {
+  const [activeTab, setActiveTab] = useState<"STORY" | "VISUALS" | "GAMEPLAY" | "ANIMATION">("STORY");
   const [isCommentsExpanded, setIsCommentsExpanded] = useState(false);
   const [commentContent, setCommentContent] = useState("");
   const [isPrivate, setIsPrivate] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isIdeaModalOpen, setIsIdeaModalOpen] = useState(false);
 
   const handleSubmitComment = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -85,48 +87,73 @@ export default function IdeaCard({ id, title, story, visuals, gameplay, category
           </div>
         </div>
 
-        <h3 className={`text-xl font-bold text-white group-hover:text-glow-theme transition-colors ${isExplore ? 'truncate' : ''}`}>{title}</h3>
-
-        {/* IDEA TABS: Hikaye, Görüntü, Oynanış */}
-        <div className="pt-2 border border-gray-800 rounded-lg overflow-hidden bg-[#05070a]">
-          {!isExplore && (
-            <div className="flex border-b border-gray-800">
-              <button 
-                onClick={() => setActiveTab("STORY")}
-                className={`flex-1 py-2 text-xs font-bold tracking-widest uppercase transition-all ${activeTab === "STORY" ? 'text-theme-accent border-b-2 border-theme-accent bg-theme-accent/5' : 'text-gray-500 hover:text-gray-300'}`}
-              >
-                Hikaye
-              </button>
-              <button 
-                onClick={() => setActiveTab("VISUALS")}
-                className={`flex-1 py-2 text-xs font-bold tracking-widest uppercase transition-all ${activeTab === "VISUALS" ? 'text-theme-accent border-b-2 border-theme-accent bg-theme-accent/5' : 'text-gray-500 hover:text-gray-300'}`}
-              >
-                Görüntü
-              </button>
-              <button 
-                onClick={() => setActiveTab("GAMEPLAY")}
-                className={`flex-1 py-2 text-xs font-bold tracking-widest uppercase transition-all ${activeTab === "GAMEPLAY" ? 'text-theme-accent border-b-2 border-theme-accent bg-theme-accent/5' : 'text-gray-500 hover:text-gray-300'}`}
-              >
-                Oynanış
-              </button>
-            </div>
-          )}
+        <div className="pt-2 cursor-pointer" onClick={() => setIsIdeaModalOpen(true)}>
+          <h3 className={`text-xl font-bold text-white group-hover:text-glow-theme transition-colors ${isExplore ? 'truncate' : ''}`}>{title}</h3>
           
-          <div className={`p-4 text-sm text-gray-300 custom-markdown-body ${isExplore ? 'line-clamp-3 max-h-20 overflow-hidden' : 'min-h-[100px]'}`}>
-            {isExplore ? (
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>{story || visuals || gameplay}</ReactMarkdown>
-            ) : (
-              <>
-                {activeTab === "STORY" && <ReactMarkdown remarkPlugins={[remarkGfm]}>{story}</ReactMarkdown>}
-                {activeTab === "VISUALS" && <ReactMarkdown remarkPlugins={[remarkGfm]}>{visuals}</ReactMarkdown>}
-                {activeTab === "GAMEPLAY" && <ReactMarkdown remarkPlugins={[remarkGfm]}>{gameplay}</ReactMarkdown>}
-              </>
-            )}
+          <div className="mt-3 p-3 bg-[#05070a] border border-gray-800 rounded-lg">
+            <div className={`text-sm text-gray-300 custom-markdown-body line-clamp-3 overflow-hidden max-h-20`}>
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{story || visuals || gameplay || "Fikir detayı..."}</ReactMarkdown>
+            </div>
+            <button className="text-theme-accent text-xs font-bold mt-2 hover:underline">Fikri İncele...</button>
           </div>
         </div>
 
-        {isExplore && (
-           <button className="text-theme-accent text-xs font-bold mt-2 hover:underline">Fikri İncele...</button>
+        {/* IDEA MODAL */}
+        {isIdeaModalOpen && (
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-[100] flex items-center justify-center p-4">
+            <div className="bg-[#05070a] border border-theme-accent/50 rounded-xl neon-glow-theme w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
+              <div className="p-5 border-b border-gray-800 flex justify-between items-center bg-[#05070a]">
+                <div>
+                  <h2 className="text-xl font-bold text-white pr-4">{title}</h2>
+                  <div className="flex items-center gap-3 mt-1">
+                    <span className="bg-theme-accent/20 text-theme-accent px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider">{category}</span>
+                    <span className="text-gray-400 text-xs">Fikir Sahibi: {user?.name} ({user?.role})</span>
+                  </div>
+                </div>
+                <button onClick={() => setIsIdeaModalOpen(false)} className="text-gray-400 hover:text-white p-1 rounded-full hover:bg-gray-800 transition">
+                  <X size={24} />
+                </button>
+              </div>
+
+              <div className="flex flex-col flex-1 overflow-hidden">
+                <div className="flex border-b border-gray-800 bg-[#0D1117] shrink-0">
+                  <button 
+                    onClick={() => setActiveTab("STORY")}
+                    className={`flex-1 py-3 text-sm font-bold tracking-widest uppercase transition-all ${activeTab === "STORY" ? 'text-theme-accent border-b-2 border-theme-accent bg-theme-accent/5' : 'text-gray-500 hover:text-gray-300'}`}
+                  >
+                    Hikaye
+                  </button>
+                  <button 
+                    onClick={() => setActiveTab("VISUALS")}
+                    className={`flex-1 py-3 text-sm font-bold tracking-widest uppercase transition-all ${activeTab === "VISUALS" ? 'text-theme-accent border-b-2 border-theme-accent bg-theme-accent/5' : 'text-gray-500 hover:text-gray-300'}`}
+                  >
+                    Görüntü
+                  </button>
+                  <button 
+                    onClick={() => setActiveTab("GAMEPLAY")}
+                    className={`flex-1 py-3 text-sm font-bold tracking-widest uppercase transition-all ${activeTab === "GAMEPLAY" ? 'text-theme-accent border-b-2 border-theme-accent bg-theme-accent/5' : 'text-gray-500 hover:text-gray-300'}`}
+                  >
+                    Oynanış
+                  </button>
+                  <button 
+                    onClick={() => setActiveTab("ANIMATION")}
+                    className={`flex-1 py-3 text-sm font-bold tracking-widest uppercase transition-all ${activeTab === "ANIMATION" ? 'text-theme-accent border-b-2 border-theme-accent bg-theme-accent/5' : 'text-gray-500 hover:text-gray-300'}`}
+                  >
+                    Animasyon
+                  </button>
+                </div>
+                
+                <div className="p-6 overflow-y-auto custom-scrollbar bg-[#05070a]">
+                  <div className="text-gray-300 text-sm leading-relaxed custom-markdown-body">
+                    {activeTab === "STORY" && <ReactMarkdown remarkPlugins={[remarkGfm]}>{story || "_Hikaye detayı bulunmuyor._"}</ReactMarkdown>}
+                    {activeTab === "VISUALS" && <ReactMarkdown remarkPlugins={[remarkGfm]}>{visuals || "_Görüntü detayı bulunmuyor._"}</ReactMarkdown>}
+                    {activeTab === "GAMEPLAY" && <ReactMarkdown remarkPlugins={[remarkGfm]}>{gameplay || "_Oynanış detayı bulunmuyor._"}</ReactMarkdown>}
+                    {activeTab === "ANIMATION" && <ReactMarkdown remarkPlugins={[remarkGfm]}>{animation || "_Animasyon detayı bulunmuyor._"}</ReactMarkdown>}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         )}
 
         {/* Action Buttons */}

@@ -1,8 +1,10 @@
 "use client";
 
-import { AlertTriangle, Users } from "lucide-react";
+import { useState } from "react";
+import { AlertTriangle, Users, X } from "lucide-react";
 
 export default function PartnersPage() {
+  const [isChatOpen, setIsChatOpen] = useState(false);
   return (
     <>
       {/* ROL BAZLI UYARI BANNER */}
@@ -53,12 +55,75 @@ export default function PartnersPage() {
               </div>
             </div>
             
-            <button className="px-6 py-2 bg-theme-accent/20 text-theme-accent border border-theme-accent font-bold rounded hover:bg-theme-accent hover:text-black transition-all neon-glow-theme">
+            <button onClick={() => setIsChatOpen(true)} className="px-6 py-2 bg-theme-accent/20 text-theme-accent border border-theme-accent font-bold rounded hover:bg-theme-accent hover:text-black transition-all neon-glow-theme">
               BAŞVUR
             </button>
           </div>
         </div>
       </div>
+
+      {/* CHAT DRAWER */}
+      {isChatOpen && (
+        <div className="fixed inset-0 z-[200] flex justify-end">
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setIsChatOpen(false)}></div>
+          <div className="relative w-full max-w-md h-full bg-[#05070a] border-l border-theme-accent shadow-[0_0_30px_rgba(0,255,255,0.2)] flex flex-col animate-slide-in-right">
+            
+            {/* Header */}
+            <div className="p-4 border-b border-theme-accent/50 bg-[#0D1117] flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded bg-theme-accent/20 border border-theme-accent flex items-center justify-center text-theme-accent font-bold">
+                  B
+                </div>
+                <div>
+                  <h3 className="text-white font-bold text-sm">BlenderMaster</h3>
+                  <p className="text-theme-accent text-[10px] uppercase tracking-widest flex items-center gap-1">
+                    <span className="w-2 h-2 rounded-full bg-theme-accent animate-pulse"></span> ONLINE
+                  </p>
+                </div>
+              </div>
+              <button onClick={() => setIsChatOpen(false)} className="text-gray-400 hover:text-white p-2">
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Chat Area (Terminal Style) */}
+            <div className="flex-1 p-4 overflow-y-auto custom-scrollbar font-mono text-sm space-y-4 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#0D1117] to-[#05070a]">
+              <div className="text-center text-gray-600 text-xs my-4 border-b border-gray-800 pb-2">
+                &lt; SECURE CONNECTION ESTABLISHED &gt;
+              </div>
+              
+              {/* Messages */}
+              <div className="flex flex-col gap-1 max-w-[85%]">
+                <span className="text-[10px] text-gray-500">BlenderMaster - 10:42</span>
+                <div className="bg-gray-800 text-gray-300 p-3 rounded-r-lg rounded-bl-lg border-l-2 border-gray-600">
+                  Selam! İlanıma başvurduğun için teşekkürler. Portfolyonu inceleyebilir miyim?
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-1 max-w-[85%] self-end ml-auto">
+                <span className="text-[10px] text-theme-accent text-right">Sen - 10:45</span>
+                <div className="bg-theme-accent/10 text-theme-accent p-3 rounded-l-lg rounded-br-lg border-r-2 border-theme-accent shadow-[0_0_10px_rgba(0,255,255,0.1)]">
+                  Merhaba! Tabi, hemen gönderiyorum: github.com/gameveloper
+                </div>
+              </div>
+            </div>
+
+            {/* Input Area */}
+            <div className="p-4 border-t border-theme-accent/50 bg-[#0D1117]">
+              <div className="flex gap-2">
+                <input 
+                  type="text" 
+                  placeholder="Mesajını yaz terminale..."
+                  className="flex-1 bg-black border border-gray-700 focus:border-theme-accent text-theme-accent font-mono text-sm p-3 rounded-md outline-none transition-colors"
+                />
+                <button className="bg-theme-accent text-black font-bold px-4 py-2 rounded-md hover:shadow-[0_0_15px_rgba(0,255,255,0.5)] transition-all">
+                  GÖNDER
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

@@ -64,8 +64,12 @@ export default function DMWidget() {
         fetchMessages(room.id);
       });
 
-      socketRef.current.on('receive_dm', (msg) => {
-        setMessages((prev) => [...prev, msg]);
+      socketRef.current.on('receive_message', (msg) => {
+        setMessages((prev) => {
+          // Gelen mesaj zaten varsa ekleme
+          if (prev.some(m => m.id === msg.id)) return prev;
+          return [...prev, msg];
+        });
       });
     }
 
@@ -135,7 +139,7 @@ export default function DMWidget() {
     e.preventDefault();
     if (!inputText.trim() || !roomId || !socketRef.current) return;
 
-    socketRef.current.emit('send_dm', {
+    socketRef.current.emit('send_message', {
       roomId,
       senderId: currentUser.id,
       content: inputText

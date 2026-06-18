@@ -33,24 +33,44 @@ io.on('connection', (socket) => {
     console.log(`[Socket] User ${socket.id} joined room partnership_${partnershipId}`);
   });
 
-  // Mesaj Gönderme
+  // Mesaj Gönderme (Ortaklık ve DM birleşimi)
   socket.on('send_message', async (data) => {
-    const { partnershipId, senderId, content } = data;
+    const { partnershipId, roomId, senderId, content } = data;
     try {
-      // Mesajı DB'ye kaydet
-      const message = await prisma.message.create({
-        data: {
-          content,
-          senderId: parseInt(senderId, 10),
-          partnershipId: parseInt(partnershipId, 10),
-        },
-        include: {
-          sender: { select: { id: true, name: true, role: true, trustScore: true, avatar: true } }
-        }
-      });
+      if (roomId) {
+        // DM mantığı
+        const dm = await prisma.directMessage.create({
+          data: {
+            content,
+            roomId,
+            senderId: parseInt(senderId, 10),
+          },
+          include: {
+            sender: { select: { id: true, name: true, role: true, avatar: true } }
+          }
+        });
 
-      // Odadaki herkese (gönderen dahil) yayınla
-      io.to(`partnership_${partnershipId}`).emit('receive_message', message);
+        await prisma.chatRoom.update({
+          where: { id: roomId },
+          data: { updatedAt: new Date() }
+        });
+
+        io.to(`dm_${roomId}`).emit('receive_message', dm);
+      } else if (partnershipId) {
+        // Ortaklık ilanı mantığı
+        const message = await prisma.message.create({
+          data: {
+            content,
+            senderId: parseInt(senderId, 10),
+            partnershipId: parseInt(partnershipId, 10),
+          },
+          include: {
+            sender: { select: { id: true, name: true, role: true, trustScore: true, avatar: true } }
+          }
+        });
+
+        io.to(`partnership_${partnershipId}`).emit('receive_message', message);
+      }
     } catch (err) {
       console.error('[Socket] Error saving message:', err);
     }
@@ -83,31 +103,7 @@ io.on('connection', (socket) => {
     }
   });
 
-  // DM: Mesaj Gönderme
-  socket.on('send_dm', async (data) => {
-    const { roomId, senderId, content } = data;
-    try {
-      const dm = await prisma.directMessage.create({
-        data: {
-          content,
-          roomId,
-          senderId: parseInt(senderId, 10),
-        },
-        include: {
-          sender: { select: { id: true, name: true, role: true, avatar: true } }
-        }
-      });
 
-      await prisma.chatRoom.update({
-        where: { id: roomId },
-        data: { updatedAt: new Date() }
-      });
-
-      io.to(`dm_${roomId}`).emit('receive_dm', dm);
-    } catch (err) {
-      console.error('[Socket] Error saving DM:', err);
-    }
-  });
 
   socket.on('disconnect', () => {
     console.log(`[Socket] User disconnected: ${socket.id}`);

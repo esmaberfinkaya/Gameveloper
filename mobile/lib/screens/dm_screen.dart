@@ -53,10 +53,13 @@ class _DMScreenState extends State<DMScreen> {
       }
     });
 
-    socket.on('receive_dm', (msg) {
+    socket.on('receive_message', (msg) {
       if (mounted) {
         setState(() {
-          messages.add(msg);
+          bool exists = messages.any((m) => m['id'] == msg['id']);
+          if (!exists) {
+            messages.add(msg);
+          }
         });
         _scrollToBottom();
       }
@@ -81,7 +84,7 @@ class _DMScreenState extends State<DMScreen> {
     final text = _messageController.text.trim();
     if (text.isEmpty || roomId == null) return;
 
-    socket.emit('send_dm', {
+    socket.emit('send_message', {
       'roomId': roomId,
       'senderId': currentUserId,
       'content': text,

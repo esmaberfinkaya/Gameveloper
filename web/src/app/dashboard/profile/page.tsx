@@ -145,13 +145,12 @@ export default function ProfilePage() {
           <h3 className="text-sm text-gray-400 uppercase tracking-[0.2em] mb-4 relative z-10 font-bold">Trust Score</h3>
           
           {/* Battery UI */}
-          <div className="w-full h-12 bg-gray-900 border-2 border-theme-accent/50 rounded-lg relative overflow-hidden flex items-center z-10 shadow-[0_0_15px_rgba(var(--theme-accent),0.3)]">
+          <div className="w-full h-12 bg-gray-900 border-2 border-theme-accent/50 rounded-lg relative overflow-hidden flex items-center justify-center z-10 shadow-[0_0_15px_rgba(var(--theme-accent),0.3)]">
             <div 
-              className="h-full bg-theme-accent transition-all duration-1000 ease-out flex items-center justify-end px-2"
+              className="absolute left-0 top-0 h-full bg-theme-accent/80 transition-all duration-1000 ease-out"
               style={{ width: `${user.trustScore}%` }}
-            >
-              <span className="text-black font-black text-xl mix-blend-difference">{user.trustScore}%</span>
-            </div>
+            ></div>
+            <span className="relative z-20 text-white font-black text-xl drop-shadow-[0_2px_2px_rgba(0,0,0,1)] tracking-widest">{user.trustScore} / 100</span>
           </div>
           
           <p className="text-xs text-theme-accent/60 mt-4 text-center relative z-10 uppercase tracking-wider">Topluluk <br/> Güvenilirlik Puanı</p>

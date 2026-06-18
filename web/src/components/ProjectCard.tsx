@@ -45,7 +45,7 @@ export default function ProjectCard({ id, title, description, imageUrl, link, ca
   };
 
   return (
-    <div onClick={onClick} className="col-span-full mb-8 relative group overflow-hidden rounded-2xl border border-theme-accent/30 hover:border-theme-accent neon-glow-theme hover:neon-glow-theme transition-all duration-500 min-h-[400px] flex items-end cursor-pointer">
+    <div onClick={onClick} className="col-span-full mb-8 relative group overflow-hidden rounded-2xl border border-theme-accent/30 hover:border-theme-accent neon-glow-theme hover:neon-glow-theme transition-all duration-500 min-h-[280px] md:min-h-[320px] flex items-end cursor-pointer">
       
       {/* Dynamic Background Image */}
       {imageUrl ? (
@@ -61,7 +61,7 @@ export default function ProjectCard({ id, title, description, imageUrl, link, ca
       )}
 
       {/* Heavy Gradient Overlay for text readability */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent"></div>
+      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent pointer-events-none"></div>
       <div className="absolute inset-0 bg-theme-accent/10 mix-blend-overlay group-hover:bg-theme-accent/20 transition-all duration-500"></div>
 
       {/* Floating Category Badge */}

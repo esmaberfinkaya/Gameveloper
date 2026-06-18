@@ -15,7 +15,7 @@ export default function ExplorePage() {
   const [mixFeed, setMixFeed] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeFilter, setActiveFilter] = useState("global"); // global, problems
+  const [activeFilter, setActiveFilter] = useState("unresolved"); // unresolved, all
 
   // Modal States
   const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false);
@@ -52,7 +52,8 @@ export default function ExplorePage() {
     setIsLoading(true);
     setError(null);
     try {
-      const res = await fetch(`http://localhost:5000/api/explore?filter=${activeFilter === "problems" ? "unresolved" : "newest"}&userId=${user?.id}`);
+      const apiFilter = activeFilter === "unresolved" ? "unresolved" : "questions";
+      const res = await fetch(`http://localhost:5000/api/explore?filter=${apiFilter}&userId=${user?.id}`);
       if (!res.ok) {
         throw new Error("API yanıt vermedi");
       }
@@ -274,7 +275,7 @@ export default function ExplorePage() {
 
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
           <h1 className="text-3xl font-black text-white tracking-widest uppercase flex items-center gap-3">
-            <Compass size={32} className="text-theme-accent" /> Dashboard
+            <MessageSquarePlus size={32} className="text-theme-accent" /> Sorunlar <span className="text-theme-accent animate-pulse">_</span>
           </h1>
           
           <button 
@@ -289,10 +290,16 @@ export default function ExplorePage() {
         <div className="flex flex-col gap-4 mb-8 border-b border-gray-800 pb-4">
           <div className="flex flex-wrap items-center gap-2">
             <button 
-              onClick={() => setActiveFilter("global")}
-              className={`px-6 py-2.5 rounded-full text-sm font-bold flex items-center gap-2 transition-all ${activeFilter === "global" ? 'bg-theme-accent text-white neon-glow-theme border border-theme-accent' : 'bg-[#0D1117] text-gray-400 border border-gray-800 hover:border-theme-accent/50'}`}
+              onClick={() => setActiveFilter("unresolved")}
+              className={`px-6 py-2.5 rounded-full text-sm font-bold flex items-center gap-2 transition-all ${activeFilter === "unresolved" ? 'bg-theme-accent text-white neon-glow-theme border border-theme-accent' : 'bg-[#0D1117] text-gray-400 border border-gray-800 hover:border-theme-accent/50'}`}
             >
-              <Globe size={18} /> Global Akış
+              <Target size={18} /> Çözülmemiş
+            </button>
+            <button 
+              onClick={() => setActiveFilter("questions")}
+              className={`px-6 py-2.5 rounded-full text-sm font-bold flex items-center gap-2 transition-all ${activeFilter === "questions" ? 'bg-theme-accent text-white neon-glow-theme border border-theme-accent' : 'bg-[#0D1117] text-gray-400 border border-gray-800 hover:border-theme-accent/50'}`}
+            >
+              <MessageSquarePlus size={18} /> Tüm Sorunlar
             </button>
           </div>
           

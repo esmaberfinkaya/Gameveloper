@@ -50,7 +50,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     if (path.includes("/dashboard/ideas")) return "#f7ef02";
     if (path.includes("/dashboard/profile")) return "#e00202";
     if (path.includes("/dashboard/partners")) return "#fc03cf";
-    if (path.includes("/dashboard/roadmaps")) return "#0505e3";
+    if (path.includes("/dashboard/issues")) return "#0505e3";
     return "#03fc1c";
   };
 
@@ -67,7 +67,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }
 
   const navLinks = [
-    { name: "Sorunlar & Akış", href: "/dashboard", icon: MessageSquarePlus },
+    { name: "Akış", href: "/dashboard", icon: Activity },
+    { name: "Sorunlar", href: "/dashboard/issues", icon: MessageSquarePlus },
     { name: "Fikir Havuzu", href: "/dashboard/ideas", icon: Lightbulb },
     { name: "Ortaklık Bul", href: "/dashboard/partners", icon: Users },
     { name: "Profilim", href: "/dashboard/profile", icon: User },

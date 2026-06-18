@@ -348,9 +348,7 @@ export default function ExplorePage() {
             </div>
           ) : (
             mixFeed.map((item: any) => {
-              if (item.feedType === 'QUESTION') {
-                return <FeedCard key={`q-${item.id}`} {...item} currentUser={user} onUpdate={fetchExploreFeed} isExplore={true} />;
-              } else if (item.feedType === 'IDEA') {
+              if (item.feedType === 'IDEA') {
                 return <IdeaCard key={`i-${item.id}`} {...item} currentUser={user} onUpdate={fetchExploreFeed} isExplore={true} />;
               } else if (item.feedType === 'PROJECT') {
                 return <ProjectCard key={`p-${item.id}`} {...item} currentUser={user} onUpdate={fetchExploreFeed} onClick={() => { setSelectedProject(item); setIsProjectDetailModalOpen(true); }} />;

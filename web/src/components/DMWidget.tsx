@@ -40,6 +40,7 @@ export default function DMWidget() {
         setCurrentUser(JSON.parse(cUserStr));
       }
       setTargetUser(tUser);
+      setMessages([]);
       setView('chat');
       setIsOpen(true);
       setIsMinimized(false);

@@ -34,6 +34,7 @@ model User {
   posts        Post[]
   comments     Comment[]
   partnerships Partnership[]
+  messages     Message[]
 }
 
 model Post {
@@ -80,4 +81,17 @@ model Partnership {
   updatedAt    DateTime @updatedAt
 
   user         User     @relation(fields: [userId], references: [id])
+  messages     Message[]
 }
+
+model Message {
+  id            Int         @id @default(autoincrement())
+  content       String      @db.Text
+  senderId      Int
+  partnershipId Int
+  createdAt     DateTime    @default(now())
+
+  sender        User        @relation(fields: [senderId], references: [id])
+  partnership   Partnership @relation(fields: [partnershipId], references: [id], onDelete: Cascade)
+}
+

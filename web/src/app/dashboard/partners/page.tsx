@@ -1,10 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { AlertTriangle, Users, X } from "lucide-react";
+import { useEffect, useState, useRef } from "react";
+import { AlertTriangle, Users, X, Send } from "lucide-react";
+import io from "socket.io-client";
 
 export default function PartnersPage() {
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [activePartnership, setActivePartnership] = useState<any>(null);
+  const [socket, setSocket] = useState<any>(null);
+  const [messages, setMessages] = useState<any[]>([]);
+  const [newMessage, setNewMessage] = useState("");
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [partnerships, setPartnerships] = useState<any[]>([]);
   const [user, setUser] = useState<any>(null);
@@ -23,6 +29,58 @@ export default function PartnersPage() {
     }
     fetchPartnerships();
   }, []);
+
+  useEffect(() => {
+    if (isChatOpen && activePartnership) {
+      const newSocket = io("http://localhost:5000");
+      setSocket(newSocket);
+      
+      newSocket.on("connect", () => {
+        newSocket.emit("join_room", activePartnership.id);
+      });
+      
+      newSocket.on("receive_message", (msg: any) => {
+        setMessages(prev => [...prev, msg]);
+      });
+      
+      fetchMessages();
+      
+      return () => {
+        newSocket.disconnect();
+      };
+    }
+  }, [isChatOpen, activePartnership]);
+
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
+
+  const fetchMessages = async () => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/partnerships/${activePartnership.id}/messages`);
+      if (res.ok) {
+        const data = await res.json();
+        setMessages(data);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleSendMessage = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!newMessage.trim() || !socket || !user) return;
+    
+    socket.emit("send_message", {
+      partnershipId: activePartnership.id,
+      senderId: user.id,
+      content: newMessage.trim()
+    });
+    setNewMessage("");
+  };
+
 
   const fetchPartnerships = async () => {
     try {
@@ -154,75 +212,34 @@ export default function PartnersPage() {
                   </p>
                 </div>
               </div>
-              
-              <button onClick={() => setIsChatOpen(true)} className="px-6 py-2 bg-theme-accent/20 text-theme-accent border border-theme-accent font-bold rounded hover:bg-theme-accent hover:text-black transition-all neon-glow-theme">
+              <button onClick={() => { setActivePartnership(p); setIsChatOpen(true); }} className="px-6 py-2 bg-theme-accent/20 text-theme-accent border border-theme-accent font-bold rounded hover:bg-theme-accent hover:text-black transition-all neon-glow-theme">
                 BAŞVUR
               </button>
             </div>
           </div>
         ))}
-
-        {/* MOCK DATA: URGENT Partnership from BlenderMaster */}
-
-        <div className="bg-card-bg/80 border border-theme-accent/50 p-6 rounded-xl neon-glow-theme hover:neon-glow-theme transition-all flex flex-col gap-4 relative overflow-hidden">
-          {/* Urgent Glow Line */}
-          <div className="absolute top-0 left-0 w-full h-1 bg-theme-accent neon-glow-theme"></div>
-          
-          <div className="flex justify-between items-start">
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <span className="px-2 py-1 bg-theme-accent/20 text-theme-accent text-xs font-bold rounded border border-theme-accent neon-glow-theme">3D ARTIST ARANIYOR</span>
-                <span className="flex items-center gap-1 text-theme-accent text-xs font-bold animate-pulse">
-                  <AlertTriangle size={14} /> URGENT
-                </span>
-              </div>
-              <h2 className="text-xl font-black text-white">Sci-Fi Çevre Tasarımı İçin Yardım</h2>
-              <p className="text-sm text-gray-400 mt-2">
-                Unity HDRP kullanarak geliştirdiğim projede sci-fi koridor ve dış mekan modellemeleri yapacak bir 3D artist arıyorum.
-              </p>
-            </div>
-          </div>
-          
-          <div className="flex justify-between items-end mt-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-white font-bold border border-gray-600">
-                B
-              </div>
-              <div>
-                <p className="text-sm text-white font-bold">BlenderMaster</p>
-                <p className="text-xs text-theme-accent flex items-center gap-1">
-                  Trust Score: 2450 <span className="text-theme-accent drop-neon-glow-theme">⚡</span>
-                </p>
-              </div>
-            </div>
-            
-            <button onClick={() => setIsChatOpen(true)} className="px-6 py-2 bg-theme-accent/20 text-theme-accent border border-theme-accent font-bold rounded hover:bg-theme-accent hover:text-black transition-all neon-glow-theme">
-              BAŞVUR
-            </button>
-          </div>
-        </div>
       </div>
 
       {/* CHAT DRAWER */}
-      {isChatOpen && (
+      {isChatOpen && activePartnership && (
         <div className="fixed inset-0 z-[200] flex justify-end">
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setIsChatOpen(false)}></div>
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => { setIsChatOpen(false); setActivePartnership(null); }}></div>
           <div className="relative w-full max-w-md h-full bg-[#05070a] border-l border-theme-accent shadow-[0_0_30px_rgba(0,255,255,0.2)] flex flex-col animate-slide-in-right">
             
             {/* Header */}
             <div className="p-4 border-b border-theme-accent/50 bg-[#0D1117] flex justify-between items-center">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded bg-theme-accent/20 border border-theme-accent flex items-center justify-center text-theme-accent font-bold">
-                  B
+                  {activePartnership.user?.name.charAt(0).toUpperCase()}
                 </div>
                 <div>
-                  <h3 className="text-white font-bold text-sm">BlenderMaster</h3>
+                  <h3 className="text-white font-bold text-sm">{activePartnership.title}</h3>
                   <p className="text-theme-accent text-[10px] uppercase tracking-widest flex items-center gap-1">
                     <span className="w-2 h-2 rounded-full bg-theme-accent animate-pulse"></span> ONLINE
                   </p>
                 </div>
               </div>
-              <button onClick={() => setIsChatOpen(false)} className="text-gray-400 hover:text-white p-2">
+              <button onClick={() => { setIsChatOpen(false); setActivePartnership(null); }} className="text-gray-400 hover:text-white p-2">
                 <X size={20} />
               </button>
             </div>
@@ -233,35 +250,43 @@ export default function PartnersPage() {
                 &lt; SECURE CONNECTION ESTABLISHED &gt;
               </div>
               
-              {/* Messages */}
-              <div className="flex flex-col gap-1 max-w-[85%]">
-                <span className="text-[10px] text-gray-500">BlenderMaster - 10:42</span>
-                <div className="bg-gray-800 text-gray-300 p-3 rounded-r-lg rounded-bl-lg border-l-2 border-gray-600">
-                  Selam! İlanıma başvurduğun için teşekkürler. Portfolyonu inceleyebilir miyim?
+              {messages.length === 0 && (
+                <div className="text-center text-gray-500 text-xs my-10">
+                  Hiç mesaj yok. İlk yazan sen ol!
                 </div>
-              </div>
-
-              <div className="flex flex-col gap-1 max-w-[85%] self-end ml-auto">
-                <span className="text-[10px] text-theme-accent text-right">Sen - 10:45</span>
-                <div className="bg-theme-accent/10 text-theme-accent p-3 rounded-l-lg rounded-br-lg border-r-2 border-theme-accent shadow-[0_0_10px_rgba(0,255,255,0.1)]">
-                  Merhaba! Tabi, hemen gönderiyorum: github.com/gameveloper
-                </div>
-              </div>
+              )}
+              
+              {messages.map((m: any, idx: number) => {
+                const isMe = m.senderId === user?.id;
+                return (
+                  <div key={idx} className={`flex flex-col gap-1 max-w-[85%] ${isMe ? 'self-end ml-auto' : ''}`}>
+                    <span className={`text-[10px] ${isMe ? 'text-theme-accent text-right' : 'text-gray-500'}`}>
+                      {m.sender?.name || "Bilinmiyor"} - {new Date(m.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                    </span>
+                    <div className={`p-3 border-2 shadow-[0_0_10px_rgba(0,255,255,0.1)] ${isMe ? 'bg-theme-accent/10 text-theme-accent rounded-l-lg rounded-br-lg border-r-theme-accent' : 'bg-gray-800 text-gray-300 rounded-r-lg rounded-bl-lg border-l-gray-600'}`}>
+                      {m.content}
+                    </div>
+                  </div>
+                );
+              })}
+              <div ref={messagesEndRef} />
             </div>
 
             {/* Input Area */}
-            <div className="p-4 border-t border-theme-accent/50 bg-[#0D1117]">
+            <form onSubmit={handleSendMessage} className="p-4 border-t border-theme-accent/50 bg-[#0D1117]">
               <div className="flex gap-2">
                 <input 
                   type="text" 
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
                   placeholder="Mesajını yaz terminale..."
                   className="flex-1 bg-black border border-gray-700 focus:border-theme-accent text-theme-accent font-mono text-sm p-3 rounded-md outline-none transition-colors"
                 />
-                <button className="bg-theme-accent text-black font-bold px-4 py-2 rounded-md hover:shadow-[0_0_15px_rgba(0,255,255,0.5)] transition-all">
-                  GÖNDER
+                <button type="submit" disabled={!newMessage.trim()} className="bg-theme-accent text-black font-bold px-4 py-2 rounded-md hover:shadow-[0_0_15px_rgba(0,255,255,0.5)] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center">
+                  <Send size={18} />
                 </button>
               </div>
-            </div>
+            </form>
           </div>
         </div>
       )}

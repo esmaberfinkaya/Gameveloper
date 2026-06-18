@@ -1,36 +1,43 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 import '../theme/app_theme.dart';
 import '../widgets/cyber_card.dart';
 
-class PartnershipScreen extends StatelessWidget {
-  PartnershipScreen({super.key});
+class PartnershipScreen extends StatefulWidget {
+  const PartnershipScreen({super.key});
 
-  final List<Map<String, dynamic>> mockPartnerships = [
-    {
-      'title': 'Sci-Fi Çevre Tasarımı İçin Yardım',
-      'description': 'Unity HDRP kullanarak geliştirdiğim projede sci-fi koridor ve dış mekan modellemeleri yapacak bir 3D artist arıyorum.',
-      'requiredRole': '3D ARTIST',
-      'username': 'BlenderMaster',
-      'trustScore': 2450,
-      'isUrgent': true,
-    },
-    {
-      'title': 'Pixel Art Metroidvania - Müzisyen / Ses Tasarımcısı',
-      'description': '2D pixel art tarzındaki metroidvania oyunumuz için karanlık ve atmosferik müzikler yapabilecek bir ekip arkadaşı arıyoruz.',
-      'requiredRole': 'SOUND DESIGNER',
-      'username': 'PixelGamer',
-      'trustScore': 840,
-      'isUrgent': false,
-    },
-    {
-      'title': 'Multiplayer Kart Oyunu İçin Backend Developer',
-      'description': 'Node.js ve Socket.io kullanarak gerçek zamanlı bir multiplayer kart oyunu geliştiriyoruz. Backend tarafında deneyimli bir yazılımcıya ihtiyacımız var.',
-      'requiredRole': 'BACKEND DEV',
-      'username': 'CodeNinja',
-      'trustScore': 2100,
-      'isUrgent': true,
+  @override
+  State<PartnershipScreen> createState() => _PartnershipScreenState();
+}
+
+class _PartnershipScreenState extends State<PartnershipScreen> {
+  List<dynamic> partnerships = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchPartnerships();
+  }
+
+  Future<void> fetchPartnerships() async {
+    try {
+      final res = await http.get(Uri.parse('http://10.0.2.2:5000/api/partnerships'));
+      if (res.statusCode == 200) {
+        setState(() {
+          partnerships = json.decode(res.body);
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      setState(() => isLoading = false);
     }
-  ];
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -45,11 +52,13 @@ class PartnershipScreen extends StatelessWidget {
           )
         ],
       ),
-      body: ListView.builder(
+      body: isLoading 
+        ? Center(child: CircularProgressIndicator(color: Theme.of(context).primaryColor))
+        : ListView.builder(
         padding: EdgeInsets.all(16.0),
-        itemCount: mockPartnerships.length,
+        itemCount: partnerships.length,
         itemBuilder: (context, index) {
-          final item = mockPartnerships[index];
+          final item = partnerships[index];
           final isUrgent = item['isUrgent'] as bool;
 
           return CyberCard(
@@ -140,13 +149,13 @@ class PartnershipScreen extends StatelessWidget {
                               radius: 10,
                               backgroundColor: Colors.white10,
                               child: Text(
-                                item['username'][0],
+                                item['user']?['name']?[0]?.toUpperCase() ?? 'U',
                                 style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
                               ),
                             ),
                             SizedBox(width: 6),
                             Text(
-                              item['username'],
+                              item['user']?['name'] ?? 'Bilinmiyor',
                               style: TextStyle(color: Colors.white70, fontSize: 12),
                             ),
                           ],
@@ -157,7 +166,7 @@ class PartnershipScreen extends StatelessWidget {
                             Icon(Icons.bolt, color: Theme.of(context).primaryColor, size: 16),
                             SizedBox(width: 4),
                             Text(
-                              'Trust Score: ${item['trustScore']}',
+                              'Trust Score: ${item['user']?['trustScore'] ?? 0}',
                               style: TextStyle(
                                 color: Theme.of(context).primaryColor,
                                 fontSize: 12,
@@ -210,12 +219,108 @@ class PartnershipScreen extends StatelessWidget {
     );
   }
 
-  void _showChatBottomSheet(BuildContext context, Map<String, dynamic> item) {
+  void _showChatBottomSheet(BuildContext context, dynamic item) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) {
+        return ChatBottomSheet(item: item);
+      },
+    );
+  }
+}
+
+class ChatBottomSheet extends StatefulWidget {
+  final dynamic item;
+  const ChatBottomSheet({Key? key, required this.item}) : super(key: key);
+
+  @override
+  _ChatBottomSheetState createState() => _ChatBottomSheetState();
+}
+
+class _ChatBottomSheetState extends State<ChatBottomSheet> {
+  IO.Socket? socket;
+  List<dynamic> messages = [];
+  final TextEditingController _messageController = TextEditingController();
+  int userId = 1;
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _initChat();
+  }
+
+  void _initChat() async {
+    final prefs = await SharedPreferences.getInstance();
+    userId = prefs.getInt('userId') ?? 1;
+
+    try {
+      final res = await http.get(Uri.parse('http://10.0.2.2:5000/api/partnerships/${widget.item['id']}/messages'));
+      if (res.statusCode == 200) {
+        setState(() {
+          messages = json.decode(res.body);
+        });
+        _scrollToBottom();
+      }
+    } catch (e) {
+      print(e);
+    }
+
+    socket = IO.io('http://10.0.2.2:5000', IO.OptionBuilder()
+      .setTransports(['websocket'])
+      .disableAutoConnect()
+      .build()
+    );
+    socket!.connect();
+    socket!.onConnect((_) {
+      socket!.emit('join_room', widget.item['id']);
+    });
+    socket!.on('receive_message', (data) {
+      if (mounted) {
+        setState(() {
+          messages.add(data);
+        });
+        _scrollToBottom();
+      }
+    });
+  }
+
+  void _scrollToBottom() {
+    Future.delayed(Duration(milliseconds: 100), () {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+  }
+
+  void _sendMessage() {
+    if (_messageController.text.trim().isEmpty) return;
+    
+    socket!.emit('send_message', {
+      'partnershipId': widget.item['id'],
+      'senderId': userId,
+      'content': _messageController.text.trim(),
+    });
+    
+    _messageController.clear();
+  }
+
+  @override
+  void dispose() {
+    socket?.disconnect();
+    _messageController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
         return Container(
           height: MediaQuery.of(context).size.height * 0.85,
           decoration: BoxDecoration(
@@ -257,7 +362,7 @@ class PartnershipScreen extends StatelessWidget {
                           ),
                           child: Center(
                             child: Text(
-                              item['username'][0],
+                              widget.item['user']?['name']?[0]?.toUpperCase() ?? 'U',
                               style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
                             ),
                           ),
@@ -266,7 +371,7 @@ class PartnershipScreen extends StatelessWidget {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(item['username'], style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                            Text(widget.item['user']?['name'] ?? 'Bilinmiyor', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                             Row(
                               children: [
                                 Container(
@@ -307,44 +412,56 @@ class PartnershipScreen extends StatelessWidget {
                         style: TextStyle(color: Colors.white30, fontSize: 10, fontFamily: 'monospace'),
                       ),
                       const SizedBox(height: 16),
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Container(
-                          margin: const EdgeInsets.only(right: 50, bottom: 16),
-                          padding: const EdgeInsets.all(12),
-                          decoration: const BoxDecoration(
-                            color: Colors.white10,
-                            borderRadius: BorderRadius.only(
-                              topRight: Radius.circular(16),
-                              bottomRight: Radius.circular(16),
-                              bottomLeft: Radius.circular(16),
-                            ),
-                            border: Border(left: BorderSide(color: Colors.white30, width: 2)),
-                          ),
-                          child: const Text(
-                            'Selam! İlanıma başvurduğun için teşekkürler. Portfolyonu inceleyebilir miyim?',
-                            style: TextStyle(color: Colors.white70, fontSize: 14),
-                          ),
-                        ),
-                      ),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: Container(
-                          margin: const EdgeInsets.only(left: 50, bottom: 16),
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).primaryColor.withOpacity(0.1),
-                            borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(16),
-                              bottomLeft: Radius.circular(16),
-                              bottomRight: Radius.circular(16),
-                            ),
-                            border: Border(right: BorderSide(color: Theme.of(context).primaryColor, width: 2)),
-                          ),
-                          child: Text(
-                            'Merhaba! Tabi, hemen gönderiyorum: github.com/gameveloper',
-                            style: TextStyle(color: Theme.of(context).primaryColor, fontSize: 14),
-                          ),
+                      if (messages.isEmpty)
+                        const Center(child: Text('Hiç mesaj yok. İlk yazan sen ol!', style: TextStyle(color: Colors.white54, fontSize: 12))),
+                        
+                      Expanded(
+                        child: ListView.builder(
+                          controller: _scrollController,
+                          itemCount: messages.length,
+                          itemBuilder: (context, index) {
+                            final m = messages[index];
+                            final isMe = m['senderId'] == userId;
+                            
+                            return Align(
+                              alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+                              child: Container(
+                                margin: EdgeInsets.only(
+                                  left: isMe ? 50 : 0, 
+                                  right: isMe ? 0 : 50, 
+                                  bottom: 16
+                                ),
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: isMe ? Theme.of(context).primaryColor.withOpacity(0.1) : Colors.white10,
+                                  borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(16),
+                                    topRight: Radius.circular(16),
+                                    bottomLeft: Radius.circular(isMe ? 16 : 0),
+                                    bottomRight: Radius.circular(isMe ? 0 : 16),
+                                  ),
+                                  border: Border(
+                                    right: isMe ? BorderSide(color: Theme.of(context).primaryColor, width: 2) : BorderSide.none,
+                                    left: !isMe ? const BorderSide(color: Colors.white30, width: 2) : BorderSide.none,
+                                  ),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      m['sender']?['name'] ?? 'Kullanıcı',
+                                      style: TextStyle(color: isMe ? Theme.of(context).primaryColor : Colors.white54, fontSize: 10),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      m['content'] ?? '',
+                                      style: TextStyle(color: isMe ? Theme.of(context).primaryColor : Colors.white70, fontSize: 14),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
                         ),
                       ),
                     ],
@@ -365,7 +482,9 @@ class PartnershipScreen extends StatelessWidget {
                   children: [
                     Expanded(
                       child: TextField(
+                        controller: _messageController,
                         style: TextStyle(color: Theme.of(context).primaryColor, fontFamily: 'monospace', fontSize: 14),
+                        onSubmitted: (_) => _sendMessage(),
                         decoration: InputDecoration(
                           hintText: 'Mesajını yaz terminale...',
                           hintStyle: TextStyle(color: Theme.of(context).primaryColor.withOpacity(0.5)),
@@ -392,7 +511,7 @@ class PartnershipScreen extends StatelessWidget {
                       ),
                       child: IconButton(
                         icon: const Icon(Icons.send, color: Colors.black),
-                        onPressed: () {},
+                        onPressed: _sendMessage,
                       ),
                     ),
                   ],

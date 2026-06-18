@@ -4,14 +4,63 @@ const cors = require('cors');
 const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const http = require('http');
+const { Server } = require('socket.io');
 
 const app = express();
 app.use(cors());
+
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: '*', // For demo purposes
+  }
+});
+
 const prisma = new PrismaClient();
 const PORT = process.env.PORT || 5000;
 const JWT_SECRET = process.env.JWT_SECRET || 'cyberpunk_super_secret_neon_key_2077';
 
 app.use(express.json());
+
+io.on('connection', (socket) => {
+  console.log(`[Socket] User connected: ${socket.id}`);
+
+  // Odaya Katılma
+  socket.on('join_room', (partnershipId) => {
+    socket.join(`partnership_${partnershipId}`);
+    console.log(`[Socket] User ${socket.id} joined room partnership_${partnershipId}`);
+  });
+
+  // Mesaj Gönderme
+  socket.on('send_message', async (data) => {
+    const { partnershipId, senderId, content } = data;
+    try {
+      // Mesajı DB'ye kaydet
+      const message = await prisma.message.create({
+        data: {
+          content,
+          senderId: parseInt(senderId, 10),
+          partnershipId: parseInt(partnershipId, 10),
+        },
+        include: {
+          sender: { select: { id: true, name: true, role: true, trustScore: true, avatar: true } }
+        }
+      });
+
+      // Odadaki herkese (gönderen dahil) yayınla
+      io.to(`partnership_${partnershipId}`).emit('receive_message', message);
+    } catch (err) {
+      console.error('[Socket] Error saving message:', err);
+    }
+  });
+
+  socket.on('disconnect', () => {
+    console.log(`[Socket] User disconnected: ${socket.id}`);
+  });
+});
+
+
 
 // API Healty Check
 app.get('/api/health', (req, res) => {
@@ -469,6 +518,23 @@ app.post('/api/partnerships', async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
+// Ortaklık İlanı Mesajları: Getir
+app.get('/api/partnerships/:id/messages', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const messages = await prisma.message.findMany({
+      where: { partnershipId: parseInt(id, 10) },
+      orderBy: { createdAt: 'asc' },
+      include: {
+        sender: { select: { id: true, name: true, role: true, trustScore: true, avatar: true } }
+      }
+    });
+    res.json(messages);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

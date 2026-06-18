@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
-import '../theme/app_theme.dart';
 
 class AccessGate extends StatefulWidget {
   final List<String> allowedRoles;

@@ -265,7 +265,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                       children: [
                         Expanded(
                           child: OutlinedButton(
-                            onPressed: () => _handleLogin(overrideEmail: 'esma@test.com', overridePassword: 'password123'),
+                            onPressed: () => _handleLogin(overrideEmail: 'esma@gameveloper.com', overridePassword: '123456'),
                             style: OutlinedButton.styleFrom(
                               foregroundColor: Theme.of(context).primaryColor,
                               side: BorderSide(color: Theme.of(context).primaryColor.withOpacity(0.5)),
@@ -283,7 +283,8 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                         const SizedBox(width: 16),
                         Expanded(
                           child: OutlinedButton(
-                            onPressed: () => _handleLogin(overrideEmail: 'alpha@test.com', overridePassword: 'password123'),
+                            onPressed: () => _handleLogin(overrideEmail: 'alphagamer@gameveloper.com', overridePassword: '123456'),
+
                             style: OutlinedButton.styleFrom(
                               foregroundColor: Theme.of(context).primaryColor,
                               side: BorderSide(color: Theme.of(context).primaryColor.withOpacity(0.5)),

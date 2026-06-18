@@ -58,9 +58,9 @@ export default function AuthPage() {
   const handleFastLogin = async (role: "DEVELOPER" | "GAMER") => {
     setError("");
     setSuccess("");
-    // Esma: esma@test.com (varsayılan seed), AlphaGamer: alpha@test.com
-    const testEmail = role === "DEVELOPER" ? "esma@test.com" : "alpha@test.com";
-    const testPassword = "password123";
+    // Esma: esma@gameveloper.com, AlphaGamer: alphagamer@gameveloper.com
+    const testEmail = role === "DEVELOPER" ? "esma@gameveloper.com" : "alphagamer@gameveloper.com";
+    const testPassword = "123456";
 
     try {
       const res = await fetch(`http://localhost:5000/api/auth/login`, {

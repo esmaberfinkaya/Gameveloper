@@ -1,18 +1,33 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Send, Minimize2, Maximize2 } from 'lucide-react';
+import { X, Send, Minimize2, Maximize2, MessageCircle, ArrowLeft } from 'lucide-react';
 import { io, Socket } from 'socket.io-client';
 
 export default function DMWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
+  const [view, setView] = useState<'inbox' | 'chat'>('inbox');
   const [targetUser, setTargetUser] = useState<any>(null);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [messages, setMessages] = useState<any[]>([]);
   const [inputText, setInputText] = useState('');
   const [roomId, setRoomId] = useState<string | null>(null);
+  const [inboxRooms, setInboxRooms] = useState<any[]>([]);
   
   const socketRef = useRef<Socket | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const cUserStr = localStorage.getItem('user');
+    if (cUserStr) {
+      setCurrentUser(JSON.parse(cUserStr));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isOpen && currentUser && view === 'inbox') {
+      fetchInboxRooms();
+    }
+  }, [isOpen, currentUser, view]);
 
   useEffect(() => {
     const handleOpenDM = (e: Event) => {
@@ -23,6 +38,7 @@ export default function DMWidget() {
         setCurrentUser(JSON.parse(cUserStr));
       }
       setTargetUser(tUser);
+      setView('chat');
       setIsOpen(true);
       setIsMinimized(false);
     };
@@ -32,7 +48,7 @@ export default function DMWidget() {
   }, []);
 
   useEffect(() => {
-    if (isOpen && currentUser && targetUser && !socketRef.current) {
+    if (isOpen && currentUser && targetUser && view === 'chat' && !socketRef.current) {
       // Connect to socket
       socketRef.current = io('http://localhost:5000');
       
@@ -52,20 +68,33 @@ export default function DMWidget() {
     }
 
     return () => {
-      if (!isOpen && socketRef.current) {
+      if ((!isOpen || view !== 'chat') && socketRef.current) {
         socketRef.current.disconnect();
         socketRef.current = null;
         setRoomId(null);
         setMessages([]);
       }
     };
-  }, [isOpen, currentUser, targetUser]);
+  }, [isOpen, currentUser, targetUser, view]);
 
   useEffect(() => {
-    if (messagesEndRef.current) {
+    if (messagesEndRef.current && view === 'chat') {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [messages]);
+  }, [messages, view]);
+
+  const fetchInboxRooms = async () => {
+    if (!currentUser) return;
+    try {
+      const res = await fetch(`http://localhost:5000/api/dm/rooms/${currentUser.id}`);
+      if (res.ok) {
+        const data = await res.json();
+        setInboxRooms(data);
+      }
+    } catch (err) {
+      console.error('Failed to fetch inbox rooms', err);
+    }
+  };
 
   const fetchMessages = async (rId: string) => {
     try {
@@ -92,22 +121,48 @@ export default function DMWidget() {
     setInputText('');
   };
 
-  if (!isOpen || !targetUser) return null;
+  if (!isOpen) {
+    return (
+      <button 
+        onClick={() => { setIsOpen(true); setView('inbox'); setIsMinimized(false); }}
+        className="fixed bottom-4 right-4 w-14 h-14 bg-theme-accent text-black rounded-full shadow-[0_0_20px_rgba(0,255,255,0.4)] flex items-center justify-center hover:scale-110 transition-transform z-50 neon-glow-theme"
+      >
+        <MessageCircle size={28} />
+      </button>
+    );
+  }
 
   return (
-    <div className={`fixed bottom-4 right-4 w-80 md:w-96 bg-[#0a0a0f] border border-theme-accent/50 rounded-2xl shadow-[0_0_20px_rgba(255,255,255,0.1)] overflow-hidden z-50 flex flex-col transition-all duration-300 ${isMinimized ? 'h-14' : 'h-[500px]'}`}>
+    <div className={`fixed bottom-4 right-4 w-80 md:w-96 bg-[#0a0a0f] border border-theme-accent/50 rounded-2xl shadow-[0_0_30px_rgba(0,255,255,0.15)] overflow-hidden z-50 flex flex-col transition-all duration-300 ${isMinimized ? 'h-14' : 'h-[500px]'}`}>
       
       {/* Header */}
       <div 
-        className="h-14 px-4 border-b border-gray-800 bg-[#12121a] flex justify-between items-center cursor-pointer relative"
+        className="h-14 px-4 border-b border-theme-accent/30 bg-[#12121a] flex justify-between items-center cursor-pointer relative"
         onClick={() => setIsMinimized(!isMinimized)}
       >
-        <div className="absolute inset-0 pointer-events-none shadow-[inset_0_0_15px_rgba(255,255,255,0.1)]" style={{ borderColor: 'white' }}></div>
+        <div className="absolute inset-0 pointer-events-none shadow-[inset_0_0_15px_rgba(0,255,255,0.05)]"></div>
         <div className="flex items-center gap-3 relative z-10">
-          <div className="w-8 h-8 rounded-full border-2 border-white flex items-center justify-center bg-black shadow-[0_0_10px_rgba(255,255,255,0.3)]">
-            <span className="text-white font-bold text-xs">{targetUser.name.charAt(0).toUpperCase()}</span>
-          </div>
-          <span className="font-bold text-white uppercase tracking-wider text-sm">{targetUser.name}</span>
+          {view === 'chat' && (
+            <button 
+              onClick={(e) => { e.stopPropagation(); setView('inbox'); setTargetUser(null); }}
+              className="text-theme-accent hover:text-white transition-colors"
+            >
+              <ArrowLeft size={20} />
+            </button>
+          )}
+          {view === 'chat' && targetUser ? (
+            <>
+              <div className="w-8 h-8 rounded-full border border-theme-accent flex items-center justify-center bg-black">
+                <span className="text-theme-accent font-bold text-xs">{targetUser.name.charAt(0).toUpperCase()}</span>
+              </div>
+              <span className="font-bold text-white uppercase tracking-wider text-sm">{targetUser.name}</span>
+            </>
+          ) : (
+            <div className="flex items-center gap-2 text-theme-accent">
+              <MessageCircle size={20} />
+              <span className="font-bold text-white uppercase tracking-wider text-sm">Gelen Kutusu</span>
+            </div>
+          )}
         </div>
         <div className="flex items-center gap-2 relative z-10">
           <button className="text-gray-400 hover:text-white transition-colors" onClick={(e) => { e.stopPropagation(); setIsMinimized(!isMinimized); }}>
@@ -122,40 +177,73 @@ export default function DMWidget() {
       {/* Body */}
       {!isMinimized && (
         <>
-          <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar bg-[url('/noise.png')]">
-            {messages.map((m, i) => {
-              const isMe = m.senderId === currentUser.id;
-              return (
-                <div key={i} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
-                  <div className={`max-w-[80%] p-3 rounded-2xl ${isMe ? 'bg-white text-black rounded-tr-sm shadow-[0_0_10px_rgba(255,255,255,0.2)]' : 'bg-gray-800 text-gray-200 rounded-tl-sm border border-gray-700'}`}>
-                    <p className="text-sm font-medium">{m.content}</p>
-                  </div>
-                  <span className="text-[10px] text-gray-500 mt-1 uppercase">
-                    {new Date(m.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                  </span>
+          {view === 'inbox' ? (
+            <div className="flex-1 overflow-y-auto p-2 custom-scrollbar bg-[#05070a]">
+              {inboxRooms.length === 0 ? (
+                <div className="h-full flex flex-col items-center justify-center text-gray-500 space-y-2">
+                  <MessageCircle size={32} className="opacity-20" />
+                  <p className="text-sm font-bold uppercase tracking-wider">Mesaj Yok</p>
                 </div>
-              );
-            })}
-            <div ref={messagesEndRef} />
-          </div>
+              ) : (
+                inboxRooms.map((room) => {
+                  const otherUser = room.user1Id === currentUser?.id ? room.user2 : room.user1;
+                  const latestMsg = room.messages?.[0]?.content || "Mesajlaşmaya başla...";
+                  return (
+                    <div 
+                      key={room.id}
+                      onClick={() => { setTargetUser(otherUser); setView('chat'); }}
+                      className="flex items-center gap-3 p-3 rounded-xl hover:bg-theme-accent/10 transition-colors cursor-pointer border border-transparent hover:border-theme-accent/30 mb-1"
+                    >
+                      <div className="w-12 h-12 rounded-full border border-gray-700 flex items-center justify-center bg-black shrink-0">
+                        <span className="text-white font-bold">{otherUser.name.charAt(0).toUpperCase()}</span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-white font-bold text-sm truncate">{otherUser.name}</h4>
+                        <p className="text-gray-400 text-xs truncate mt-0.5">{latestMsg}</p>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          ) : (
+            <div className="flex-1 flex flex-col overflow-hidden bg-[url('/noise.png')]">
+              <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
+                {messages.map((m, i) => {
+                  const isMe = m.senderId === currentUser.id;
+                  return (
+                    <div key={i} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
+                      <div className={`max-w-[80%] p-3 rounded-2xl ${isMe ? 'bg-theme-accent/20 text-theme-accent border border-theme-accent/50 rounded-tr-sm shadow-[0_0_10px_rgba(0,255,255,0.1)]' : 'bg-gray-800 text-gray-200 rounded-tl-sm border border-gray-700'}`}>
+                        <p className="text-sm font-medium">{m.content}</p>
+                      </div>
+                      <span className="text-[10px] text-gray-500 mt-1 uppercase tracking-wider">
+                        {new Date(m.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                      </span>
+                    </div>
+                  );
+                })}
+                <div ref={messagesEndRef} />
+              </div>
 
-          {/* Input */}
-          <form onSubmit={sendMessage} className="p-3 border-t border-gray-800 bg-[#12121a] flex gap-2">
-            <input
-              type="text"
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
-              placeholder="Mesaj yaz..."
-              className="flex-1 bg-black border border-gray-700 rounded-full px-4 py-2 text-sm text-white focus:outline-none focus:border-white shadow-[inset_0_0_5px_rgba(255,255,255,0.1)] transition-colors"
-            />
-            <button 
-              type="submit" 
-              disabled={!inputText.trim()}
-              className="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center disabled:opacity-50 hover:bg-gray-200 transition-colors shadow-[0_0_10px_rgba(255,255,255,0.3)]"
-            >
-              <Send size={16} className="-ml-0.5" />
-            </button>
-          </form>
+              {/* Input */}
+              <form onSubmit={sendMessage} className="p-3 border-t border-theme-accent/30 bg-[#12121a] flex gap-2">
+                <input
+                  type="text"
+                  value={inputText}
+                  onChange={(e) => setInputText(e.target.value)}
+                  placeholder="Terminal'e yaz..."
+                  className="flex-1 bg-black border border-gray-700 rounded-full px-4 py-2 text-sm text-theme-accent focus:outline-none focus:border-theme-accent shadow-[inset_0_0_10px_rgba(0,255,255,0.05)] transition-colors font-mono"
+                />
+                <button 
+                  type="submit" 
+                  disabled={!inputText.trim()}
+                  className="w-10 h-10 rounded-full bg-theme-accent text-black flex items-center justify-center disabled:opacity-50 hover:bg-theme-accent/80 transition-colors shadow-[0_0_15px_rgba(0,255,255,0.3)]"
+                >
+                  <Send size={16} className="-ml-0.5" />
+                </button>
+              </form>
+            </div>
+          )}
         </>
       )}
     </div>

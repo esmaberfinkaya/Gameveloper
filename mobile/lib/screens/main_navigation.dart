@@ -5,6 +5,7 @@ import 'profile_screen.dart';
 import 'issues_screen.dart';
 import 'ideas_screen.dart';
 import 'partnership_screen.dart';
+import 'inbox_screen.dart';
 
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});
@@ -21,6 +22,7 @@ class _MainNavigationState extends State<MainNavigation> {
     IdeasScreen(),
     const IssuesScreen(),
     PartnershipScreen(),
+    const InboxScreen(),
     ProfileScreen(),
   ];
 
@@ -33,6 +35,8 @@ class _MainNavigationState extends State<MainNavigation> {
       case 3:
         return AppTheme.accentPurple;
       case 4:
+        return AppTheme.neonCyan;
+      case 5:
         return AppTheme.neonDeepRed;
       case 0:
       default:
@@ -94,6 +98,11 @@ class _MainNavigationState extends State<MainNavigation> {
               icon: Icon(Icons.group_add_outlined),
               activeIcon: Icon(Icons.group_add),
               label: 'Ortaklık',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.message_outlined),
+              activeIcon: Icon(Icons.message),
+              label: 'Mesajlar',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.person_outline),

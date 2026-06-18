@@ -7,7 +7,7 @@ import io from "socket.io-client";
 export default function PartnersPage() {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [activePartnership, setActivePartnership] = useState<any>(null);
-  const [socket, setSocket] = useState<any>(null);
+  const socketRef = useRef<any>(null);
   const [messages, setMessages] = useState<any[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -31,24 +31,31 @@ export default function PartnersPage() {
   }, []);
 
   useEffect(() => {
-    if (isChatOpen && activePartnership) {
-      const newSocket = io("http://localhost:5000");
-      setSocket(newSocket);
+    if (isChatOpen && activePartnership && !socketRef.current) {
+      socketRef.current = io("http://localhost:5000");
       
-      newSocket.on("connect", () => {
-        newSocket.emit("join_room", activePartnership.id);
+      socketRef.current.on("connect", () => {
+        socketRef.current.emit("join_room", activePartnership.id);
       });
       
-      newSocket.on("receive_message", (msg: any) => {
-        setMessages(prev => [...prev, msg]);
+      socketRef.current.on("receive_message", (msg: any) => {
+        setMessages(prev => {
+          // Check if message already exists to prevent duplicates
+          if (prev.find(m => m.id === msg.id)) return prev;
+          return [...prev, msg];
+        });
       });
       
       fetchMessages();
-      
-      return () => {
-        newSocket.disconnect();
-      };
     }
+
+    return () => {
+      if (!isChatOpen && socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
+        setMessages([]);
+      }
+    };
   }, [isChatOpen, activePartnership]);
 
   useEffect(() => {
@@ -71,9 +78,9 @@ export default function PartnersPage() {
 
   const handleSendMessage = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    if (!newMessage.trim() || !socket || !user) return;
+    if (!newMessage.trim() || !socketRef.current || !user) return;
     
-    socket.emit("send_message", {
+    socketRef.current.emit("send_message", {
       partnershipId: activePartnership.id,
       senderId: user.id,
       content: newMessage.trim()

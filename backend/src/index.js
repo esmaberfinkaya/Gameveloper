@@ -98,6 +98,11 @@ io.on('connection', (socket) => {
         }
       });
 
+      await prisma.chatRoom.update({
+        where: { id: roomId },
+        data: { updatedAt: new Date() }
+      });
+
       io.to(`dm_${roomId}`).emit('receive_dm', dm);
     } catch (err) {
       console.error('[Socket] Error saving DM:', err);
@@ -610,6 +615,33 @@ app.get('/api/dm/:roomId/messages', async (req, res) => {
       orderBy: { createdAt: 'asc' }
     });
     res.json(messages);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// DM: Odaları (Inbox) Getir
+app.get('/api/dm/rooms/:userId', async (req, res) => {
+  const userId = parseInt(req.params.userId, 10);
+  try {
+    const rooms = await prisma.chatRoom.findMany({
+      where: {
+        OR: [
+          { user1Id: userId },
+          { user2Id: userId }
+        ]
+      },
+      include: {
+        user1: { select: { id: true, name: true, role: true, avatar: true } },
+        user2: { select: { id: true, name: true, role: true, avatar: true } },
+        messages: {
+          orderBy: { createdAt: 'desc' },
+          take: 1
+        }
+      },
+      orderBy: { updatedAt: 'desc' }
+    });
+    res.json(rooms);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

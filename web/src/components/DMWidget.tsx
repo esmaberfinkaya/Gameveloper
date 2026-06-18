@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Send, Minimize2, Maximize2, MessageCircle, ArrowLeft } from 'lucide-react';
+import { X, Send, Minimize2, Maximize2, MessageCircle, ArrowLeft, Search } from 'lucide-react';
 import { io, Socket } from 'socket.io-client';
 
 export default function DMWidget() {
@@ -12,6 +12,8 @@ export default function DMWidget() {
   const [inputText, setInputText] = useState('');
   const [roomId, setRoomId] = useState<string | null>(null);
   const [inboxRooms, setInboxRooms] = useState<any[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<any[]>([]);
   
   const socketRef = useRef<Socket | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -96,6 +98,27 @@ export default function DMWidget() {
     }
   };
 
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(async () => {
+      if (searchQuery.trim().length > 0) {
+        try {
+          const res = await fetch(`http://localhost:5000/api/users/search?q=${searchQuery}`);
+          if (res.ok) {
+            const data = await res.json();
+            // Kendi adımızı sonuçlardan çıkaralım
+            setSearchResults(data.filter((u: any) => u.id !== currentUser?.id));
+          }
+        } catch (err) {
+          console.error('Failed to search users', err);
+        }
+      } else {
+        setSearchResults([]);
+      }
+    }, 300);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchQuery, currentUser]);
+
   const fetchMessages = async (rId: string) => {
     try {
       const res = await fetch(`http://localhost:5000/api/dm/${rId}/messages`);
@@ -178,33 +201,71 @@ export default function DMWidget() {
       {!isMinimized && (
         <>
           {view === 'inbox' ? (
-            <div className="flex-1 overflow-y-auto p-2 custom-scrollbar bg-[#05070a]">
-              {inboxRooms.length === 0 ? (
-                <div className="h-full flex flex-col items-center justify-center text-gray-500 space-y-2">
-                  <MessageCircle size={32} className="opacity-20" />
-                  <p className="text-sm font-bold uppercase tracking-wider">Mesaj Yok</p>
+            <div className="flex-1 flex flex-col overflow-hidden bg-[#05070a]">
+              {/* Arama Çubuğu */}
+              <div className="p-3 border-b border-theme-accent/20">
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Search size={14} className="text-theme-accent/50" />
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Kullanıcı Ara..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full bg-[#0D1117] border border-theme-accent/30 rounded-full pl-9 pr-4 py-1.5 text-xs text-white focus:outline-none focus:border-theme-accent shadow-[0_0_10px_rgba(0,255,255,0.1)] transition-colors placeholder-gray-500"
+                  />
                 </div>
-              ) : (
-                inboxRooms.map((room) => {
-                  const otherUser = room.user1Id === currentUser?.id ? room.user2 : room.user1;
-                  const latestMsg = room.messages?.[0]?.content || "Mesajlaşmaya başla...";
-                  return (
-                    <div 
-                      key={room.id}
-                      onClick={() => { setTargetUser(otherUser); setView('chat'); }}
-                      className="flex items-center gap-3 p-3 rounded-xl hover:bg-theme-accent/10 transition-colors cursor-pointer border border-transparent hover:border-theme-accent/30 mb-1"
-                    >
-                      <div className="w-12 h-12 rounded-full border border-gray-700 flex items-center justify-center bg-black shrink-0">
-                        <span className="text-white font-bold">{otherUser.name.charAt(0).toUpperCase()}</span>
+              </div>
+
+              <div className="flex-1 overflow-y-auto p-2 custom-scrollbar">
+                {searchQuery.trim().length > 0 ? (
+                  searchResults.length === 0 ? (
+                    <div className="text-center text-xs text-gray-500 mt-4">Kullanıcı bulunamadı.</div>
+                  ) : (
+                    searchResults.map(user => (
+                      <div 
+                        key={user.id}
+                        onClick={() => { setTargetUser(user); setView('chat'); setSearchQuery(''); }}
+                        className="flex items-center gap-3 p-2 rounded-xl hover:bg-theme-accent/10 transition-colors cursor-pointer border border-transparent hover:border-theme-accent/30 mb-1"
+                      >
+                        <div className="w-10 h-10 rounded-full border border-gray-700 flex items-center justify-center bg-black shrink-0">
+                          <span className="text-white font-bold text-sm">{user.name.charAt(0).toUpperCase()}</span>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="text-white font-bold text-sm truncate">{user.name}</h4>
+                          <p className="text-theme-accent text-[10px] uppercase tracking-wider">{user.role}</p>
+                        </div>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <h4 className="text-white font-bold text-sm truncate">{otherUser.name}</h4>
-                        <p className="text-gray-400 text-xs truncate mt-0.5">{latestMsg}</p>
+                    ))
+                  )
+                ) : inboxRooms.length === 0 ? (
+                  <div className="h-full flex flex-col items-center justify-center text-gray-500 space-y-2 mt-10">
+                    <MessageCircle size={32} className="opacity-20" />
+                    <p className="text-sm font-bold uppercase tracking-wider">Mesaj Yok</p>
+                  </div>
+                ) : (
+                  inboxRooms.map((room) => {
+                    const otherUser = room.user1Id === currentUser?.id ? room.user2 : room.user1;
+                    const latestMsg = room.messages?.[0]?.content || "Mesajlaşmaya başla...";
+                    return (
+                      <div 
+                        key={room.id}
+                        onClick={() => { setTargetUser(otherUser); setView('chat'); }}
+                        className="flex items-center gap-3 p-3 rounded-xl hover:bg-theme-accent/10 transition-colors cursor-pointer border border-transparent hover:border-theme-accent/30 mb-1"
+                      >
+                        <div className="w-12 h-12 rounded-full border border-gray-700 flex items-center justify-center bg-black shrink-0">
+                          <span className="text-white font-bold">{otherUser.name.charAt(0).toUpperCase()}</span>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="text-white font-bold text-sm truncate">{otherUser.name}</h4>
+                          <p className="text-gray-400 text-xs truncate mt-0.5">{latestMsg}</p>
+                        </div>
                       </div>
-                    </div>
-                  );
-                })
-              )}
+                    );
+                  })
+                )}
+              </div>
             </div>
           ) : (
             <div className="flex-1 flex flex-col overflow-hidden bg-[url('/noise.png')]">

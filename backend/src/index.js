@@ -180,6 +180,24 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
+// Search users
+app.get('/api/users/search', async (req, res) => {
+  const { q } = req.query;
+  if (!q) return res.json([]);
+  try {
+    const users = await prisma.user.findMany({
+      where: {
+        name: { contains: String(q), mode: 'insensitive' }
+      },
+      select: { id: true, name: true, role: true, avatar: true },
+      take: 10
+    });
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Test route
 app.get('/api/users', async (req, res) => {
   try {
@@ -200,7 +218,8 @@ app.get('/api/users/:id', async (req, res) => {
       where: { id: parseInt(id, 10) },
       include: {
         posts: { orderBy: { createdAt: 'desc' } },
-        partnerships: { orderBy: { createdAt: 'desc' } }
+        partnerships: { orderBy: { createdAt: 'desc' } },
+        _count: { select: { posts: true, projects: true } }
       }
     });
     if (!user) {
@@ -216,7 +235,11 @@ app.get('/api/users/:id', async (req, res) => {
       ...user,
       issues,
       ideas,
-      partnerships: user.partnerships || []
+      partnerships: user.partnerships || [],
+      stats: {
+        issues: issues.length,
+        projects: user._count.projects
+      }
     });
   } catch (err) {
     res.status(500).json({ error: err.message });

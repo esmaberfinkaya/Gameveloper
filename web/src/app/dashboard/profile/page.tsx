@@ -164,7 +164,7 @@ export default function ProfilePage() {
             </div>
           </div>
           <div className="text-4xl font-black text-theme-accent mt-4 shadow-theme-accent/50 drop-shadow-md">
-            {((user.issues?.length || 0) + (user.ideas?.length || 0) + (user.partnerships?.length || 0)) * 3 + 12}
+            {user.stats?.issues || 0}
           </div>
         </div>
 
@@ -177,7 +177,7 @@ export default function ProfilePage() {
             </div>
           </div>
           <div className="text-4xl font-black text-theme-accent mt-4 drop-shadow-md">
-            {user.role === 'DEVELOPER' ? 4 : 1}
+            {user.stats?.projects || 0}
           </div>
         </div>
 

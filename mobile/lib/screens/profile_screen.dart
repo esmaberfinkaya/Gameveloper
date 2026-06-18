@@ -172,14 +172,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (activeFilter == 'partnerships') currentList = partnershipsList;
     if (activeFilter == 'projects') currentList = projectsList;
     
-    int solvedIssues = 0;
-    int completedProjects = role == 'DEVELOPER' ? 4 : 1; 
-    
-    for (var post in issuesList) {
-      if (post['isResolved'] == true) {
-        solvedIssues++;
-      }
-    }
+    int solvedIssues = userData?['stats']?['issues'] ?? 0;
+    int completedProjects = userData?['stats']?['projects'] ?? 0;
 
     return Scaffold(
       body: CustomScrollView(

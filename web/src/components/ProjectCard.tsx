@@ -4,10 +4,11 @@ interface ProjectCardProps {
   id: number;
   title: string;
   description: string;
-  imageUrl: string;
+  imageUrl?: string;
+  images?: any[];
   link?: string;
-  category: string;
-  createdAt: string;
+  category?: string;
+  createdAt?: string;
   user: {
     id: number;
     name: string;
@@ -18,7 +19,8 @@ interface ProjectCardProps {
   onClick?: () => void;
 }
 
-export default function ProjectCard({ id, title, description, imageUrl, link, category, createdAt, user, currentUser, onUpdate, onClick }: ProjectCardProps) {
+export default function ProjectCard({ id, title, description, imageUrl, images, link, category, createdAt, user, currentUser, onUpdate, onClick }: ProjectCardProps) {
+  const displayImage = (images && images.length > 0) ? images[0] : imageUrl;
   const handleLike = async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!currentUser) return;
@@ -45,19 +47,15 @@ export default function ProjectCard({ id, title, description, imageUrl, link, ca
   };
 
   return (
-    <div onClick={onClick} className="col-span-full mb-8 rounded-2xl border border-theme-accent/30 hover:border-theme-accent neon-glow-theme hover:neon-glow-theme transition-all duration-500 cursor-pointer aspect-video w-full overflow-hidden relative flex items-end group">
+    <div onClick={onClick} className="col-span-full mb-8 rounded-2xl border border-theme-accent/30 hover:border-theme-accent neon-glow-theme hover:neon-glow-theme transition-all duration-500 cursor-pointer h-48 md:h-[220px] w-full overflow-hidden relative flex items-end group">
       
       {/* Dynamic Background Image */}
-      {imageUrl ? (
+      {displayImage && (
         <img 
-          src={imageUrl} 
+          src={displayImage} 
           alt={title} 
           className="w-full h-full object-cover absolute inset-0 group-hover:scale-105 transition-transform duration-1000 ease-in-out" 
         />
-      ) : (
-        <div className="absolute inset-0 bg-gradient-to-tr from-gray-900 to-black w-full h-full flex items-center justify-center">
-          <Star size={120} className="text-theme-accent/10" />
-        </div>
       )}
 
       {/* Bottom Gradient Overlay for text readability only */}

@@ -13,10 +13,37 @@ interface ProjectCardProps {
     name: string;
     role: string;
   };
+  currentUser?: any;
+  onUpdate?: () => void;
   onClick?: () => void;
 }
 
-export default function ProjectCard({ title, description, imageUrl, link, category, createdAt, user, onClick }: ProjectCardProps) {
+export default function ProjectCard({ id, title, description, imageUrl, link, category, createdAt, user, currentUser, onUpdate, onClick }: ProjectCardProps) {
+  const handleLike = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!currentUser) return;
+    try {
+      const res = await fetch(`http://localhost:5000/api/like`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: currentUser.id, projectId: id })
+      });
+      if (res.ok && onUpdate) onUpdate();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleShare = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      await navigator.clipboard.writeText(`${window.location.origin}/dashboard?project=${id}`);
+      alert("Proje linki kopyalandı!");
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <div onClick={onClick} className="col-span-full mb-8 relative group overflow-hidden rounded-2xl border border-theme-accent/30 hover:border-theme-accent neon-glow-theme hover:neon-glow-theme transition-all duration-500 min-h-[400px] flex items-end cursor-pointer">
       
@@ -85,10 +112,10 @@ export default function ProjectCard({ title, description, imageUrl, link, catego
           )}
           
           <div className="flex items-center gap-6 text-gray-300 font-bold mt-2">
-            <button className="flex items-center gap-2 hover:text-theme-accent transition-colors">
+            <button onClick={handleLike} className="flex items-center gap-2 hover:text-theme-accent transition-colors">
               <Star size={24} /> <span className="hidden md:inline">Destekle</span>
             </button>
-            <button className="flex items-center gap-2 hover:text-white transition-colors">
+            <button onClick={handleShare} className="flex items-center gap-2 hover:text-white transition-colors">
               <Share2 size={24} /> <span className="hidden md:inline">Paylaş</span>
             </button>
           </div>

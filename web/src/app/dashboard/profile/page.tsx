@@ -90,7 +90,9 @@ export default function ProfilePage() {
       
       <div className="flex items-center gap-3 mb-8">
         <User size={32} className="text-theme-accent" />
-        <h1 className="text-3xl font-black text-white tracking-widest uppercase">Geliştirici <span className="text-theme-accent">Profili</span></h1>
+        <h1 className="text-3xl font-black text-white tracking-widest uppercase">
+          {user.role === 'GAMER' ? 'Oyuncu' : 'Geliştirici'} <span className="text-theme-accent">Profili</span>
+        </h1>
       </div>
 
       {/* BENTO GRID LAYOUT */}
@@ -233,12 +235,14 @@ export default function ProfilePage() {
                 Projelerim
               </button>
               
-              <button 
-                onClick={() => setIsProjectModalOpen(true)}
-                className="ml-4 px-4 py-2 text-sm font-bold tracking-wider uppercase rounded-lg bg-theme-accent text-black hover:bg-theme-accent/90 transition-all flex items-center gap-2"
-              >
-                <FolderPlus size={16} /> Proje Paylaş
-              </button>
+              {user.role === 'DEVELOPER' && (
+                <button 
+                  onClick={() => setIsProjectModalOpen(true)}
+                  className="ml-4 px-4 py-2 text-sm font-bold tracking-wider uppercase rounded-lg bg-theme-accent text-black hover:bg-theme-accent/90 transition-all flex items-center gap-2"
+                >
+                  <FolderPlus size={16} /> Proje Paylaş
+                </button>
+              )}
             </div>
           </div>
           

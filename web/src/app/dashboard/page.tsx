@@ -360,7 +360,7 @@ export default function ExplorePage() {
               } else if (item.feedType === 'IDEA') {
                 return <IdeaCard key={`i-${item.id}`} {...item} currentUser={user} onUpdate={fetchExploreFeed} isExplore={true} />;
               } else if (item.feedType === 'PROJECT') {
-                return <ProjectCard key={`p-${item.id}`} {...item} onClick={() => { setSelectedProject(item); setIsProjectDetailModalOpen(true); }} />;
+                return <ProjectCard key={`p-${item.id}`} {...item} currentUser={user} onUpdate={fetchExploreFeed} onClick={() => { setSelectedProject(item); setIsProjectDetailModalOpen(true); }} />;
               } else if (item.feedType === 'SOLUTION') {
                 return <SolutionCard key={`s-${item.id}`} {...item} />;
               } else if (item.feedType === 'ROADMAP') {

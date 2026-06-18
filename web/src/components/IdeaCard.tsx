@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MessageSquarePlus, Share2, Lock, Unlock, EyeOff, X } from "lucide-react";
+import { MessageSquarePlus, Share2, Lock, Unlock, EyeOff, X, ThumbsUp } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -31,6 +31,31 @@ export default function IdeaCard({ id, title, story, visuals, gameplay, animatio
   const [isPrivate, setIsPrivate] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isIdeaModalOpen, setIsIdeaModalOpen] = useState(false);
+
+  const handleLike = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!currentUser) return;
+    try {
+      const res = await fetch(`http://localhost:5000/api/like`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: currentUser.id, postId: id })
+      });
+      if (res.ok && onUpdate) onUpdate();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleShare = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      await navigator.clipboard.writeText(`${window.location.origin}/dashboard?idea=${id}`);
+      alert("Fikir linki kopyalandı!");
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const handleSubmitComment = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -158,14 +183,18 @@ export default function IdeaCard({ id, title, story, visuals, gameplay, animatio
 
         {/* Action Buttons */}
         <div className="pt-4 flex items-center gap-6 text-gray-500 text-xs font-medium mt-4">
+          <button onClick={handleLike} className="flex items-center gap-1.5 hover:text-theme-accent transition-colors group/btn">
+            <ThumbsUp size={16} className="group-hover/btn:text-glow-theme" />
+            <span>Beğen</span>
+          </button>
           <button 
-            onClick={() => setIsCommentsExpanded(!isCommentsExpanded)}
+            onClick={(e) => { e.stopPropagation(); setIsCommentsExpanded(!isCommentsExpanded); }}
             className={`flex items-center gap-1.5 transition-colors group/btn ${isCommentsExpanded ? 'text-theme-accent' : 'hover:text-theme-accent'}`}
           >
             <MessageSquarePlus size={16} className="group-hover/btn:text-glow-theme" />
             <span>Tartışmalar ({(comments || []).length})</span>
           </button>
-          <button className="flex items-center gap-1.5 hover:text-theme-accent transition-colors group/btn">
+          <button onClick={handleShare} className="flex items-center gap-1.5 hover:text-theme-accent transition-colors group/btn">
             <Share2 size={16} className="group-hover/btn:text-glow-theme" />
             <span>Paylaş</span>
           </button>

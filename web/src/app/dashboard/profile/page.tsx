@@ -1,20 +1,24 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { User, Zap, Activity, MessageSquare, Heart, Share2, Hexagon, Trophy, Code, Target, AlertTriangle } from "lucide-react";
+import { User, Zap, Activity, MessageSquare, Heart, Share2, Hexagon, Trophy, Code, Target, AlertTriangle, BatteryCharging, FolderPlus } from "lucide-react";
 import FeedCard from "@/components/FeedCard";
 import IdeaCard from "@/components/IdeaCard";
 import ProjectCard from "@/components/ProjectCard";
 import SolutionCard from "@/components/SolutionCard";
 import RoadmapCard from "@/components/RoadmapCard";
+import ProjectShareModal from "@/components/ProjectShareModal";
+import ProjectDetailModal from "@/components/ProjectDetailModal";
 
 export default function ProfilePage() {
   const [user, setUser] = useState<any>(null);
-  const [activeFilter, setActiveFilter] = useState<'issues' | 'ideas' | 'partnerships'>('issues');
+  const [activeFilter, setActiveFilter] = useState<'issues' | 'ideas' | 'partnerships' | 'projects'>('issues');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const [isUploading, setIsUploading] = useState(false);
+  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<any>(null);
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
@@ -129,15 +133,25 @@ export default function ProfilePage() {
           </p>
         </div>
 
-        {/* Trust Score Box (Span 1x2) */}
+        {/* Trust Score Box (Battery Indicator) */}
         <div className="col-span-1 md:col-span-1 lg:col-span-1 row-span-2 bg-[#05070a] border border-theme-accent/50 hover:border-theme-accent neon-glow-theme hover:neon-glow-theme rounded-3xl p-8 flex flex-col items-center justify-center relative overflow-hidden transition-all group">
           <div className="absolute -bottom-10 -right-10 text-theme-accent/5 group-hover:text-theme-accent/10 transition-colors">
-            <Zap size={180} />
+            <BatteryCharging size={180} />
           </div>
           
-          <Zap size={48} className="text-theme-accent mb-4 animate-pulse relative z-10 drop-neon-glow-theme" />
-          <h3 className="text-sm text-gray-400 uppercase tracking-[0.2em] mb-2 relative z-10 font-bold">Trust Score</h3>
-          <div className="text-7xl font-black text-theme-accent text-glow-theme relative z-10">{user.trustScore}</div>
+          <BatteryCharging size={48} className="text-theme-accent mb-4 animate-pulse relative z-10 drop-neon-glow-theme" />
+          <h3 className="text-sm text-gray-400 uppercase tracking-[0.2em] mb-4 relative z-10 font-bold">Trust Score</h3>
+          
+          {/* Battery UI */}
+          <div className="w-full h-12 bg-gray-900 border-2 border-theme-accent/50 rounded-lg relative overflow-hidden flex items-center z-10 shadow-[0_0_15px_rgba(var(--theme-accent),0.3)]">
+            <div 
+              className="h-full bg-theme-accent transition-all duration-1000 ease-out flex items-center justify-end px-2"
+              style={{ width: `${user.trustScore}%` }}
+            >
+              <span className="text-black font-black text-xl mix-blend-difference">{user.trustScore}%</span>
+            </div>
+          </div>
+          
           <p className="text-xs text-theme-accent/60 mt-4 text-center relative z-10 uppercase tracking-wider">Topluluk <br/> Güvenilirlik Puanı</p>
         </div>
 
@@ -212,54 +226,101 @@ export default function ProfilePage() {
               >
                 İlanlarım
               </button>
+              <button 
+                onClick={() => setActiveFilter('projects')}
+                className={`px-4 py-2 text-sm font-bold tracking-wider uppercase rounded-lg border transition-all ${activeFilter === 'projects' ? 'bg-theme-accent/20 border-theme-accent text-theme-accent neon-glow-theme' : 'bg-transparent border-gray-800 text-gray-500 hover:text-white'}`}
+              >
+                Projelerim
+              </button>
+              
+              <button 
+                onClick={() => setIsProjectModalOpen(true)}
+                className="ml-4 px-4 py-2 text-sm font-bold tracking-wider uppercase rounded-lg bg-theme-accent text-black hover:bg-theme-accent/90 transition-all flex items-center gap-2"
+              >
+                <FolderPlus size={16} /> Proje Paylaş
+              </button>
             </div>
           </div>
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {error ? (
-              <div className="col-span-full text-center text-theme-accent py-10 border border-dashed border-theme-accent/50 rounded-xl bg-theme-accent/10">
-                <AlertTriangle size={48} className="mx-auto mb-4 opacity-50" />
-                <p className="text-lg font-bold">{error}</p>
-                <button 
-                  onClick={() => fetchUserData(user.id)} 
-                  className="mt-4 px-4 py-2 bg-theme-accent/20 text-theme-accent border border-theme-accent/50 rounded hover:bg-theme-accent/40 transition"
-                >
-                  Tekrar Dene
-                </button>
+          {(() => {
+            let activeList: any[] = [];
+            if (activeFilter === 'issues') activeList = user?.issues || [];
+            else if (activeFilter === 'ideas') activeList = user?.ideas || [];
+            else if (activeFilter === 'partnerships') activeList = user?.partnerships || [];
+            else if (activeFilter === 'projects') activeList = user?.projects || [];
+            
+            return (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {error ? (
+                  <div className="col-span-full text-center text-theme-accent py-10 border border-dashed border-theme-accent/50 rounded-xl bg-theme-accent/10">
+                    <AlertTriangle size={48} className="mx-auto mb-4 opacity-50" />
+                    <p className="text-lg font-bold">{error}</p>
+                    <button 
+                      onClick={() => fetchUserData(user.id)} 
+                      className="mt-4 px-4 py-2 bg-theme-accent/20 text-theme-accent border border-theme-accent/50 rounded hover:bg-theme-accent/40 transition"
+                    >
+                      Tekrar Dene
+                    </button>
+                  </div>
+                ) : isLoading ? (
+                  <div className="col-span-full text-center text-gray-500 py-10">Yükleniyor...</div>
+                ) : activeList.length === 0 ? (
+                  <div className="col-span-full text-center text-gray-500 py-20 border border-dashed border-gray-800 rounded-3xl bg-card-bg/30 flex flex-col items-center justify-center">
+                    <Activity size={48} className="mb-4 opacity-20" />
+                    <p className="text-lg font-medium">Bu kategoride içerik bulunmuyor.</p>
+                    <p className="text-sm text-gray-600 mt-2">Daha fazla paylaşım yaparak ekosisteme katkıda bulunun.</p>
+                  </div>
+                ) : (
+                  activeList.map((item: any) => {
+                    if (activeFilter === 'issues') {
+                      return <FeedCard key={`q-${item.id}`} {...item} currentUser={user} onUpdate={() => fetchUserData(user.id)} isExplore={true} />;
+                    } else if (activeFilter === 'ideas') {
+                      return <IdeaCard key={`i-${item.id}`} {...item} currentUser={user} onUpdate={() => fetchUserData(user.id)} isExplore={true} />;
+                    } else if (activeFilter === 'partnerships') {
+                      return (
+                        <div key={`p-${item.id}`} className="bg-card-bg/80 border border-theme-accent/40 rounded-xl p-6">
+                          <h4 className="text-lg font-bold text-white mb-2">{item.title}</h4>
+                          <p className="text-gray-400 text-sm mb-4">{item.description}</p>
+                          <div className="text-xs font-bold text-theme-accent px-3 py-1 bg-theme-accent/10 border border-theme-accent/30 rounded inline-block">
+                            {item.requiredRole}
+                          </div>
+                        </div>
+                      );
+                    } else if (activeFilter === 'projects') {
+                      return (
+                        <div 
+                          key={`proj-${item.id}`} 
+                          onClick={() => setSelectedProject(item)}
+                          className="bg-card-bg/80 border border-theme-accent/40 rounded-xl p-6 flex flex-col group hover:border-theme-accent transition-all cursor-pointer"
+                        >
+                          {item.images && <img src={item.images} alt={item.title} className="w-full h-32 object-cover rounded-lg mb-4 opacity-70 group-hover:opacity-100 transition-opacity" />}
+                          <h4 className="text-lg font-bold text-white mb-2">{item.title}</h4>
+                          <p className="text-gray-400 text-sm line-clamp-2">{item.summary}</p>
+                        </div>
+                      );
+                    }
+                    return null;
+                  })
+                )}
               </div>
-            ) : isLoading ? (
-              <div className="col-span-full text-center text-gray-500 py-10">Yükleniyor...</div>
-            ) : (activeFilter === 'issues' ? user.issues || [] : activeFilter === 'ideas' ? user.ideas || [] : user.partnerships || []).length === 0 ? (
-              <div className="col-span-full text-center text-gray-500 py-20 border border-dashed border-gray-800 rounded-3xl bg-card-bg/30 flex flex-col items-center justify-center">
-                <Activity size={48} className="mb-4 opacity-20" />
-                <p className="text-lg font-medium">Bu kategoride içerik bulunmuyor.</p>
-                <p className="text-sm text-gray-600 mt-2">Daha fazla paylaşım yaparak ekosisteme katkıda bulunun.</p>
-              </div>
-            ) : (
-              (activeFilter === 'issues' ? user.issues || [] : activeFilter === 'ideas' ? user.ideas || [] : user.partnerships || []).map((item: any) => {
-                if (activeFilter === 'issues') {
-                  return <FeedCard key={`q-${item.id}`} {...item} currentUser={user} onUpdate={() => fetchUserData(user.id)} isExplore={true} />;
-                } else if (activeFilter === 'ideas') {
-                  return <IdeaCard key={`i-${item.id}`} {...item} currentUser={user} onUpdate={() => fetchUserData(user.id)} isExplore={true} />;
-                } else if (activeFilter === 'partnerships') {
-                  return (
-                    <div key={`p-${item.id}`} className="bg-card-bg/80 border border-theme-accent/40 rounded-xl p-6">
-                      <h4 className="text-lg font-bold text-white mb-2">{item.title}</h4>
-                      <p className="text-gray-400 text-sm mb-4">{item.description}</p>
-                      <div className="text-xs font-bold text-theme-accent px-3 py-1 bg-theme-accent/10 border border-theme-accent/30 rounded inline-block">
-                        {item.requiredRole}
-                      </div>
-                    </div>
-                  );
-                }
-                return null;
-              })
-            )}
-          </div>
+            );
+          })()}
         </div>
 
       </div>
 
+      <ProjectShareModal 
+        isOpen={isProjectModalOpen} 
+        onClose={() => setIsProjectModalOpen(false)} 
+        user={user} 
+        onUpdate={() => fetchUserData(user.id)} 
+      />
+
+      <ProjectDetailModal 
+        isOpen={!!selectedProject} 
+        onClose={() => setSelectedProject(null)} 
+        project={selectedProject} 
+      />
     </div>
   );
 }

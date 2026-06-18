@@ -35,6 +35,14 @@ model User {
   comments     Comment[]
   partnerships Partnership[]
   messages     Message[]
+
+  projects     Project[]
+  roadmaps     Roadmap[]
+  likes        Like[]
+
+  chatRoomsAsUser1 ChatRoom[] @relation("ChatRoomUser1")
+  chatRoomsAsUser2 ChatRoom[] @relation("ChatRoomUser2")
+  directMessages   DirectMessage[]
 }
 
 model Post {
@@ -45,7 +53,7 @@ model Post {
   visuals    String?   @db.Text
   gameplay   String?   @db.Text
   category   String
-  imageUrl   String?
+  imageUrl   String?   @db.Text
   postType   PostType
   isResolved Boolean   @default(false)
   userId     Int
@@ -54,6 +62,7 @@ model Post {
 
   user       User      @relation(fields: [userId], references: [id])
   comments   Comment[]
+  likes      Like[]
 }
 
 model Comment {
@@ -95,3 +104,69 @@ model Message {
   partnership   Partnership @relation(fields: [partnershipId], references: [id], onDelete: Cascade)
 }
 
+model ChatRoom {
+  id        String   @id @default(uuid())
+  user1Id   Int
+  user2Id   Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user1     User     @relation("ChatRoomUser1", fields: [user1Id], references: [id])
+  user2     User     @relation("ChatRoomUser2", fields: [user2Id], references: [id])
+  messages  DirectMessage[]
+
+  @@unique([user1Id, user2Id])
+}
+
+model DirectMessage {
+  id        Int      @id @default(autoincrement())
+  content   String   @db.Text
+  roomId    String
+  senderId  Int
+  createdAt DateTime @default(now())
+
+  room      ChatRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  sender    User     @relation(fields: [senderId], references: [id])
+}
+
+model Project {
+  id         Int      @id @default(autoincrement())
+  title      String
+  summary    String   @db.Text
+  youtubeUrl String?
+  storeUrl   String?
+  images     Json?    
+  userId     Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user       User     @relation(fields: [userId], references: [id])
+  likes      Like[]
+}
+
+model Roadmap {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?  @db.Text
+  steps       Json     
+  userId      Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation(fields: [userId], references: [id])
+  likes       Like[]
+}
+
+model Like {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  postId    Int?
+  projectId Int?
+  roadmapId Int?
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id])
+  post      Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  roadmap   Roadmap? @relation(fields: [roadmapId], references: [id], onDelete: Cascade)
+}

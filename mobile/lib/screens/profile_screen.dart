@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import '../widgets/cyber_card.dart';
 import '../widgets/feed_card.dart';
+import '../widgets/project_share_bottom_sheet.dart';
 import '../theme/app_theme.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -164,11 +164,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final issuesList = userData?['issues'] as List<dynamic>? ?? [];
     final ideasList = userData?['ideas'] as List<dynamic>? ?? [];
     final partnershipsList = userData?['partnerships'] as List<dynamic>? ?? [];
+    final projectsList = userData?['projects'] as List<dynamic>? ?? [];
 
     List<dynamic> currentList = [];
     if (activeFilter == 'issues') currentList = issuesList;
     if (activeFilter == 'ideas') currentList = ideasList;
     if (activeFilter == 'partnerships') currentList = partnershipsList;
+    if (activeFilter == 'projects') currentList = projectsList;
     
     int solvedIssues = 0;
     int completedProjects = role == 'DEVELOPER' ? 4 : 1; 
@@ -279,7 +281,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               mainAxisSpacing: 16.0,
               crossAxisSpacing: 16.0,
               children: [
-                // Trust Score Box
+                // Trust Score Box (Battery Indicator Style)
                 CyberCard(
                   glowColor: Theme.of(context).primaryColor,
                   hasGlow: true,
@@ -287,24 +289,57 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.bolt, color: Theme.of(context).primaryColor, size: 36),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Icon(Icons.battery_charging_full, color: Theme.of(context).primaryColor, size: 28),
+                          SizedBox(width: 4),
+                          Text(
+                            trustScore.toString(),
+                            style: TextStyle(
+                              color: Theme.of(context).primaryColor,
+                              fontSize: 32,
+                              fontWeight: FontWeight.w900,
+                              shadows: AppTheme.getGlow(Theme.of(context).primaryColor, spread: 0, blur: 10),
+                            ),
+                          ),
+                          Text(
+                            '%',
+                            style: TextStyle(
+                              color: Theme.of(context).primaryColor.withOpacity(0.5),
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
                       SizedBox(height: 8),
+                      // Battery Bars
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: List.generate(5, (index) {
+                          double threshold = (index + 1) * 20.0;
+                          bool isActive = trustScore >= threshold - 10;
+                          return Container(
+                            margin: EdgeInsets.symmetric(horizontal: 2),
+                            width: 16,
+                            height: 6,
+                            decoration: BoxDecoration(
+                              color: isActive ? Theme.of(context).primaryColor : Colors.white10,
+                              borderRadius: BorderRadius.circular(2),
+                              boxShadow: isActive ? AppTheme.getGlow(Theme.of(context).primaryColor, blur: 5) : [],
+                            ),
+                          );
+                        }),
+                      ),
+                      SizedBox(height: 12),
                       Text(
                         'TRUST SCORE',
                         style: TextStyle(
                           color: AppTheme.textSecondary,
                           fontSize: 10,
                           letterSpacing: 1.5,
-                        ),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        trustScore.toString(),
-                        style: TextStyle(
-                          color: Theme.of(context).primaryColor,
-                          fontSize: 36,
-                          fontWeight: FontWeight.w900,
-                          shadows: AppTheme.getGlow(Theme.of(context).primaryColor, spread: 0, blur: 10),
                         ),
                       ),
                     ],
@@ -396,14 +431,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'KENDİ PAYLAŞIMLARIM',
-                    style: TextStyle(
-                      color: AppTheme.textPrimary,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 2,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'KENDİ PAYLAŞIMLARIM',
+                        style: TextStyle(
+                          color: AppTheme.textPrimary,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 2,
+                        ),
+                      ),
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            backgroundColor: Colors.transparent,
+                            builder: (context) => ProjectShareBottomSheet(
+                              userId: widget.userId,
+                              onSuccess: () => fetchData(),
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.add_box, color: Colors.black, size: 16),
+                        label: const Text('PROJE PAYLAŞ', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 10)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Theme.of(context).primaryColor,
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 16),
                   SingleChildScrollView(
@@ -415,6 +474,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         _buildFilterButton('ideas', 'FİKİRLERİM'),
                         const SizedBox(width: 8),
                         _buildFilterButton('partnerships', 'İLANLARIM'),
+                        const SizedBox(width: 8),
+                        _buildFilterButton('projects', 'PROJELERİM'),
                       ],
                     ),
                   ),
@@ -475,6 +536,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ),
                                 ),
                               ],
+                            ),
+                          ),
+                        );
+                      }
+
+                      if (activeFilter == 'projects') {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pushNamed(context, '/project_detail', arguments: item);
+                            },
+                            child: CyberCard(
+                              padding: const EdgeInsets.all(16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (item['images'] != null && item['images'].toString().isNotEmpty)
+                                    Container(
+                                      height: 150,
+                                      width: double.infinity,
+                                      margin: EdgeInsets.only(bottom: 12),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(8),
+                                        image: DecorationImage(
+                                          image: MemoryImage(base64Decode(item['images'].toString().split(',').last)),
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                                  Text(item['title'] ?? '', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                                  const SizedBox(height: 8),
+                                  Text(item['summary'] ?? '', maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white70, fontSize: 14)),
+                                ],
+                              ),
                             ),
                           ),
                         );

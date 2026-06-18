@@ -1,14 +1,46 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:share_plus/share_plus.dart';
 import 'cyber_card.dart';
 import '../theme/app_theme.dart';
 
-class FeedCard extends StatelessWidget {
+class FeedCard extends StatefulWidget {
   final Map<String, dynamic> data;
 
   const FeedCard({super.key, required this.data});
 
   @override
+  State<FeedCard> createState() => _FeedCardState();
+}
+
+class _FeedCardState extends State<FeedCard> {
+  bool isLiked = false;
+  bool isExpanded = false;
+  int? openStepIndex;
+
+  Future<void> handleLike() async {
+    try {
+      final res = await http.post(
+        Uri.parse('http://10.0.2.2:5000/api/like'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({'userId': 1, 'postId': widget.data['id']}),
+      );
+      if (res.statusCode == 200) {
+        setState(() => isLiked = true);
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  void handleShare() {
+    Share.share('Bu projeye/içeriğe göz at: ${widget.data['title']} - Gameveloper\'da gör!');
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final data = widget.data;
     final type = data['type'] ?? 'UNKNOWN';
     final title = data['title'] ?? '';
     final content = data['content'] ?? '';
@@ -127,27 +159,39 @@ class FeedCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          username,
-                          style: const TextStyle(
-                            color: AppTheme.textPrimary,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            username,
+                            style: const TextStyle(
+                              color: AppTheme.textPrimary,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
                           ),
-                        ),
-                        Text(
-                          role,
-                          style: TextStyle(
-                            color: AppTheme.textSecondary.withOpacity(0.5),
-                            fontSize: 10,
-                            letterSpacing: 1.0,
+                          Text(
+                            role,
+                            style: TextStyle(
+                              color: AppTheme.textSecondary.withOpacity(0.5),
+                              fontSize: 10,
+                              letterSpacing: 1.0,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
+                    IconButton(
+                      icon: Icon(Icons.message, color: getTypeColor()),
+                      onPressed: () {
+                        Navigator.pushNamed(
+                          context, 
+                          '/dm', 
+                          arguments: {'userId': data['userId'] ?? 1, 'name': username}
+                        );
+                      },
+                    )
                   ],
                 ),
                 const SizedBox(height: 16),
@@ -174,13 +218,82 @@ class FeedCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 
-                // Devamını Oku
+                // Roadmap Steps
+                if (type == 'ROADMAP' && data['steps'] != null && isExpanded)
+                  Container(
+                    margin: const EdgeInsets.only(top: 8, bottom: 8),
+                    child: Column(
+                      children: List.generate((data['steps'] as List).length, (index) {
+                        final step = data['steps'][index];
+                        final isOpen = openStepIndex == index;
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 8),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF12121A),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.white12),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    openStepIndex = isOpen ? null : index;
+                                  });
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.all(12),
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        width: 24,
+                                        height: 24,
+                                        decoration: BoxDecoration(
+                                          color: getTypeColor().withOpacity(0.2),
+                                          shape: BoxShape.circle,
+                                          border: Border.all(color: getTypeColor().withOpacity(0.5)),
+                                        ),
+                                        alignment: Alignment.center,
+                                        child: Text('${index + 1}', style: TextStyle(color: getTypeColor(), fontSize: 12, fontWeight: FontWeight.bold)),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Text(step['title'] ?? 'Adım', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                                      ),
+                                      Icon(isOpen ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down, color: Colors.white54, size: 16),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              if (isOpen)
+                                Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: const BoxDecoration(
+                                    border: Border(top: BorderSide(color: Colors.white12)),
+                                  ),
+                                  child: Text(step['content'] ?? '', style: const TextStyle(color: Colors.white70, fontSize: 12)),
+                                ),
+                            ],
+                          ),
+                        );
+                      }),
+                    ),
+                  ),
+
+                // Devamını Oku / İncele
                 GestureDetector(
                   onTap: () {
-                    // Navigate to details
+                    if (type == 'PROJECT') {
+                      Navigator.pushNamed(context, '/project_detail', arguments: data);
+                    } else if (type == 'ROADMAP') {
+                      setState(() {
+                        isExpanded = !isExpanded;
+                      });
+                    }
                   },
                   child: Text(
-                    'Devamını Oku >',
+                    type == 'ROADMAP' ? (isExpanded ? 'Gizle' : 'İncele') : 'Devamını Oku >',
                     style: TextStyle(
                       color: getTypeColor(),
                       fontWeight: FontWeight.bold,
@@ -198,16 +311,28 @@ class FeedCard extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.thumb_up_alt_outlined, color: getTypeColor(), size: 18),
-                        const SizedBox(width: 4),
-                        const Text('Beğen', style: TextStyle(color: Colors.white70, fontSize: 12)),
+                        GestureDetector(
+                          onTap: handleLike,
+                          child: Row(
+                            children: [
+                              Icon(isLiked ? Icons.thumb_up : Icons.thumb_up_alt_outlined, color: getTypeColor(), size: 18),
+                              const SizedBox(width: 4),
+                              const Text('Beğen', style: TextStyle(color: Colors.white70, fontSize: 12)),
+                            ],
+                          ),
+                        ),
                         const SizedBox(width: 16),
                         const Icon(Icons.mode_comment_outlined, color: Colors.white70, size: 18),
                         const SizedBox(width: 4),
                         const Text('Yorum', style: TextStyle(color: Colors.white70, fontSize: 12)),
                       ],
                     ),
-                    const Icon(Icons.share_outlined, color: Colors.white70, size: 18),
+                    IconButton(
+                      icon: const Icon(Icons.share_outlined, color: Colors.white70, size: 18),
+                      onPressed: handleShare,
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                    ),
                   ],
                 ),
               ],

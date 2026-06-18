@@ -245,6 +245,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                       'imageUrl': item['imageUrl'],
                       'username': item['user']?['name'] ?? 'Unknown',
                       'role': item['user']?['role'] ?? 'GAMER',
+                      'steps': item['steps'],
                     });
                   },
                 ),

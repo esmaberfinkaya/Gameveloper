@@ -1,7 +1,7 @@
 import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { MessageSquarePlus, ThumbsUp, Share2, CheckCircle2, ChevronDown, ChevronUp, AlertCircle, Lock, X } from "lucide-react";
+import { MessageSquarePlus, ThumbsUp, Share2, CheckCircle2, ChevronDown, ChevronUp, AlertCircle, Lock, X, MessageCircle } from "lucide-react";
 import AccessGate from "./AccessGate";
 
 interface FeedCardProps {
@@ -83,6 +83,34 @@ export default function FeedCard({ id, title, content, category, imageUrl, creat
     }
   };
 
+  const handleLike = async () => {
+    if (!currentUser) return;
+    try {
+      const res = await fetch(`http://localhost:5000/api/like`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: currentUser.id, postId: id })
+      });
+      if (res.ok && onUpdate) onUpdate();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleShare = async () => {
+    try {
+      await navigator.clipboard.writeText(`${window.location.origin}/dashboard?post=${id}`);
+      alert("Link kopyalandı!");
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const openDM = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    window.dispatchEvent(new CustomEvent('open-dm', { detail: user }));
+  };
+
   return (
     <div className={`bg-card-bg/80 border ${isResolved ? 'border-theme-accent/40' : 'border-gray-800'} hover:border-theme-accent/50 rounded-xl transition-all duration-300 backdrop-blur-sm shadow-lg hover:neon-glow-theme group relative overflow-hidden`}>
       
@@ -110,13 +138,24 @@ export default function FeedCard({ id, title, content, category, imageUrl, creat
               </div>
             )}
           </div>
-          <div className="flex-1">
-            <div className="text-sm font-bold text-gray-200">{user?.name || "Anonim"}</div>
-            <div className="flex items-center gap-2 text-xs text-gray-500 mt-0.5">
-              <span className="uppercase text-[9px] tracking-widest text-theme-accent font-semibold">{user?.role || "GAMER"}</span>
-              <span>•</span>
-              <span>{new Date(createdAt).toLocaleDateString("tr-TR", {day: "numeric", month: "short", hour: "2-digit", minute:"2-digit"})}</span>
+          <div className="flex-1 flex justify-between items-start">
+            <div>
+              <div className="text-sm font-bold text-gray-200">{user?.name || "Anonim"}</div>
+              <div className="flex items-center gap-2 text-xs text-gray-500 mt-0.5">
+                <span className="uppercase text-[9px] tracking-widest text-theme-accent font-semibold">{user?.role || "GAMER"}</span>
+                <span>•</span>
+                <span>{new Date(createdAt).toLocaleDateString("tr-TR", {day: "numeric", month: "short", hour: "2-digit", minute:"2-digit"})}</span>
+              </div>
             </div>
+            {currentUser && currentUser.id !== user?.id && (
+              <button 
+                onClick={openDM}
+                className="text-gray-400 hover:text-theme-accent transition-colors p-2 rounded-full hover:bg-theme-accent/10 border border-transparent hover:border-theme-accent/30"
+                title="Mesaj Gönder"
+              >
+                <MessageCircle size={18} />
+              </button>
+            )}
           </div>
         </div>
 
@@ -190,7 +229,7 @@ export default function FeedCard({ id, title, content, category, imageUrl, creat
         
         {/* Modüler Alt Butonlar (Beğen, Çözümler & Yorumlar, Paylaş) */}
         <div className="pt-4 flex items-center gap-6 text-gray-500 text-xs font-medium border-t border-gray-800/50 mt-4">
-          <button className="flex items-center gap-1.5 hover:text-theme-accent transition-colors group/btn">
+          <button onClick={handleLike} className="flex items-center gap-1.5 hover:text-theme-accent transition-colors group/btn">
             <ThumbsUp size={16} className="group-hover/btn:text-glow-theme" />
             <span>Beğen</span>
           </button>
@@ -202,7 +241,7 @@ export default function FeedCard({ id, title, content, category, imageUrl, creat
             <span>Çözümler & Yorumlar ({responses.length})</span>
             {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
           </button>
-          <button className="flex items-center gap-1.5 hover:text-theme-accent transition-colors group/btn">
+          <button onClick={handleShare} className="flex items-center gap-1.5 hover:text-theme-accent transition-colors group/btn">
             <Share2 size={16} className="group-hover/btn:text-glow-theme" />
             <span>Paylaş</span>
           </button>

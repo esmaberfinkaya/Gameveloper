@@ -16,6 +16,7 @@ import {
   Activity,
   User
 } from "lucide-react";
+import DMWidget from "@/components/DMWidget";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -248,6 +249,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       </aside>
 
+    <DMWidget />
     </div>
   );
 }

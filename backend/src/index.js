@@ -39,7 +39,7 @@ io.on('connection', (socket) => {
     try {
       if (roomId) {
         // DM mantığı
-        const dm = await prisma.directMessage.create({
+        const newMessage = await prisma.directMessage.create({
           data: {
             content,
             roomId,
@@ -55,7 +55,7 @@ io.on('connection', (socket) => {
           data: { updatedAt: new Date() }
         });
 
-        io.to(`dm_${roomId}`).emit('receive_message', dm);
+        io.to(roomId).emit('receive_message', newMessage);
       } else if (partnershipId) {
         // Ortaklık ilanı mantığı
         const message = await prisma.message.create({
@@ -96,7 +96,7 @@ io.on('connection', (socket) => {
         });
       }
       
-      socket.join(`dm_${room.id}`);
+      socket.join(room.id);
       socket.emit('dm_room_joined', room);
     } catch (err) {
       console.error('[Socket] DM Join Error:', err);

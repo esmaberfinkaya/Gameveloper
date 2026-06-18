@@ -45,7 +45,7 @@ export default function ProjectCard({ id, title, description, imageUrl, link, ca
   };
 
   return (
-    <div onClick={onClick} className="col-span-full mb-8 relative group overflow-hidden rounded-2xl border border-theme-accent/30 hover:border-theme-accent neon-glow-theme hover:neon-glow-theme transition-all duration-500 min-h-[280px] md:min-h-[320px] flex items-end cursor-pointer">
+    <div onClick={onClick} className="col-span-full mb-8 relative group overflow-hidden rounded-2xl border border-theme-accent/30 hover:border-theme-accent neon-glow-theme hover:neon-glow-theme transition-all duration-500 min-h-[350px] md:min-h-[400px] flex items-end cursor-pointer">
       
       {/* Dynamic Background Image */}
       {imageUrl ? (
@@ -60,9 +60,9 @@ export default function ProjectCard({ id, title, description, imageUrl, link, ca
         </div>
       )}
 
-      {/* Heavy Gradient Overlay for text readability */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent pointer-events-none"></div>
-      <div className="absolute inset-0 bg-theme-accent/10 mix-blend-overlay group-hover:bg-theme-accent/20 transition-all duration-500"></div>
+      {/* Bottom Gradient Overlay for text readability only */}
+      <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black via-black/60 to-transparent pointer-events-none"></div>
+      <div className="absolute inset-0 bg-theme-accent/5 mix-blend-overlay group-hover:bg-theme-accent/10 transition-all duration-500 pointer-events-none"></div>
 
       {/* Floating Category Badge */}
       <div className="absolute top-6 right-6 bg-black/60 backdrop-blur-md border border-theme-accent/50 text-theme-accent text-xs font-black uppercase tracking-[0.2em] px-4 py-2 rounded-full neon-glow-theme flex items-center gap-2 animate-pulse">

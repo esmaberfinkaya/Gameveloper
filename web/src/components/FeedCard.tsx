@@ -130,14 +130,9 @@ export default function FeedCard({ id, title, content, category, imageUrl, creat
         </div>
 
         {/* Author Info */}
-        <div className={`flex items-center gap-3 ${isResolved ? 'mt-4' : ''}`}>
-          <div className="w-10 h-10 rounded-full border border-gray-700 flex items-center justify-center bg-[#0D1117] relative">
-            <span className="text-gray-300 font-bold text-lg">{user?.name?.charAt(0).toUpperCase()}</span>
-            {user?.trustScore > 0 && (
-              <div className="absolute -bottom-1 -right-1 bg-theme-accent text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full neon-glow-theme border border-[#0D1117]">
-                TS: {user.trustScore}
-              </div>
-            )}
+        <div className="flex items-center gap-3 w-full">
+          <div className="w-10 h-10 rounded-full border border-theme-accent flex items-center justify-center bg-[#0D1117] flex-shrink-0 neon-glow-theme">
+            <span className="text-theme-accent font-black">{user?.name?.charAt(0).toUpperCase()}</span>
           </div>
           <div className="flex-1 flex justify-between items-start">
             <div>
@@ -288,9 +283,10 @@ export default function FeedCard({ id, title, content, category, imageUrl, creat
                         )}
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center gap-2">
-                            <span className="font-bold text-gray-300 text-sm">{res.user?.name}</span>
+                            <div className="text-sm font-bold text-gray-200">
+                              {res.user?.name}
+                            </div>
                             <span className="text-[9px] bg-theme-accent/20 text-theme-accent px-1.5 rounded">{res.user?.role}</span>
-                            <span className="text-xs text-gray-600">• TS: {res.user?.trustScore}</span>
                           </div>
                           
                           {/* Accept Button for Author */}

@@ -84,8 +84,10 @@ export default function DMWidget() {
   }, [isOpen, currentUser, targetUser, view]);
 
   useEffect(() => {
-    if (messagesEndRef.current && view === 'chat') {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    if (view === 'chat') {
+      setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
     }
   }, [messages, view]);
 
@@ -125,7 +127,7 @@ export default function DMWidget() {
 
   const fetchMessages = async (rId: string) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/dm/${rId}/messages`);
+      const res = await fetch(`http://localhost:5000/api/dm/rooms/${rId}/messages`);
       if (res.ok) {
         const data = await res.json();
         setMessages(data);

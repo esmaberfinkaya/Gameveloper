@@ -68,7 +68,7 @@ class _DMScreenState extends State<DMScreen> {
 
   Future<void> _fetchMessages(String rId) async {
     try {
-      final res = await http.get(Uri.parse('http://10.0.2.2:5000/api/dm/$rId/messages'));
+      final res = await http.get(Uri.parse('http://10.0.2.2:5000/api/dm/rooms/$rId/messages'));
       if (res.statusCode == 200) {
         setState(() {
           messages = json.decode(res.body);
@@ -94,7 +94,7 @@ class _DMScreenState extends State<DMScreen> {
   }
 
   void _scrollToBottom() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    Future.delayed(const Duration(milliseconds: 100), () {
       if (_scrollController.hasClients) {
         _scrollController.animateTo(
           _scrollController.position.maxScrollExtent,

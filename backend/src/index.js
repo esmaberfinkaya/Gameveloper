@@ -55,7 +55,7 @@ io.on('connection', (socket) => {
           data: { updatedAt: new Date() }
         });
 
-        io.to(roomId).emit('receive_message', newMessage);
+        io.to(roomId.toString()).emit('receive_message', newMessage);
       } else if (partnershipId) {
         // Ortaklık ilanı mantığı
         const message = await prisma.message.create({
@@ -96,7 +96,7 @@ io.on('connection', (socket) => {
         });
       }
       
-      socket.join(room.id);
+      socket.join(room.id.toString());
       socket.emit('dm_room_joined', room);
     } catch (err) {
       console.error('[Socket] DM Join Error:', err);
@@ -623,7 +623,7 @@ app.get('/api/partnerships/:id/messages', async (req, res) => {
 });
 
 // DM: Mesajları Getir
-app.get('/api/dm/:roomId/messages', async (req, res) => {
+app.get('/api/dm/rooms/:roomId/messages', async (req, res) => {
   const { roomId } = req.params;
   try {
     const messages = await prisma.directMessage.findMany({
@@ -774,6 +774,6 @@ app.post('/api/like', async (req, res) => {
   }
 });
 
-app.listen(PORT, '0.0.0.0', () => {
+server.listen(PORT, '0.0.0.0', () => {
   console.log(`[API] Server is running on http://localhost:${PORT}`);
 });

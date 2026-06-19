@@ -47,64 +47,67 @@ export default function ProjectCard({ id, title, description, imageUrl, images, 
   };
 
   return (
-    <div onClick={onClick} className="relative w-full h-[250px] overflow-hidden rounded-xl border border-green-500/50 shadow-[0_0_15px_rgba(34,197,94,0.3)] bg-black/80 flex flex-col justify-end cursor-pointer group">
+    <div onClick={onClick} className="bg-card-bg/80 border border-theme-accent/30 hover:border-theme-accent rounded-xl p-5 md:p-6 transition-all duration-300 backdrop-blur-sm shadow-[0_0_15px_rgba(0,255,255,0.05)] hover:shadow-[0_0_20px_rgba(0,255,255,0.2)] group relative overflow-hidden mb-6 cursor-pointer flex flex-col justify-between min-h-[180px]">
       
-      <img 
-        src={displayImage || '/default-placeholder.png'} 
-        alt={title} 
-        className="absolute inset-0 w-full h-full object-cover z-0" 
-        onError={(e) => e.currentTarget.src = '/default-placeholder.png'} 
-      />
+      {/* Category Badge Top Right */}
+      <div className="absolute top-4 right-4 bg-gray-900 border border-theme-accent/30 text-theme-accent text-[10px] uppercase tracking-wider px-3 py-1 rounded-full flex items-center gap-1 z-10 animate-pulse">
+        <Flame size={12} /> PROJE
+      </div>
 
-      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent z-10 pointer-events-none"></div>
-
-      <div className="relative z-20 p-4 w-full flex flex-col gap-2">
-        
-        <div className="flex items-center gap-2 mb-1">
-          <div className="w-8 h-8 rounded-full border border-green-500 flex items-center justify-center bg-black">
-            <span className="text-green-500 font-bold text-sm">{user?.name?.charAt(0).toUpperCase()}</span>
+      <div className="space-y-4">
+        {/* Author Info */}
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full border border-theme-accent flex items-center justify-center bg-black">
+            <span className="text-theme-accent font-bold text-lg">{user?.name?.charAt(0).toUpperCase()}</span>
           </div>
           <div>
-            <div className="text-sm font-bold text-white leading-tight">{user?.name || "Anonim"}</div>
-            <div className="text-[10px] text-green-400 uppercase tracking-wider">{user?.role || "DEVELOPER"}</div>
-          </div>
-          <div className="ml-auto text-xs text-gray-400">
-            {createdAt ? new Date(createdAt).toLocaleDateString("tr-TR", {day: "numeric", month: "short"}) : ''}
+            <div className="text-sm font-bold text-white tracking-wide">{user?.name || "Anonim"}</div>
+            <div className="flex items-center gap-2 text-[10px] text-theme-accent/80 uppercase tracking-widest mt-0.5">
+              <span>{user?.role || "DEVELOPER"}</span>
+              <span>•</span>
+              <span className="text-gray-500">{createdAt ? new Date(createdAt).toLocaleDateString("tr-TR", {day: "numeric", month: "short", year: "numeric"}) : ''}</span>
+            </div>
           </div>
         </div>
 
-        <h3 className="text-xl md:text-2xl font-black text-white leading-tight drop-shadow-md">
-          {title}
-        </h3>
-
-        <p className="text-xs md:text-sm text-gray-300 line-clamp-2">
-          {description}
-        </p>
-
-        <div className="flex items-center justify-between mt-2">
-          <div className="flex items-center gap-4 text-gray-400">
-            <button onClick={handleLike} className="flex items-center gap-1 hover:text-green-400 transition-colors">
-              <Star size={16} /> <span className="text-xs">Destekle</span>
-            </button>
-            <button onClick={handleShare} className="flex items-center gap-1 hover:text-white transition-colors">
-              <Share2 size={16} /> <span className="text-xs">Paylaş</span>
-            </button>
-          </div>
-
-          {link && (
-            <a 
-              href={link} 
-              target="_blank" 
-              rel="noreferrer" 
-              onClick={(e) => e.stopPropagation()}
-              className="flex items-center gap-1 bg-green-500 text-black font-bold uppercase text-xs px-3 py-1.5 rounded hover:bg-green-400 transition-colors"
-            >
-              İncele <ExternalLink size={14} />
-            </a>
-          )}
+        {/* Project Content */}
+        <div>
+          <h3 className="text-xl md:text-2xl font-black text-white leading-tight mb-2 group-hover:text-theme-accent transition-colors">
+            {title}
+          </h3>
+          <p className="text-sm text-gray-300 line-clamp-3 leading-relaxed">
+            {description}
+          </p>
         </div>
-
       </div>
+
+      {/* Actions and Meta */}
+      <div className="mt-6 pt-4 border-t border-gray-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        
+        {/* Interaction Actions */}
+        <div className="flex items-center gap-4 text-gray-400">
+          <button onClick={handleLike} className="flex items-center gap-1.5 hover:text-theme-accent transition-colors">
+            <Star size={16} /> <span className="text-xs font-bold uppercase tracking-wider">Destekle</span>
+          </button>
+          <button onClick={handleShare} className="flex items-center gap-1.5 hover:text-white transition-colors">
+            <Share2 size={16} /> <span className="text-xs font-bold uppercase tracking-wider">Paylaş</span>
+          </button>
+        </div>
+
+        {/* Link Actions */}
+        {link && (
+          <a 
+            href={link} 
+            target="_blank" 
+            rel="noreferrer" 
+            onClick={(e) => e.stopPropagation()}
+            className="flex items-center gap-2 bg-theme-accent/10 border border-theme-accent text-theme-accent font-bold uppercase tracking-widest text-[10px] md:text-xs px-4 py-2 rounded-md hover:bg-theme-accent hover:text-black transition-colors shrink-0"
+          >
+            Hemen İncele <ExternalLink size={14} />
+          </a>
+        )}
+      </div>
+
     </div>
   );
 }

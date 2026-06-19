@@ -347,16 +347,9 @@ export default function ExplorePage() {
               <p className="text-lg">Bu filtreye uygun içerik bulunamadı.</p>
             </div>
           ) : (
-            mixFeed.map((item: any) => {
-              if (item.feedType === 'IDEA') {
-                return <IdeaCard key={`i-${item.id}`} {...item} currentUser={user} onUpdate={fetchExploreFeed} isExplore={true} />;
-              } else if (item.feedType === 'PROJECT') {
-                return <ProjectCard key={`p-${item.id}`} {...item} currentUser={user} onUpdate={fetchExploreFeed} onClick={() => { setSelectedProject(item); setIsProjectDetailModalOpen(true); }} />;
-              } else if (item.feedType === 'SOLUTION') {
-                return <SolutionCard key={`s-${item.id}`} {...item} />;
-              }
-              return null;
-            })
+            mixFeed.filter((item: any) => item.feedType === 'PROJECT').map((item: any) => (
+              <ProjectCard key={`p-${item.id}`} {...item} currentUser={user} onUpdate={fetchExploreFeed} onClick={() => { setSelectedProject(item); setIsProjectDetailModalOpen(true); }} />
+            ))
           )}
         </div>
         

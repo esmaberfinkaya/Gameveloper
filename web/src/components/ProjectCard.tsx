@@ -9,6 +9,7 @@ interface ProjectCardProps {
   link?: string;
   category?: string;
   createdAt?: string;
+  project?: any;
   user?: {
     id: number;
     name: string;
@@ -24,7 +25,7 @@ interface ProjectCardProps {
   onClick?: () => void;
 }
 
-export default function ProjectCard({ id, title, description, imageUrl, images, link, category, createdAt, user, author, currentUser, onUpdate, onClick }: ProjectCardProps) {
+export default function ProjectCard({ id, title, description, imageUrl, images, link, category, createdAt, project, user, author, currentUser, onUpdate, onClick }: ProjectCardProps) {
   const displayImage = (images && images.length > 0) ? images[0] : imageUrl;
   const handleLike = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -63,12 +64,12 @@ export default function ProjectCard({ id, title, description, imageUrl, images, 
         {/* Author Info */}
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full border border-theme-accent flex items-center justify-center bg-black">
-            <span className="text-theme-accent font-bold text-lg">{(user?.name || author?.name || 'G').charAt(0).toUpperCase()}</span>
+            <span className="text-theme-accent font-bold text-lg">{(project?.user?.name || project?.author?.name || author?.name || user?.name || 'G').charAt(0).toUpperCase()}</span>
           </div>
           <div>
-            <div className="text-sm font-bold text-white tracking-wide">{user?.name || author?.name || "Geliştirici"}</div>
+            <div className="text-sm font-bold text-white tracking-wide">{project?.user?.name || project?.author?.name || author?.name || user?.name || 'Geliştirici'}</div>
             <div className="flex items-center gap-2 text-[10px] text-theme-accent/80 uppercase tracking-widest mt-0.5">
-              <span>{user?.role || author?.role || "DEVELOPER"}</span>
+              <span>{project?.user?.role || project?.author?.role || author?.role || user?.role || "DEVELOPER"}</span>
               <span>•</span>
               <span className="text-gray-500">{createdAt ? new Date(createdAt).toLocaleDateString("tr-TR", {day: "numeric", month: "short", year: "numeric"}) : ''}</span>
             </div>

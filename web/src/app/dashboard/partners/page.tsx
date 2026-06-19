@@ -215,7 +215,7 @@ export default function PartnersPage() {
                 <div>
                   <p className="text-sm text-white font-bold">{p.user?.name}</p>
                   <p className="text-xs text-theme-accent flex items-center gap-1">
-                    Trust Score: {p.user?.trustScore} <span className="text-theme-accent drop-neon-glow-theme">⚡</span>
+                    Trust Score: {p.user?.trustScore || 0} <span className="text-theme-accent drop-neon-glow-theme">⚡</span>
                   </p>
                 </div>
               </div>

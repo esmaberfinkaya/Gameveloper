@@ -348,7 +348,7 @@ export default function ExplorePage() {
             </div>
           ) : (
             mixFeed.filter((item: any) => item.feedType === 'PROJECT').map((item: any) => (
-              <ProjectCard key={`p-${item.id}`} {...item} currentUser={user} onUpdate={fetchExploreFeed} onClick={() => { setSelectedProject(item); setIsProjectDetailModalOpen(true); }} />
+              <ProjectCard key={`p-${item.id}`} {...item} author={item.user} currentUser={user} onUpdate={fetchExploreFeed} onClick={() => { setSelectedProject(item); setIsProjectDetailModalOpen(true); }} />
             ))
           )}
         </div>

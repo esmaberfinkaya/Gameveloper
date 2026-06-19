@@ -16,16 +16,16 @@ async function main() {
 
   // 1. Users
   const esma = await prisma.user.create({
-    data: { email: 'dev@gameveloper.com', name: 'Esma', password: passwordHash, role: 'DEVELOPER', trustScore: 1500 }
+    data: { email: 'dev@gameveloper.com', name: 'Esma', password: passwordHash, role: 'DEVELOPER', trustScore: 0 }
   });
   const alphaGamer = await prisma.user.create({
-    data: { email: 'gamer@gameveloper.com', name: 'AlphaGamer', password: passwordHash, role: 'GAMER', trustScore: 800 }
+    data: { email: 'gamer@gameveloper.com', name: 'AlphaGamer', password: passwordHash, role: 'GAMER', trustScore: 0 }
   });
   const codeSamurai = await prisma.user.create({
-    data: { email: 'samurai@gameveloper.com', name: 'CodeSamurai', password: passwordHash, role: 'DEVELOPER', trustScore: 2100 }
+    data: { email: 'samurai@gameveloper.com', name: 'CodeSamurai', password: passwordHash, role: 'DEVELOPER', trustScore: 0 }
   });
   const pixelHunter = await prisma.user.create({
-    data: { email: 'pixel@gameveloper.com', name: 'PixelHunter', password: passwordHash, role: 'GAMER', trustScore: 450 }
+    data: { email: 'pixel@gameveloper.com', name: 'PixelHunter', password: passwordHash, role: 'GAMER', trustScore: 0 }
   });
 
   const users = [esma, alphaGamer, codeSamurai, pixelHunter];

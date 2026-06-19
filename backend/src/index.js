@@ -215,7 +215,10 @@ app.get('/api/users/:id', async (req, res) => {
       include: {
         posts: { orderBy: { createdAt: 'desc' } },
         partnerships: { orderBy: { createdAt: 'desc' } },
-        projects: { orderBy: { createdAt: 'desc' } },
+        projects: { 
+          orderBy: { createdAt: 'desc' },
+          include: { user: { select: { id: true, name: true, role: true, trustScore: true } } }
+        },
         _count: { select: { posts: true, projects: true } }
       }
     });

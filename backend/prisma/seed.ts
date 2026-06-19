@@ -24,7 +24,7 @@ async function main() {
       name: 'Esma',
       password: passwordHash,
       role: Role.DEVELOPER,
-      trustScore: 3200,
+      trustScore: 0,
     },
   });
 
@@ -34,7 +34,7 @@ async function main() {
       name: 'CyberDev',
       password: passwordHash,
       role: Role.DEVELOPER,
-      trustScore: 1850,
+      trustScore: 0,
     },
   });
 
@@ -44,7 +44,7 @@ async function main() {
       name: 'BlenderMaster',
       password: passwordHash,
       role: Role.DEVELOPER,
-      trustScore: 2450,
+      trustScore: 0,
     },
   });
 
@@ -54,7 +54,7 @@ async function main() {
       name: 'AlphaGamer',
       password: passwordHash,
       role: Role.GAMER,
-      trustScore: 950,
+      trustScore: 0,
     },
   });
 

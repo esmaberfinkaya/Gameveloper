@@ -276,9 +276,9 @@ export default function ProfilePage() {
                 ) : (
                   activeList.map((item: any) => {
                     if (activeFilter === 'issues') {
-                      return <FeedCard key={`q-${item.id}`} {...item} currentUser={user} onUpdate={() => fetchUserData(user.id)} isExplore={true} />;
+                      return <FeedCard key={`q-${item.id}`} {...item} user={{ id: user.id, name: user.name, role: user.role, trustScore: user.trustScore || 0 }} currentUser={user} onUpdate={() => fetchUserData(user.id)} isExplore={true} />;
                     } else if (activeFilter === 'ideas') {
-                      return <IdeaCard key={`i-${item.id}`} {...item} currentUser={user} onUpdate={() => fetchUserData(user.id)} isExplore={true} />;
+                      return <IdeaCard key={`i-${item.id}`} {...item} user={{ id: user.id, name: user.name, role: user.role, trustScore: user.trustScore || 0 }} currentUser={user} onUpdate={() => fetchUserData(user.id)} isExplore={true} />;
                     } else if (activeFilter === 'partnerships') {
                       return (
                         <div key={`p-${item.id}`} className="bg-card-bg/80 border border-theme-accent/40 rounded-xl p-6">

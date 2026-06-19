@@ -133,12 +133,14 @@ model Project {
   id         Int      @id @default(autoincrement())
   title      String
   summary    String   @db.Text
-  youtubeUrl String?
-  storeUrl   String?
-  images     Json?    
-  userId     Int
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  youtubeUrl  String?
+  videoDesc   String?
+  storeUrl    String?
+  images      Json?    
+  releaseDate String?
+  userId      Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   user       User     @relation(fields: [userId], references: [id])
   likes      Like[]

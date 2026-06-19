@@ -12,7 +12,9 @@ export default function ProjectShareModal({ isOpen, onClose, user, onUpdate }: P
   const [title, setTitle] = useState('');
   const [summary, setSummary] = useState('');
   const [youtubeUrl, setYoutubeUrl] = useState('');
+  const [videoDesc, setVideoDesc] = useState('');
   const [storeUrl, setStoreUrl] = useState('');
+  const [releaseDate, setReleaseDate] = useState('Yakında');
   const [image, setImage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -45,8 +47,10 @@ export default function ProjectShareModal({ isOpen, onClose, user, onUpdate }: P
           title,
           summary,
           youtubeUrl,
+          videoDesc,
           storeUrl,
-          images: image,
+          images: image ? [image] : [],
+          releaseDate,
           userId: user.id
         })
       });
@@ -57,7 +61,9 @@ export default function ProjectShareModal({ isOpen, onClose, user, onUpdate }: P
         setTitle('');
         setSummary('');
         setYoutubeUrl('');
+        setVideoDesc('');
         setStoreUrl('');
+        setReleaseDate('Yakında');
         setImage(null);
       } else {
         alert('Proje paylaşılırken bir hata oluştu.');
@@ -104,6 +110,33 @@ export default function ProjectShareModal({ isOpen, onClose, user, onUpdate }: P
               placeholder="Projenizin öne çıkan özellikleri neler?"
               required
             />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Çıkış Tarihi</label>
+              <select 
+                value={releaseDate} 
+                onChange={e => setReleaseDate(e.target.value)}
+                className="w-full bg-[#12121a] border border-gray-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-theme-accent transition-colors"
+              >
+                <option value="Yakında">Yakında</option>
+                <option value="2026">2026</option>
+                <option value="2027">2027</option>
+                <option value="Belirsiz">Belirsiz</option>
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Video Açıklaması</label>
+              <input 
+                type="text" 
+                value={videoDesc} 
+                onChange={e => setVideoDesc(e.target.value)}
+                className="w-full bg-[#12121a] border border-gray-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-theme-accent transition-colors"
+                placeholder="Örn: Oynanış Fragmanı, Teaser vb."
+              />
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

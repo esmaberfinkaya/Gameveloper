@@ -215,6 +215,7 @@ app.get('/api/users/:id', async (req, res) => {
       include: {
         posts: { orderBy: { createdAt: 'desc' } },
         partnerships: { orderBy: { createdAt: 'desc' } },
+        projects: { orderBy: { createdAt: 'desc' } },
         _count: { select: { posts: true, projects: true } }
       }
     });
@@ -231,6 +232,7 @@ app.get('/api/users/:id', async (req, res) => {
       ...user,
       issues,
       ideas,
+      projects: user.projects || [],
       partnerships: user.partnerships || [],
       stats: {
         issues: issues.length,
@@ -684,11 +686,11 @@ app.get('/api/dm/rooms/:userId', async (req, res) => {
 
 // Projeler
 app.post('/api/projects', async (req, res) => {
-  const { title, summary, youtubeUrl, storeUrl, images, userId } = req.body;
+  const { title, summary, youtubeUrl, videoDesc, storeUrl, images, releaseDate, userId } = req.body;
   try {
     const project = await prisma.project.create({
       data: {
-        title, summary, youtubeUrl, storeUrl, images,
+        title, summary, youtubeUrl, videoDesc, storeUrl, images, releaseDate,
         userId: parseInt(userId, 10)
       }
     });

@@ -290,17 +290,7 @@ export default function ProfilePage() {
                         </div>
                       );
                     } else if (activeFilter === 'projects') {
-                      return (
-                        <div 
-                          key={`proj-${item.id}`} 
-                          onClick={() => setSelectedProject(item)}
-                          className="bg-card-bg/80 border border-theme-accent/40 rounded-xl p-6 flex flex-col group hover:border-theme-accent transition-all cursor-pointer"
-                        >
-                          {item.images && <img src={item.images} alt={item.title} className="w-full h-32 object-cover rounded-lg mb-4 opacity-70 group-hover:opacity-100 transition-opacity" />}
-                          <h4 className="text-lg font-bold text-white mb-2">{item.title}</h4>
-                          <p className="text-gray-400 text-sm line-clamp-2">{item.summary}</p>
-                        </div>
-                      );
+                      return <ProjectCard key={`proj-${item.id}`} {...item} currentUser={user} onUpdate={() => fetchUserData(user.id)} onClick={() => { setSelectedProject(item); setIsProjectModalOpen(true); }} />;
                     }
                     return null;
                   })

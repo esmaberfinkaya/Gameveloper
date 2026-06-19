@@ -51,11 +51,13 @@ export default function ProjectCard({ id, title, description, imageUrl, images, 
       
       {/* Dynamic Background Image */}
       {displayImage && (
-        <img 
-          src={displayImage} 
-          alt={title} 
-          className="w-full h-full object-cover absolute inset-0 group-hover:scale-105 transition-transform duration-1000 ease-in-out" 
-        />
+        <div className="absolute inset-0 relative overflow-hidden w-full h-full">
+          <img 
+            src={displayImage} 
+            alt={title} 
+            className="w-full h-full object-cover absolute inset-0 z-0 group-hover:scale-105 transition-transform duration-1000 ease-in-out" 
+          />
+        </div>
       )}
 
       {/* Bottom Gradient Overlay for text readability only */}

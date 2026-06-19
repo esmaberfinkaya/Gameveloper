@@ -1,4 +1,6 @@
 import { Share2, Star, Eye, ExternalLink, Flame } from "lucide-react";
+import { useState } from "react";
+import ShareModal from "./ShareModal";
 
 interface ProjectCardProps {
   id: number;
@@ -23,6 +25,8 @@ interface ProjectCardProps {
 
 export default function ProjectCard({ id, title, description, imageUrl, images, link, category, createdAt, project, user, author, currentUser, onUpdate, onClick }: ProjectCardProps) {
   const displayImage = (images && images.length > 0) ? images[0] : imageUrl;
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+
   const handleLike = async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!currentUser) return;
@@ -40,15 +44,11 @@ export default function ProjectCard({ id, title, description, imageUrl, images, 
 
   const handleShare = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    try {
-      await navigator.clipboard.writeText(`${window.location.origin}/dashboard?project=${id}`);
-      alert("Proje linki kopyalandı!");
-    } catch (err) {
-      console.error(err);
-    }
+    setIsShareModalOpen(true);
   };
 
   return (
+    <>
     <div onClick={onClick} className="bg-card-bg/80 border border-theme-accent/30 hover:border-theme-accent rounded-xl p-5 md:p-6 transition-all duration-300 backdrop-blur-sm shadow-[0_0_15px_rgba(0,255,255,0.05)] hover:shadow-[0_0_20px_rgba(0,255,255,0.2)] group relative overflow-hidden mb-6 cursor-pointer flex flex-col justify-between min-h-[180px]">
       
       {/* Category Badge Top Right */}
@@ -111,5 +111,15 @@ export default function ProjectCard({ id, title, description, imageUrl, images, 
       </div>
 
     </div>
+    
+    {isShareModalOpen && (
+      <ShareModal 
+        isOpen={isShareModalOpen} 
+        onClose={() => setIsShareModalOpen(false)} 
+        itemTitle={title} 
+        itemLink={`${window.location.origin}/dashboard?project=${id}`} 
+      />
+    )}
+    </>
   );
 }

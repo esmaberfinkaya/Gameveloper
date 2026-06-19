@@ -14,6 +14,7 @@ export default function DMWidget() {
   const [inboxRooms, setInboxRooms] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [pendingMessage, setPendingMessage] = useState('');
   
   const socketRef = useRef<Socket | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -34,7 +35,9 @@ export default function DMWidget() {
   useEffect(() => {
     const handleOpenDM = (e: Event) => {
       const customEvent = e as CustomEvent;
-      const tUser = customEvent.detail;
+      const payload = customEvent.detail;
+      const tUser = payload.user || payload;
+      
       const cUserStr = localStorage.getItem('user');
       if (cUserStr) {
         setCurrentUser(JSON.parse(cUserStr));
@@ -44,6 +47,12 @@ export default function DMWidget() {
       setView('chat');
       setIsOpen(true);
       setIsMinimized(false);
+
+      if (payload.autoSendMessage) {
+        setPendingMessage(payload.autoSendMessage);
+      } else {
+        setPendingMessage('');
+      }
     };
 
     window.addEventListener('open-dm', handleOpenDM);
@@ -83,6 +92,17 @@ export default function DMWidget() {
       }
     };
   }, [isOpen, currentUser, targetUser, view]);
+
+  useEffect(() => {
+    if (roomId && pendingMessage && socketRef.current && currentUser) {
+      socketRef.current.emit('send_message', {
+        roomId,
+        senderId: currentUser.id,
+        content: pendingMessage
+      });
+      setPendingMessage('');
+    }
+  }, [roomId, pendingMessage, currentUser]);
 
   useEffect(() => {
     if (view === 'chat') {

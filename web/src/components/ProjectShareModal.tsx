@@ -128,13 +128,14 @@ export default function ProjectShareModal({ isOpen, onClose, user, onUpdate }: P
             </div>
             
             <div>
-              <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Video Açıklaması</label>
+              <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-2"><Store size={14}/> Mağaza Linki</label>
               <input 
-                type="text" 
-                value={videoDesc} 
-                onChange={e => setVideoDesc(e.target.value)}
+                type="url" 
+                value={storeUrl} 
+                onChange={e => setStoreUrl(e.target.value)}
                 className="w-full bg-[#12121a] border border-gray-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-theme-accent transition-colors"
-                placeholder="Örn: Oynanış Fragmanı, Teaser vb."
+                placeholder="Steam, Play Store vs..."
+                required
               />
             </div>
           </div>
@@ -152,14 +153,13 @@ export default function ProjectShareModal({ isOpen, onClose, user, onUpdate }: P
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-2"><Store size={14}/> Mağaza Linki</label>
+              <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Video Açıklaması</label>
               <input 
-                type="url" 
-                value={storeUrl} 
-                onChange={e => setStoreUrl(e.target.value)}
+                type="text" 
+                value={videoDesc} 
+                onChange={e => setVideoDesc(e.target.value)}
                 className="w-full bg-[#12121a] border border-gray-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-theme-accent transition-colors"
-                placeholder="Steam, Play Store vs..."
-                required
+                placeholder="Örn: Oynanış Fragmanı, Teaser vb."
               />
             </div>
           </div>

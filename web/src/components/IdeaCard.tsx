@@ -2,6 +2,7 @@ import { useState } from "react";
 import { MessageSquarePlus, Share2, Lock, Unlock, EyeOff, X, ThumbsUp } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import ShareModal from "./ShareModal";
 
 interface IdeaCardProps {
   id: number;
@@ -31,6 +32,7 @@ export default function IdeaCard({ id, title, story, visuals, gameplay, animatio
   const [isPrivate, setIsPrivate] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isIdeaModalOpen, setIsIdeaModalOpen] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   const handleLike = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -49,12 +51,7 @@ export default function IdeaCard({ id, title, story, visuals, gameplay, animatio
 
   const handleShare = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    try {
-      await navigator.clipboard.writeText(`${window.location.origin}/dashboard?idea=${id}`);
-      alert("Fikir linki kopyalandı!");
-    } catch (err) {
-      console.error(err);
-    }
+    setIsShareModalOpen(true);
   };
 
   const handleSubmitComment = async (e: React.FormEvent) => {
@@ -89,6 +86,7 @@ export default function IdeaCard({ id, title, story, visuals, gameplay, animatio
   };
 
   return (
+    <>
     <div className="bg-card-bg/80 border border-gray-800 hover:border-theme-accent/50 rounded-xl transition-all duration-300 backdrop-blur-sm shadow-lg group relative overflow-hidden mb-6">
       
       {/* Category Badge Top Right */}
@@ -255,6 +253,15 @@ export default function IdeaCard({ id, title, story, visuals, gameplay, animatio
         </div>
       )}
 
+      {isShareModalOpen && (
+        <ShareModal 
+          isOpen={isShareModalOpen} 
+          onClose={() => setIsShareModalOpen(false)} 
+          itemTitle={title} 
+          itemLink={`${window.location.origin}/dashboard?idea=${id}`} 
+        />
+      )}
     </div>
+    </>
   );
 }

@@ -10,17 +10,13 @@ interface ProjectCardProps {
   category?: string;
   createdAt?: string;
   project?: any;
+  author?: any;
+  currentUser?: any;
   user?: {
     id: number;
     name: string;
-    role: string;
+    role?: string;
   };
-  author?: {
-    id: number;
-    name: string;
-    role: string;
-  };
-  currentUser?: any;
   onUpdate?: () => void;
   onClick?: () => void;
 }

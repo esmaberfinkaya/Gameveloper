@@ -290,7 +290,7 @@ export default function ProfilePage() {
                         </div>
                       );
                     } else if (activeFilter === 'projects') {
-                      return <ProjectCard key={`proj-${item.id}`} {...item} author={item.user || { id: user.id, name: user.name, role: user.role }} currentUser={user} onUpdate={() => fetchUserData(user.id)} onClick={() => { setSelectedProject(item); setIsProjectModalOpen(true); }} />;
+                      return <ProjectCard key={`proj-${item.id}`} {...item} user={{ id: user.id, name: user.name, role: user.role }} currentUser={user} onUpdate={() => fetchUserData(user.id)} onClick={() => { setSelectedProject(item); setIsProjectModalOpen(true); }} />;
                     }
                     return null;
                   })
